@@ -3,16 +3,16 @@ class EDF_DbRepositoryBase
 	protected ref EDF_DbContext m_DbContext;
 
 	//------------------------------------------------------------------------------------------------
-	void Configure(EDF_DbContext dbContext)
-	{
-		if (m_DbContext) return; //Only allow configure once
-		m_DbContext = dbContext;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	EDF_DbContext GetDbContext()
 	{
 		return m_DbContext;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Use with caution, normally you should never need to use this!
+	void SetDbContext(EDF_DbContext dbContext)
+	{
+		m_DbContext = dbContext;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ class EDF_DbRepositoryBase
 class EDF_DbRepository<Class TEntityType> : EDF_DbRepositoryBase
 {
 	//------------------------------------------------------------------------------------------------
-	typename GetEntityType()
+	static typename GetEntityType()
 	{
 		return TEntityType;
 	}
@@ -131,11 +131,85 @@ class EDF_DbRepository<Class TEntityType> : EDF_DbRepositoryBase
 	{
 		m_DbContext.FindAllAsync(TEntityType, condition, orderBy, limit, offset, callback);
 	}
+};
+
+class EDF_DbRepositoryRegistration
+{
+	protected static ref map<typename, typename> s_mMapping;
+	protected static ref array<typename> s_aRegistrationQueue;
 
 	//------------------------------------------------------------------------------------------------
-	protected void EDF_DbRepository()
+	static typename Get(typename entityType)
 	{
-		if (!GetEntityType().IsInherited(EDF_DbEntity))
-			Debug.Error(string.Format("Db repository '%1' created with entity type '%2' that does not inherit from '%3'. Results will be invalid!", this, TEntityType, EDF_DbEntity));
+		if (!s_mMapping)
+			s_mMapping = new map<typename, typename>();
+
+		typename result = s_mMapping.Get(entityType);
+		if (!result)
+		{
+			string repositoryTypeStr = string.Format("EDF_DbRepository<%1>", entityType.ToString());
+
+			result = repositoryTypeStr.ToType();
+
+			if (result)
+			{
+				// Save default implementation repository to cache
+				s_mMapping.Set(entityType, result);
+			}
+		}
+
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void FlushRegistrations(ScriptModule scriptModule)
+	{
+		if (!s_aRegistrationQueue || !scriptModule)
+			return;
+
+		if (!s_mMapping)
+			s_mMapping = new map<typename, typename>();
+
+		foreach (typename repositoryType : s_aRegistrationQueue)
+		{
+			Class reflectionInst = repositoryType.Spawn();
+			if (!reflectionInst)
+				continue;
+
+			typename entityType;
+			scriptModule.Call(reflectionInst, "GetEntityType", false, entityType);
+			reflectionInst = null;
+
+			typename expectedBase = string.Format("EDF_DbRepository<%1>", entityType.ToString()).ToType();
+			if (!repositoryType.IsInherited(expectedBase))
+			{
+				Debug.Error(string.Format("Failed to register '%1' as repository for '%2'. '%1' must inherit from '%3'.", repositoryType, entityType, expectedBase));
+				continue;
+			}
+
+			if (!entityType.IsInherited(EDF_DbEntity))
+			{
+				Debug.Error(string.Format("Db repository '%1' created with entity type '%2' that does not inherit from '%3'. Results will be invalid!", repositoryType, entityType, EDF_DbEntity));
+				continue;
+			}
+
+			s_mMapping.Set(entityType, repositoryType);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void EDF_DbRepositoryRegistration()
+	{
+		// TODO: Retrire registration attribute when we can can get all inherited types from our repository base classes
+
+		typename repositoryType = EDF_ReflectionUtils.GetAttributeParent();
+
+		if (!s_aRegistrationQueue)
+		{
+			s_aRegistrationQueue = {repositoryType};
+			return;
+		}
+
+		s_aRegistrationQueue.Insert(repositoryType);
 	}
 };

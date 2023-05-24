@@ -20,7 +20,7 @@ sealed class EDF_DbRepositoryFactory
 			repository = EDF_DbRepositoryBase.Cast(repositoryType.Spawn());
 
 			if (repository)
-				repository.Configure(dbContext);
+				repository.SetDbContext(dbContext);
 		}
 
 		// Cache repository to be re-used, even if null because second time it would still create an invalid one

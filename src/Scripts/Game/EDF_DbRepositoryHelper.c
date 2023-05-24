@@ -6,7 +6,7 @@ class EDF_DbEntityHelper<Class TEntityType>
 	//! \return database repository instance or null if no type could be found.
 	static EDF_DbRepository<TEntityType> GetRepository(notnull EDF_DbContext dbContext)
 	{
-		typename repositoryType = EDF_DbRepositoryType.Get(TEntityType); // Can not be inlined or else illegal read happens because of bug in scriptvm.
+		typename repositoryType = EDF_DbRepositoryRegistration.Get(TEntityType); // Can not be inlined or else illegal read happens because of bug in scriptvm.
 		if (!repositoryType)
 		{
 			string repositoryTypeStr = string.Format("EDF_DbRepository<%1>", TEntityType);
@@ -15,7 +15,7 @@ class EDF_DbEntityHelper<Class TEntityType>
 
 		return EDF_DbRepository<TEntityType>.Cast(EDF_DbRepositoryFactory.GetRepository(repositoryType, dbContext));
 	}
-}
+};
 
 class EDF_DbRepositoryHelper<Class TRepositoryType>
 {
@@ -24,4 +24,4 @@ class EDF_DbRepositoryHelper<Class TRepositoryType>
 	{
 		return TRepositoryType.Cast(EDF_DbRepositoryFactory.GetRepository(TRepositoryType, dbContext));
 	}
-}
+};
