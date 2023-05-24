@@ -22,12 +22,6 @@ class EDF_DbRepositoryBase
 
 class EDF_DbRepository<Class TEntityType> : EDF_DbRepositoryBase
 {
-	//------------------------------------------------------------------------------------------------
-	static typename GetEntityType()
-	{
-		return TEntityType;
-	}
-
 	// ------------------------------------ Sync API -------------------------------------------------
 
 	//------------------------------------------------------------------------------------------------
@@ -130,6 +124,12 @@ class EDF_DbRepository<Class TEntityType> : EDF_DbRepositoryBase
 	void FindAllAsync(EDF_DbFindCondition condition = null, array<ref array<string>> orderBy = null, int limit = -1, int offset = -1, notnull EDF_DbFindCallbackMultiple<TEntityType> callback = null)
 	{
 		m_DbContext.FindAllAsync(TEntityType, condition, orderBy, limit, offset, callback);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	sealed static typename GetEntityType()
+	{
+		return TEntityType;
 	}
 };
 
