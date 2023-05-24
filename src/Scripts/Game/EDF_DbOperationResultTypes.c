@@ -76,7 +76,7 @@ class EDF_DbOperationStatusOnlyCallback : EDF_DbOperationCallback
 	void OnSuccess(Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	void OnFailure(EDF_EDbOperationStatusCode resultCode, Managed context);
+	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
 	sealed void Invoke(EDF_EDbOperationStatusCode code)
@@ -105,10 +105,10 @@ class EDF_DbFindCallbackBase : EDF_DbOperationCallback
 class EDF_DbFindCallbackMultiple<Class TEntityType> : EDF_DbFindCallbackBase
 {
 	//------------------------------------------------------------------------------------------------
-	void OnSuccess(array<ref TEntityType> resultData, Managed context);
+	void OnSuccess(array<ref TEntityType> results, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	void OnFailure(EDF_EDbOperationStatusCode resultCode, Managed context);
+	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
 	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
@@ -133,10 +133,10 @@ class EDF_DbFindCallbackMultiple<Class TEntityType> : EDF_DbFindCallbackBase
 class EDF_DbFindCallbackSingle<Class TEntityType> : EDF_DbFindCallbackBase
 {
 	//------------------------------------------------------------------------------------------------
-	void OnSuccess(TEntityType resultData, Managed context);
+	void OnSuccess(TEntityType result, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	void OnFailure(EDF_EDbOperationStatusCode resultCode, Managed context);
+	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
 	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
@@ -164,10 +164,10 @@ class EDF_DbFindCallbackSingle<Class TEntityType> : EDF_DbFindCallbackBase
 class EDF_DbFindCallbackSingleton<Class TEntityType> : EDF_DbFindCallbackBase
 {
 	//------------------------------------------------------------------------------------------------
-	void OnSuccess(TEntityType resultData, Managed context);
+	void OnSuccess(TEntityType result, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	void OnFailure(EDF_EDbOperationStatusCode resultCode, Managed context);
+	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
 	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)

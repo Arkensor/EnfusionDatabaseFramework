@@ -112,7 +112,7 @@ class EDF_DbContext
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Use EDF_DbContext::Create(string) to get a context instance.
+	//! Use EDF_DbContext::Create(EDF_DbConnectionInfoBase) to get a context instance.
 	protected void EDF_DbContext(notnull EDF_DbDriver driver)
 	{
 		m_Driver = driver;

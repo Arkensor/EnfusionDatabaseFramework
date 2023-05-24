@@ -50,10 +50,14 @@ class EDF_DbName
 	//------------------------------------------------------------------------------------------------
 	static string Get(typename entityType)
 	{
+		string name;
 		if (s_mMapping)
-			return s_mMapping.Get(entityType);
+			name = s_mMapping.Get(entityType);
 
-		return entityType.ToString();
+		if (!name)
+			name = entityType.ToString();
+
+		return name;
 	}
 
 	//------------------------------------------------------------------------------------------------

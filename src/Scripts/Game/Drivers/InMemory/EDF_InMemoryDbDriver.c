@@ -111,18 +111,18 @@ class EDF_InMemoryDbDriver : EDF_DbDriver
 	override void AddOrUpdateAsync(notnull EDF_DbEntity entity, EDF_DbOperationStatusOnlyCallback callback = null)
 	{
 		// In memory is blocking, re-use sync api
-		EDF_EDbOperationStatusCode resultCode = AddOrUpdate(entity);
+		EDF_EDbOperationStatusCode statusCode = AddOrUpdate(entity);
 		if (callback)
-			callback.Invoke(resultCode);
+			callback.Invoke(statusCode);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void RemoveAsync(typename entityType, string entityId, EDF_DbOperationStatusOnlyCallback callback = null)
 	{
 		// In memory is blocking, re-use sync api
-		EDF_EDbOperationStatusCode resultCode = Remove(entityType, entityId);
+		EDF_EDbOperationStatusCode statusCode = Remove(entityType, entityId);
 		if (callback)
-			callback.Invoke(resultCode);
+			callback.Invoke(statusCode);
 	}
 
 	//------------------------------------------------------------------------------------------------

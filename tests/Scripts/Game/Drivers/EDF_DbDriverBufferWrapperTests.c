@@ -42,10 +42,10 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateFindById_NotFlushed_Ret
 	auto entity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
 
 	// Act
-	EDF_EDbOperationStatusCode resultCode = bufferedDriver.AddOrUpdate(entity);
+	EDF_EDbOperationStatusCode statusCode = bufferedDriver.AddOrUpdate(entity);
 
 	// Assert
-	if (resultCode != EDF_EDbOperationStatusCode.SUCCESS)
+	if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
 		return new EDF_TestResult(false);
 
 	array<ref EDF_DbEntity> results = bufferedDriver.FindAll(EDF_Test_DbDriverBufferWrapperEntity, EDF_DbFind.Id().Equals(entity.GetId())).GetEntities();
@@ -73,13 +73,13 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateInPlaceTwice_Flushed_Re
 	auto updatedEntity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 1337);
 
 	// Act
-	EDF_EDbOperationStatusCode resultCode1 = bufferedDriver.AddOrUpdate(entity);
-	EDF_EDbOperationStatusCode resultCode2 = bufferedDriver.AddOrUpdate(updatedEntity);
+	EDF_EDbOperationStatusCode statusCode1 = bufferedDriver.AddOrUpdate(entity);
+	EDF_EDbOperationStatusCode statusCode2 = bufferedDriver.AddOrUpdate(updatedEntity);
 	bufferedDriver.Flush(forceBlocking: true);
 
 	// Assert
-	if (resultCode1 != EDF_EDbOperationStatusCode.SUCCESS||
-		resultCode2 != EDF_EDbOperationStatusCode.SUCCESS)
+	if (statusCode1 != EDF_EDbOperationStatusCode.SUCCESS||
+		statusCode2 != EDF_EDbOperationStatusCode.SUCCESS)
 	{
 		return new EDF_TestResult(false);
 	}
@@ -110,14 +110,14 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateFindAllLimited_NotFlush
 	auto entity3 = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000003", 44);
 
 	// Act
-	EDF_EDbOperationStatusCode resultCode1 = bufferedDriver.AddOrUpdate(entity1);
-	EDF_EDbOperationStatusCode resultCode2 = bufferedDriver.AddOrUpdate(entity2);
-	EDF_EDbOperationStatusCode resultCode3 = bufferedDriver.AddOrUpdate(entity3);
+	EDF_EDbOperationStatusCode statusCode1 = bufferedDriver.AddOrUpdate(entity1);
+	EDF_EDbOperationStatusCode statusCode2 = bufferedDriver.AddOrUpdate(entity2);
+	EDF_EDbOperationStatusCode statusCode3 = bufferedDriver.AddOrUpdate(entity3);
 
 	// Assert
-	if (resultCode1 != EDF_EDbOperationStatusCode.SUCCESS||
-		resultCode2 != EDF_EDbOperationStatusCode.SUCCESS||
-		resultCode3 != EDF_EDbOperationStatusCode.SUCCESS)
+	if (statusCode1 != EDF_EDbOperationStatusCode.SUCCESS||
+		statusCode2 != EDF_EDbOperationStatusCode.SUCCESS||
+		statusCode3 != EDF_EDbOperationStatusCode.SUCCESS)
 	{
 		return new EDF_TestResult(false);
 	}
@@ -149,14 +149,14 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateFindMultipleByIdDesc_No
 	auto entity3 = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000003", 44);
 
 	// Act
-	EDF_EDbOperationStatusCode resultCode1 = bufferedDriver.AddOrUpdate(entity1);
-	EDF_EDbOperationStatusCode resultCode2 = bufferedDriver.AddOrUpdate(entity2);
-	EDF_EDbOperationStatusCode resultCode3 = bufferedDriver.AddOrUpdate(entity3);
+	EDF_EDbOperationStatusCode statusCode1 = bufferedDriver.AddOrUpdate(entity1);
+	EDF_EDbOperationStatusCode statusCode2 = bufferedDriver.AddOrUpdate(entity2);
+	EDF_EDbOperationStatusCode statusCode3 = bufferedDriver.AddOrUpdate(entity3);
 
 	// Assert
-	if (resultCode1 != EDF_EDbOperationStatusCode.SUCCESS||
-		resultCode2 != EDF_EDbOperationStatusCode.SUCCESS||
-		resultCode3 != EDF_EDbOperationStatusCode.SUCCESS)
+	if (statusCode1 != EDF_EDbOperationStatusCode.SUCCESS||
+		statusCode2 != EDF_EDbOperationStatusCode.SUCCESS||
+		statusCode3 != EDF_EDbOperationStatusCode.SUCCESS)
 	{
 		return new EDF_TestResult(false);
 	}
@@ -191,12 +191,12 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddRemove_NotFlushed_NotRetured()
 	auto entity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
 
 	// Act
-	EDF_EDbOperationStatusCode resultCode1 = bufferedDriver.AddOrUpdate(entity);
-	EDF_EDbOperationStatusCode resultCode2 = bufferedDriver.Remove(EDF_Test_DbDriverBufferWrapperEntity, entity.GetId());
+	EDF_EDbOperationStatusCode statusCode1 = bufferedDriver.AddOrUpdate(entity);
+	EDF_EDbOperationStatusCode statusCode2 = bufferedDriver.Remove(EDF_Test_DbDriverBufferWrapperEntity, entity.GetId());
 
 	// Assert
-	if (resultCode1 != EDF_EDbOperationStatusCode.SUCCESS ||
-		resultCode2 != EDF_EDbOperationStatusCode.SUCCESS)
+	if (statusCode1 != EDF_EDbOperationStatusCode.SUCCESS ||
+		statusCode2 != EDF_EDbOperationStatusCode.SUCCESS)
 	{
 		return new EDF_TestResult(false);
 	}
@@ -219,13 +219,13 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddRemove_Flushed_NotRetured()
 	auto entity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
 
 	// Act
-	EDF_EDbOperationStatusCode resultCode1 = bufferedDriver.AddOrUpdate(entity);
-	EDF_EDbOperationStatusCode resultCode2 = bufferedDriver.Remove(EDF_Test_DbDriverBufferWrapperEntity, entity.GetId());
+	EDF_EDbOperationStatusCode statusCode1 = bufferedDriver.AddOrUpdate(entity);
+	EDF_EDbOperationStatusCode statusCode2 = bufferedDriver.Remove(EDF_Test_DbDriverBufferWrapperEntity, entity.GetId());
 	bufferedDriver.Flush(forceBlocking: true);
 
 	// Assert
-	if (resultCode1 != EDF_EDbOperationStatusCode.SUCCESS ||
-		resultCode2 != EDF_EDbOperationStatusCode.SUCCESS)
+	if (statusCode1 != EDF_EDbOperationStatusCode.SUCCESS ||
+		statusCode2 != EDF_EDbOperationStatusCode.SUCCESS)
 	{
 		return new EDF_TestResult(false);
 	}
@@ -248,13 +248,13 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddFlushRemove_NotFlushed_NotRetur
 	auto entity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
 
 	// Act
-	EDF_EDbOperationStatusCode resultCode1 = bufferedDriver.AddOrUpdate(entity);
+	EDF_EDbOperationStatusCode statusCode1 = bufferedDriver.AddOrUpdate(entity);
 	bufferedDriver.Flush(forceBlocking: true);
-	EDF_EDbOperationStatusCode resultCode2 = bufferedDriver.Remove(EDF_Test_DbDriverBufferWrapperEntity, entity.GetId());
+	EDF_EDbOperationStatusCode statusCode2 = bufferedDriver.Remove(EDF_Test_DbDriverBufferWrapperEntity, entity.GetId());
 
 	// Assert
-	if (resultCode1 != EDF_EDbOperationStatusCode.SUCCESS ||
-		resultCode2 != EDF_EDbOperationStatusCode.SUCCESS)
+	if (statusCode1 != EDF_EDbOperationStatusCode.SUCCESS ||
+		statusCode2 != EDF_EDbOperationStatusCode.SUCCESS)
 	{
 		return new EDF_TestResult(false);
 	}

@@ -40,10 +40,10 @@ TestResultBase EDF_Test_InMemoryDbDriver_AddOrUpdate_NewEntity_Inserted()
 	EDF_Test_InMemoryDbDriverEntity entity("TEST0000-0000-0001-0000-000000000001", 42.42, "Hello World");
 
 	// Act
-	EDF_EDbOperationStatusCode resultCode = driver.AddOrUpdate(entity);
+	EDF_EDbOperationStatusCode statusCode = driver.AddOrUpdate(entity);
 
 	// Assert
-	if (!resultCode == EDF_EDbOperationStatusCode.SUCCESS) return new EDF_TestResult(false);
+	if (!statusCode == EDF_EDbOperationStatusCode.SUCCESS) return new EDF_TestResult(false);
 
 	array<ref EDF_DbEntity> results = driver.FindAll(EDF_Test_InMemoryDbDriverEntity, EDF_DbFind.Id().Equals(entity.GetId())).GetEntities();
 
@@ -73,10 +73,10 @@ TestResultBase EDF_Test_InMemoryDbDriver_Remove_ExistingId_Removed()
 	driver.AddOrUpdate(entity);
 
 	// Act
-	EDF_EDbOperationStatusCode resultCode = driver.Remove(EDF_Test_InMemoryDbDriverEntity, entity.GetId());
+	EDF_EDbOperationStatusCode statusCode = driver.Remove(EDF_Test_InMemoryDbDriverEntity, entity.GetId());
 
 	// Assert
-	if (!resultCode == EDF_EDbOperationStatusCode.SUCCESS) return new EDF_TestResult(false);
+	if (!statusCode == EDF_EDbOperationStatusCode.SUCCESS) return new EDF_TestResult(false);
 
 	array<ref EDF_DbEntity> results = driver.FindAll(EDF_Test_InMemoryDbDriverEntity, EDF_DbFind.Id().Equals(entity.GetId())).GetEntities();
 

@@ -84,10 +84,10 @@ class EDF_Test_JsonFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully :
 	void ActAndAsset()
 	{
 		EDF_Test_JsonFileDbDriverEntity entity("TEST0000-0000-0001-0000-000000000001", 42.42, "Hello World");
-		EDF_EDbOperationStatusCode resultCode = driver.AddOrUpdate(entity);
+		EDF_EDbOperationStatusCode statusCode = driver.AddOrUpdate(entity);
 
 		// Assert
-		if (resultCode != EDF_EDbOperationStatusCode.SUCCESS)
+		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
 		{
 			SetResult(new EDF_TestResult(false));
 			return;
@@ -142,10 +142,10 @@ class EDF_Test_JsonFileDbDriver_Remove_ExistingEntity_FileDeleted : EDF_Test_Jso
 		EDF_Test_JsonFileDbDriverEntity entity("TEST0000-0000-0001-0000-000000000002", 42.42, "Hello World");
 		driver.AddOrUpdate(entity);
 
-		EDF_EDbOperationStatusCode resultCode = driver.Remove(EDF_Test_JsonFileDbDriverEntity, entity.GetId());
+		EDF_EDbOperationStatusCode statusCode = driver.Remove(EDF_Test_JsonFileDbDriverEntity, entity.GetId());
 
 		// Assert
-		if (resultCode != EDF_EDbOperationStatusCode.SUCCESS)
+		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
 		{
 			SetResult(new EDF_TestResult(false));
 			return;
