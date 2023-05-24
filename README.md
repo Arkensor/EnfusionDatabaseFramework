@@ -13,13 +13,13 @@
 **A database framework to connect the Enfusion engine with SQL-, document- and local file databases.**
 
 > **Warning**
-> This framework is still in **BETA**. Until version 1.0 there is no backwards compatiblity guarantee! Expect some bugs/performance issues and function signature updates until then. Feedback via [Issue](https://github.com/Arkensor/EnfusionDatabaseFramework/issues) or [Issue](https://github.com/Arkensor/EnfusionDatabaseFramework/discussions) is welcome.
+> This framework is still in **BETA**. Until version 1.0 there is no backward compatibility guarantee! Expect some bugs/performance issues and function signature updates until then. Feedback via [Issue](https://github.com/Arkensor/EnfusionDatabaseFramework/issues) or [Issue](https://github.com/Arkensor/EnfusionDatabaseFramework/discussions) is welcome.
 
 ## 🚀 Features
 - ✅ Easy to setup your DB entities with the provided base classes
-- ✅ Built in [GUID](https://en.wikipedia.org/wiki/GUID) generation for DB entities to avoid expensive roundtrips to the database
+- ✅ Built-in [GUID](https://en.wikipedia.org/wiki/GUID) generation for DB entities to avoid expensive roundtrips to the database
 - ✅ Powerful query builder to find DB entities by complex conditions
-- ✅ Sync (blocking) and Async (non blocking) API's for adding/updating, finding and removing DB entities
+- ✅ Sync (blocking) and Async (non-blocking) APIs for adding/updating, finding, and removing DB entities
 - ✅ Pagination and result sorting by nested properties 
 - ✅ Optional repository pattern for easy strong typed results and re-useable queries.
 - 🚧 Migrations between storage backends e.g. `JsonFile` <-> `Http:MySQL`
@@ -29,7 +29,7 @@
 - ✅ `JsonFile` local `.json` files for workbench development and small data volumes
 - ✅ `BinaryFile` local `.bin` files, same purpose as JSON but much smaller in filesize.
 - 🚧 `BIBackend` local/cloud synced `.bin` files stored in the Bohemia Interactive session backend.
-- 🚧 `Http` a web api powered bridge to other external storage services such as SQL and document databases.
+- 🚧 `Http` a web API powered bridge to other external storage services such as SQL and document databases.
     - 🚧 SQL Databases `SQLite`, `MySQL`, `PostgreSQL`
     - 🚧 Document Databases `MongoDB`
 
@@ -61,14 +61,14 @@ class EDF_QuickstartAction : ScriptedUserAction
     //------------------------------------------------------------------------------------------------
     override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
     {
-        // Get the connection info as attribute or parse it from CLI params etc.
+        // Get the connection info as an attribute or parse it from CLI params etc.
         EDF_JsonFileDbConnectionInfo connectInfo();
         connectInfo.m_sDatabaseName = "MyJsonDatabase";
 
-        // Get a db context instance and save somewhere to re-use in e.g. a singleton
+        // Get a db context instance and save it somewhere to re-use in e.g. a singleton
         EDF_DbContext dbContext = EDF_DbContext.Create(connectInfo);
 
-        // For convinience interact with the db context through a repostitory
+        // For convenience interact with the DB context through a repository
         EDF_DbRepository<TAG_MyPersistentInfo> repository = EDF_DbEntityHelper<TAG_MyPersistentInfo>.GetRepository(dbContext);
 
         // Add some entries
