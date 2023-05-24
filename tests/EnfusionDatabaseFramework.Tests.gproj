@@ -1,0 +1,8 @@
+GameProject {
+ ID "EnfusionDatabaseFramework.Tests"
+ GUID "5D6EA89D94B07EDF"
+ TITLE "Enfusion Database Framework Tests"
+ Dependencies {
+  "5D6EA74A94173EDF" "58D0FB3206B6F859"
+ }
+}
