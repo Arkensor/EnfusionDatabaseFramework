@@ -76,7 +76,7 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 	{
 		EDF_BinaryFileDbConnectionInfo connectInfo();
 		connectInfo.m_sDatabaseName = EDF_BinaryFileDbDriverTests.DB_NAME;
-		driver.Initalize(connectInfo);
+		driver.Initialize(connectInfo);
 	}
 
 	//------------------------------------------------------------------------------------------------

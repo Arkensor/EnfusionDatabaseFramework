@@ -10,9 +10,9 @@ class EDF_InMemoryDbDriver : EDF_DbDriver
 	protected EDF_InMemoryDatabase m_pDb;
 
 	//------------------------------------------------------------------------------------------------
-	override bool Initalize(notnull EDF_DbConnectionInfoBase connectionInfo)
+	override bool Initialize(notnull EDF_DbConnectionInfoBase connectionInfo)
 	{
-		// Only create the db holder if at least one driver is initalized. (Avoids allocation on clients)
+		// Only create the db holder if at least one driver is initialized. (Avoids allocation on clients)
 		if (!s_mDatabases)
 			s_mDatabases = new map<string, ref EDF_InMemoryDatabase>();
 

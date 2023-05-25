@@ -76,7 +76,7 @@ class EDF_Test_JsonFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully :
 	{
 		EDF_JsonFileDbConnectionInfo connectInfo();
 		connectInfo.m_sDatabaseName = EDF_JsonFileDbDriverTests.DB_NAME;
-		driver.Initalize(connectInfo);
+		driver.Initialize(connectInfo);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ class EDF_Test_JsonFileDbDriver_Remove_ExistingEntity_FileDeleted : EDF_Test_Jso
 	{
 		EDF_JsonFileDbConnectionInfo connectInfo();
 		connectInfo.m_sDatabaseName = EDF_JsonFileDbDriverTests.DB_NAME;
-		driver.Initalize(connectInfo);
+		driver.Initialize(connectInfo);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ class EDF_Test_JsonFileDbDriver_FindAll_IdOnly_ExactLoadAndCache : EDF_Test_Json
 		EDF_JsonFileDbConnectionInfo connectInfo();
 		connectInfo.m_sDatabaseName = EDF_JsonFileDbDriverTests.DB_NAME;
 		connectInfo.m_bUseCache = true;
-		driver.Initalize(connectInfo);
+		driver.Initialize(connectInfo);
 
 		EDF_JsonFileDbDriverTests.WriteEntity(driver._GetTypeDirectory(EDF_Test_JsonFileDbDriverEntity), new EDF_Test_JsonFileDbDriverEntity("TEST0000-0000-0001-0000-000000001001", 41.1, "Existing 1001"));
 		EDF_JsonFileDbDriverTests.WriteEntity(driver._GetTypeDirectory(EDF_Test_JsonFileDbDriverEntity), new EDF_Test_JsonFileDbDriverEntity("TEST0000-0000-0001-0000-000000001002", 41.2, "Existing 1002"));
@@ -217,7 +217,7 @@ class EDF_Test_JsonFileDbDriver_FindAll_ContentField_AllLoadedAndCached : EDF_Te
 		EDF_JsonFileDbConnectionInfo connectInfo();
 		connectInfo.m_sDatabaseName = EDF_JsonFileDbDriverTests.DB_NAME;
 		connectInfo.m_bUseCache = true;
-		driver.Initalize(connectInfo);
+		driver.Initialize(connectInfo);
 
 		EDF_JsonFileDbDriverTests.WriteEntity(driver._GetTypeDirectory(EDF_Test_JsonFileDbDriverEntity), new EDF_Test_JsonFileDbDriverEntity("TEST0000-0000-0001-0000-000000002001", 42.1, "Existing 2001"));
 		EDF_JsonFileDbDriverTests.WriteEntity(driver._GetTypeDirectory(EDF_Test_JsonFileDbDriverEntity), new EDF_Test_JsonFileDbDriverEntity("TEST0000-0000-0001-0000-000000002002", 42.2, "Existing 2002"));

@@ -26,7 +26,7 @@ class EDF_FileDbDriverBase : EDF_DbDriver
 	protected bool m_bUseCache;
 
 	//------------------------------------------------------------------------------------------------
-	override bool Initalize(notnull EDF_DbConnectionInfoBase connectionInfo)
+	override bool Initialize(notnull EDF_DbConnectionInfoBase connectionInfo)
 	{
 		if (!m_pEntityCache)
 			m_pEntityCache = new EDF_DbEntityCache();

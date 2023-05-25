@@ -3,7 +3,7 @@ class EDF_DbDriver
 	static bool s_bForceBlocking; //Used to forced drivers to rely on sync api during session teardown
 
 	//------------------------------------------------------------------------------------------------
-	bool Initalize(notnull EDF_DbConnectionInfoBase connectionInfo);
+	bool Initialize(notnull EDF_DbConnectionInfoBase connectionInfo);
 
 	//------------------------------------------------------------------------------------------------
 	EDF_EDbOperationStatusCode AddOrUpdate(notnull EDF_DbEntity entity);

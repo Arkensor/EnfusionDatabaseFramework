@@ -35,7 +35,7 @@ TestResultBase EDF_Test_InMemoryDbDriver_AddOrUpdate_NewEntity_Inserted()
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.Initialize(connectInfo);
 
 	EDF_Test_InMemoryDbDriverEntity entity("TEST0000-0000-0001-0000-000000000001", 42.42, "Hello World");
 
@@ -67,7 +67,7 @@ TestResultBase EDF_Test_InMemoryDbDriver_Remove_ExistingId_Removed()
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.Initialize(connectInfo);
 
 	EDF_Test_InMemoryDbDriverEntity entity("TEST0000-0000-0001-0000-000000000002", 42.42, "Hello World");
 	driver.AddOrUpdate(entity);

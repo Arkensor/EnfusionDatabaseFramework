@@ -36,7 +36,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateFindById_NotFlushed_Ret
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.initialize(connectInfo);
 	EDF_DbDriverBufferWrapper bufferedDriver(driver);
 
 	auto entity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
@@ -66,7 +66,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateInPlaceTwice_Flushed_Re
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.initialize(connectInfo);
 	EDF_DbDriverBufferWrapper bufferedDriver(driver);
 
 	auto entity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
@@ -102,7 +102,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateFindAllLimited_NotFlush
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.initialize(connectInfo);
 	EDF_DbDriverBufferWrapper bufferedDriver(driver);
 
 	auto entity1 = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
@@ -141,7 +141,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateFindMultipleByIdDesc_No
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.initialize(connectInfo);
 	EDF_DbDriverBufferWrapper bufferedDriver(driver);
 
 	auto entity1 = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
@@ -185,7 +185,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddRemove_NotFlushed_NotRetured()
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.initialize(connectInfo);
 	EDF_DbDriverBufferWrapper bufferedDriver(driver);
 
 	auto entity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
@@ -213,7 +213,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddRemove_Flushed_NotRetured()
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.initialize(connectInfo);
 	EDF_DbDriverBufferWrapper bufferedDriver(driver);
 
 	auto entity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
@@ -242,7 +242,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddFlushRemove_NotFlushed_NotRetur
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.initialize(connectInfo);
 	EDF_DbDriverBufferWrapper bufferedDriver(driver);
 
 	auto entity = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 42);
@@ -272,7 +272,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_FindAllPaginatedOrdered_HalfFlushe
 	EDF_InMemoryDbDriver driver();
 	EDF_InMemoryDbConnectionInfo connectInfo();
 	connectInfo.m_sDatabaseName = "Testing";
-	driver.Initalize(connectInfo);
+	driver.initialize(connectInfo);
 	EDF_DbDriverBufferWrapper bufferedDriver(driver);
 
 	auto entity1 = EDF_Test_DbDriverBufferWrapperEntity.Create("TEST0000-0000-0001-0000-000000000001", 11);

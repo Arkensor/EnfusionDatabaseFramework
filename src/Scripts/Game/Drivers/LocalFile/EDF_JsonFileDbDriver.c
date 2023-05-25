@@ -18,9 +18,9 @@ class EDF_JsonFileDbDriver : EDF_FileDbDriverBase
 	protected bool m_bPrettify;
 
 	//------------------------------------------------------------------------------------------------
-	override bool Initalize(notnull EDF_DbConnectionInfoBase connectionInfo)
+	override bool Initialize(notnull EDF_DbConnectionInfoBase connectionInfo)
 	{
-		if (!super.Initalize(connectionInfo))
+		if (!super.Initialize(connectionInfo))
 			return false;
 
 		auto jsonConnectInfo = EDF_JsonFileDbConnectionInfo.Cast(connectionInfo);

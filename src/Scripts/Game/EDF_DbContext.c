@@ -102,9 +102,9 @@ class EDF_DbContext
 	{
 		typename driverType = EDF_DbConnectionInfoDriverType.GetDriverType(connectionInfo.Type());
 		EDF_DbDriver driver = EDF_DbDriver.Cast(driverType.Spawn());
-		if (!driver || !driver.Initalize(connectionInfo))
+		if (!driver || !driver.Initialize(connectionInfo))
 		{
-			Debug.Error(string.Format("Unable to initalize database driver of type '%1'.", driverType));
+			Debug.Error(string.Format("Unable to initialize database driver of type '%1'.", driverType));
 			return null;
 		}
 
