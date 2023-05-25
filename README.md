@@ -12,8 +12,11 @@
 # Enfusion Database Framework
 **A database framework to connect the Enfusion engine with SQL-, document- and local file databases.**
 
+> **Note**
+> Are you trying to persist the entire world state and not just a few self scripted db entites? Consider using [EnfusionPersistenceFramework](https://github.com/Arkensor/EnfusionPersistenceFramework) which is built on top of this project.
+
 > **Warning**
-> This framework is still in **BETA**. Until version 1.0 there is no backward compatibility guarantee! Expect some bugs/performance issues and function signature updates until then. Feedback via [Issue](https://github.com/Arkensor/EnfusionDatabaseFramework/issues) or [Issue](https://github.com/Arkensor/EnfusionDatabaseFramework/discussions) is welcome.
+> This framework is still in **BETA**. Until version 1.0.0 there is no backward compatibility guarantee! Expect some bugs/performance issues and function signature updates until then. Feedback via [Issue](https://github.com/Arkensor/EnfusionDatabaseFramework/issues) or [Discussion](https://github.com/Arkensor/EnfusionDatabaseFramework/discussions) is welcome.
 
 ## 🚀 Features
 - ✅ Easy to setup your DB entities with the provided base classes

@@ -1,13 +1,13 @@
 [EDF_DbConnectionInfoDriverType(EDF_JsonFileDbDriver), BaseContainerProps()]
 class EDF_JsonFileDbConnectionInfo : EDF_FileDbDriverInfoBase
 {
-	[Attribute(defvalue: "1", desc: "Save prettified json (formatted, with tabs etc.)")]
+	[Attribute(defvalue: "1", desc: "Save files prettified (formatted). Primarily for debugging.")]
 	bool m_bPrettify;
 
 	//------------------------------------------------------------------------------------------------
-	override void Parse(string connectionString)
+	override void ReadOptions(string connectionString)
 	{
-		super.Parse(connectionString);
+		super.ReadOptions(connectionString);
 		m_bPrettify = connectionString.Contains("prettify=true") || connectionString.Contains("pretty=true");
 	}
 };

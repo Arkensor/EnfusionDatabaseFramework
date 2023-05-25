@@ -1,13 +1,13 @@
 [EDF_DbConnectionInfoDriverType(EDF_JsonFileDbDriver), BaseContainerProps()]
 class EDF_FileDbDriverInfoBase : EDF_DbConnectionInfoBase
 {
-	[Attribute(defvalue: "1", desc: "Cache files loaded to reduce disk IO.")]
+	[Attribute(defvalue: "1", desc: "Cache read results from disk to reduce file IO operations on consecutive queries.")]
 	bool m_bUseCache;
 
 	//------------------------------------------------------------------------------------------------
-	override void Parse(string connectionString)
+	override void ReadOptions(string connectionString)
 	{
-		super.Parse(connectionString);
+		super.ReadOptions(connectionString);
 		connectionString.ToLower();
 		connectionString.Replace(" = ", "=");
 		m_bUseCache = connectionString.Contains("cache=true");

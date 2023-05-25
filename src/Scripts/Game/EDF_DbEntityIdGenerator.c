@@ -24,7 +24,7 @@ class EDF_DbEntityIdGenerator
 		string randHex = EDF_HexHelper.Convert(s_pRandom.RandFloatXY(0, int.MAX), false, 8);
 		string randHex2 = EDF_HexHelper.Convert(s_pRandom.RandFloatXY(0, int.MAX), false, 8);
 
-		// TTTT TTTT-SEQ1-SEQ2-RND1-RND1 RND2 RND2
+		// TTTT TTTT-SEQ1-SEQ1-RND1-RND1 RND2 RND2
 		return string.Format("%1-%2-%3-%4-%5%6",
 			timeHex,
 			seqHex.Substring(0, 4),
