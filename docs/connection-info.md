@@ -8,7 +8,7 @@ connectInfo.m_sDatabaseName = "MyDatabase";
 connectInfo.m_bPrettify = true;
 ```
 
-They can also be parsed from CLI params or other string sources using [`EDF_DbConnectionInfoBase::Parse()`](https://enfusionengine.com/api/redirect?to=enfusion://ScriptEditor/Scripts/Game/Drivers/EDF_DbConnectionInfo.c;8).
+They can also be parsed from CLI params or other string sources using [`EDF_DbConnectionInfoBase::Parse()`](https://enfusionengine.com/api/redirect?to=enfusion://ScriptEditor/Scripts/Game/Drivers/EDF_DbConnectionInfo.c;8).  
 The format for this is `<driver-name>://<database-name>?<option-name>=<option-value>&<another-option-name>=<another-option-value>`.
 ```cs
 // ArmaReforgerServer.exe "-ConnectionString=JsonFile://MyDatabase?prettify=true"
