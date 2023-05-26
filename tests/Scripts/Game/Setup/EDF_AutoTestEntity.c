@@ -4,7 +4,6 @@ class EDF_AutoTestEntityClass : GenericEntityClass
 
 class EDF_AutoTestEntity : GenericEntity
 {
-	#ifdef WORKBENCH
 	//------------------------------------------------------------------------------------------------
 	protected void EDF_AutoTestEntity(IEntitySource src, IEntity parent)
 	{
@@ -13,7 +12,7 @@ class EDF_AutoTestEntity : GenericEntity
 
 		Run();
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
 	static void Run()
 	{
@@ -42,7 +41,7 @@ class EDF_AutoTestEntity : GenericEntity
 		{
 			Print(string.Format("Some tests <color rgba='255,0,0,200'>failed</color>! For details check MyGames/ArmaReforger/profile/</br>%1", resultFile), LogLevel.ERROR);
 		}
-		
+
 		// Write results file
 		FileIO.MakeDirectory("$profile:TestResults");
 
@@ -53,6 +52,4 @@ class EDF_AutoTestEntity : GenericEntity
 		handle.Write(testResults);
 		handle.Close();
 	}
-	
-	#endif
 };
