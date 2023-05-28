@@ -10,13 +10,14 @@
 </div>
 
 # Enfusion Database Framework
+
+> **Warning**
+> This framework is still in **BETA**. Until version 1.0.0 there is no backward compatibility guarantee! Expect some bugs/performance issues and function signature updates until then. Feedback via [issue](https://github.com/Arkensor/EnfusionDatabaseFramework/issues) or [discussion](https://github.com/Arkensor/EnfusionDatabaseFramework/discussions) is welcome.
+
 **A database framework to connect the Enfusion engine with SQL-, document- and local file databases.**
 
 > **Note**
 > Are you trying to persist the entire world state and not just a few self scripted db entites? Consider using [EnfusionPersistenceFramework](https://github.com/Arkensor/EnfusionPersistenceFramework) which is built on top of this project.
-
-> **Warning**
-> This framework is still in **BETA**. Until version 1.0.0 there is no backward compatibility guarantee! Expect some bugs/performance issues and function signature updates until then. Feedback via [issue](https://github.com/Arkensor/EnfusionDatabaseFramework/issues) or [discussion](https://github.com/Arkensor/EnfusionDatabaseFramework/discussions) is welcome.
 
 ## 🚀 Features
 - ✅ Easy to setup your DB entities with the provided base classes
