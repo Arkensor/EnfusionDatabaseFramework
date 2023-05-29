@@ -127,7 +127,7 @@ class EDF_DbRepository<Class TEntityType> : EDF_DbRepositoryBase
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	sealed static typename GetEntityType()
+	/*sealed*/ static typename GetEntityType()
 	{
 		return TEntityType;
 	}

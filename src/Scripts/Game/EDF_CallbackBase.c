@@ -6,7 +6,7 @@ class EDF_Callback
 	string m_sInvokeMethod;
 
 	//------------------------------------------------------------------------------------------------
-	sealed void Invoke()
+	/*sealed*/ void Invoke()
 	{
 		GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, true, null, m_pContext);
 	}
@@ -26,7 +26,7 @@ class EDF_DataCallbackSingle<Class T> : EDF_Callback
 	void OnComplete(T data, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	sealed void Invoke(T data)
+	/*sealed*/ void Invoke(T data)
 	{
 		if (!m_pInvokeInstance ||
 			!m_sInvokeMethod ||
@@ -43,7 +43,7 @@ class EDF_DataCallbackMultiple<Class T> : EDF_Callback
 	void OnComplete(array<T> data, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	sealed void Invoke(array<T> data)
+	/*sealed*/ void Invoke(array<T> data)
 	{
 		if (!m_pInvokeInstance ||
 			!m_sInvokeMethod ||

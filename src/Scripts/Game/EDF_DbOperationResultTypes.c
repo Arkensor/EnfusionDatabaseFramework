@@ -79,7 +79,7 @@ class EDF_DbOperationStatusOnlyCallback : EDF_DbOperationCallback
 	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	sealed void Invoke(EDF_EDbOperationStatusCode code)
+	/*sealed*/ void Invoke(EDF_EDbOperationStatusCode code)
 	{
 		if (m_pInvokeInstance &&
 			m_sInvokeMethod &&
@@ -111,7 +111,7 @@ class EDF_DbFindCallbackMultiple<Class TEntityType> : EDF_DbFindCallbackBase
 	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
+	/*sealed*/ override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
 	{
 		array<ref TEntityType> strongTypedResults = EDF_RefArrayCaster<EDF_DbEntity, TEntityType>.Convert(findResults);
 
@@ -139,7 +139,7 @@ class EDF_DbFindCallbackSingle<Class TEntityType> : EDF_DbFindCallbackBase
 	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
+	/*sealed*/ override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
 	{
 		TEntityType typedResult;
 
@@ -170,7 +170,7 @@ class EDF_DbFindCallbackSingleton<Class TEntityType> : EDF_DbFindCallbackBase
 	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
+	/*sealed*/ override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
 	{
 		TEntityType typedResult;
 

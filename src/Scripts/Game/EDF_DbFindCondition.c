@@ -31,7 +31,7 @@ class EDF_DbFindCondition
 	protected static ref array<ref EDF_DbFindCondition> ALLOC_BUFFER;
 
 	//------------------------------------------------------------------------------------------------
-	sealed void Debug()
+	/*sealed*/ void Debug()
 	{
 		PrintFormat("%1:\n%2", this, GetDebugString());
 	}

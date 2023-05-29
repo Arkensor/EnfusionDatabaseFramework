@@ -1,4 +1,4 @@
-sealed class EDF_DbRepositoryFactory
+/*sealed*/ class EDF_DbRepositoryFactory
 {
 	private static ref map<string, ref EDF_DbRepositoryBase> s_mRepositoryCache;
 
