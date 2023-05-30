@@ -79,11 +79,11 @@ class EDF_DbOperationStatusOnlyCallback : EDF_DbOperationCallback
 	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	/*sealed*/ void Invoke(EDF_EDbOperationStatusCode code)
+	sealed void Invoke(EDF_EDbOperationStatusCode code)
 	{
 		if (m_pInvokeInstance &&
 			m_sInvokeMethod &&
-			GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, true, null, code, m_pContext)) return;
+			GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, false, null, code, m_pContext)) return;
 
 		if (code == EDF_EDbOperationStatusCode.SUCCESS)
 		{
@@ -111,13 +111,13 @@ class EDF_DbFindCallbackMultiple<Class TEntityType> : EDF_DbFindCallbackBase
 	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	/*sealed*/ override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
+	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
 	{
 		array<ref TEntityType> strongTypedResults = EDF_RefArrayCaster<EDF_DbEntity, TEntityType>.Convert(findResults);
 
 		if (m_pInvokeInstance &&
 			m_sInvokeMethod &&
-			GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, true, null, code, strongTypedResults, m_pContext)) return;
+			GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, false, null, code, strongTypedResults, m_pContext)) return;
 
 		if (code == EDF_EDbOperationStatusCode.SUCCESS)
 		{
@@ -139,7 +139,7 @@ class EDF_DbFindCallbackSingle<Class TEntityType> : EDF_DbFindCallbackBase
 	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	/*sealed*/ override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
+	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
 	{
 		TEntityType typedResult;
 
@@ -148,7 +148,7 @@ class EDF_DbFindCallbackSingle<Class TEntityType> : EDF_DbFindCallbackBase
 
 		if (m_pInvokeInstance &&
 			m_sInvokeMethod &&
-			GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, true, null, code, typedResult, m_pContext)) return;
+			GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, false, null, code, typedResult, m_pContext)) return;
 
 		if (code == EDF_EDbOperationStatusCode.SUCCESS)
 		{
@@ -170,7 +170,7 @@ class EDF_DbFindCallbackSingleton<Class TEntityType> : EDF_DbFindCallbackBase
 	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
 
 	//------------------------------------------------------------------------------------------------
-	/*sealed*/ override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
+	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
 	{
 		TEntityType typedResult;
 
@@ -186,7 +186,7 @@ class EDF_DbFindCallbackSingleton<Class TEntityType> : EDF_DbFindCallbackBase
 
 		if (m_pInvokeInstance &&
 			m_sInvokeMethod &&
-			GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, true, null, code, typedResult, m_pContext)) return;
+			GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, true, false, code, typedResult, m_pContext)) return;
 
 		if (code == EDF_EDbOperationStatusCode.SUCCESS)
 		{
