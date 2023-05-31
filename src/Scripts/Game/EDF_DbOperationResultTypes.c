@@ -102,6 +102,32 @@ class EDF_DbFindCallbackBase : EDF_DbOperationCallback
 	void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults);
 };
 
+class EDF_DbFindCallbackMultipleUntyped : EDF_DbFindCallbackBase
+{
+	//------------------------------------------------------------------------------------------------
+	void OnSuccess(array<ref EDF_DbEntity> results, Managed context);
+
+	//------------------------------------------------------------------------------------------------
+	void OnFailure(EDF_EDbOperationStatusCode statusCode, Managed context);
+
+	//------------------------------------------------------------------------------------------------
+	sealed override void Invoke(EDF_EDbOperationStatusCode code, array<ref EDF_DbEntity> findResults)
+	{
+		if (m_pInvokeInstance &&
+			m_sInvokeMethod &&
+			GetGame().GetScriptModule().Call(m_pInvokeInstance, m_sInvokeMethod, false, null, code, findResults, m_pContext)) return;
+
+		if (code == EDF_EDbOperationStatusCode.SUCCESS)
+		{
+			OnSuccess(findResults, m_pContext);
+		}
+		else
+		{
+			OnFailure(code, m_pContext);
+		}
+	}
+};
+
 class EDF_DbFindCallbackMultiple<Class TEntityType> : EDF_DbFindCallbackBase
 {
 	//------------------------------------------------------------------------------------------------
