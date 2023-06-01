@@ -63,7 +63,7 @@ EDF_DbFindCondition condition = EDF_DbFind.Or({
     EDF_DbFind.Field("B").Empty(),
     EDF_DbFind.And({
         EDF_DbFind.Field("CString").Contains("SubString"),
-        EDF_DbFind.Field("DFloatArray").Equals(EDF_DbValues<bool>.From({true, false, true, true})),
+        EDF_DbFind.Field("DBoolArray").Equals(EDF_DbValues<bool>.From({true, false, true, true})),
         EDF_DbFind.And({
             EDF_DbFind.Field("E.m_Numbers").Contains(100),
             EDF_DbFind.Field("F.m_ComplexWrapperSet").FirstOf(Class).Field("someNumber").Not().EqualsAnyOf(EL_DbValues<int>.From({1, 2}))
