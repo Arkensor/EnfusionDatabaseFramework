@@ -39,11 +39,11 @@ Summary of the available filed condition builder functions:
 | ContainsAllOf       | Collection           | Collection must at least contain all the comparison values         |
 | Length              | String               | Character count of string comparison                               |
 | Count               | Collection           | Number of elements inside the collection                           |
+| Any                 | Collection           | True if any collection item matches the condition                  |
+| All                 | Collection           | True if all collection items match the condition                   |
 | At                  | Collection           | Get collection item at index                                       |
 | FirstOf             | Collection           | Evaluates the first collection item that matches the type          |
 | AllOf               | Collection           | Evaluates all collection items that match the type                 |
-| Any                 | Collection           | True if any collection item matches the condition                  |
-| All                 | Collection           | True if all collection items match the condition                   |
 | Keys                | Collection           | Get the key collection of a map                                    |
 | Values              | Collection           | Get the value collection of a map                                  |
 
