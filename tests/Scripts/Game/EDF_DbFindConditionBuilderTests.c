@@ -139,7 +139,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_All_ModifierPresent()
 TestResultBase EDF_Test_DbFindConditionBuilder_Field_Keys_ModifierPresent()
 {
 	// Act
-	EDF_DbFindFieldCollectionHandlingBuilder builder = EDF_DbFind.Field("collectionName").Keys();
+	EDF_DbFindFieldBasicCollectionHandlingBuilder builder = EDF_DbFind.Field("collectionName").Keys();
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath.EndsWith(":keys"));
@@ -150,7 +150,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_Keys_ModifierPresent()
 TestResultBase EDF_Test_DbFindConditionBuilder_Field_Values_ModifierPresent()
 {
 	// Act
-	EDF_DbFindFieldCollectionHandlingBuilder builder = EDF_DbFind.Field("collectionName").Values();
+	EDF_DbFindFieldBasicCollectionHandlingBuilder builder = EDF_DbFind.Field("collectionName").Values();
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath.EndsWith(":values"));
@@ -180,24 +180,13 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_At_IndexFieldSet()
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
-TestResultBase EDF_Test_DbFindConditionBuilder_Field_FirstOf_ModiferAndTypefilterPresent()
+TestResultBase EDF_Test_DbFindConditionBuilder_Field_OfType_ModiferAndTypefilterPresent()
 {
 	// Act
-	EDF_DbFindFieldMainConditionBuilder builder = EDF_DbFind.Field("collectionName").FirstOf(Class);
+	EDF_DbFindFieldMainConditionBuilder builder = EDF_DbFind.Field("collectionName").OfType(Class);
 
 	// Assert
-	return new EDF_TestResult(builder.m_sFieldPath == "collectionName:any.Class");
-};
-
-//------------------------------------------------------------------------------------------------
-[Test("EDF_DbFindConditionBuilderTests")]
-TestResultBase EDF_Test_DbFindConditionBuilder_Field_AllOf_ModiferAndTypefilterPresent()
-{
-	// Act
-	EDF_DbFindFieldMainConditionBuilder builder = EDF_DbFind.Field("collectionName").AllOf(Class);
-
-	// Assert
-	return new EDF_TestResult(builder.m_sFieldPath == "collectionName:all.Class");
+	return new EDF_TestResult(builder.m_sFieldPath == "collectionName.Class");
 };
 
 //------------------------------------------------------------------------------------------------
@@ -216,7 +205,7 @@ class EDF_Test_DbFindConditionBuilder_Field_ComplexBuild_DebugStringEqual : Test
 				EDF_DbFind.Field("DFloatArray").Equals(EDF_DbValues<bool>.From({true, false, true, true})),
 				EDF_DbFind.And({
 					EDF_DbFind.Field("E.m_Numbers").Contains(100),
-					EDF_DbFind.Field("F.m_ComplexWrapperSet").FirstOf(Class).Field("someNumber").Not().EqualsAnyOf(EDF_DbValues<int>.From({1, 2}))
+					EDF_DbFind.Field("F.m_ComplexWrapperSet").OfType(Class).Any().Field("someNumber").Not().EqualsAnyOf(EDF_DbValues<int>.From({1, 2}))
 				}),
 				EDF_DbFind.Or({
 					EDF_DbFind.Field("G").EqualsAnyOf(EDF_DbValues<int>.From({12, 13}))
@@ -231,19 +220,21 @@ class EDF_Test_DbFindConditionBuilder_Field_ComplexBuild_DebugStringEqual : Test
 
 		// Assert
 		string compareString = "Or(\
-		CheckNull(fieldPath:'A', shouldBeNull:false),\
-		CheckEmpty(fieldPath:'B', shouldBeEmpty:true),\
-		And(\
-			Compare(fieldPath:'CString', operator:CONTAINS, values:{SubString}),\
-			Compare(fieldPath:'DFloatArray', operator:EQUAL, values:{true,false,true,true}),\
-			And(\
-				Compare(fieldPath:'E.m_Numbers:any', operator:CONTAINS, values:{100}),\
-				Compare(fieldPath:'F.m_ComplexWrapperSet:any.Class.someNumber', operator:NOT_EQUAL, values:{1,2})\
-			),\
-			Or(\
-				Compare(fieldPath:'G', operator:EQUAL, values:{12,13})\
-			)\
-		)\n)";
+		 CheckNull(fieldPath:'A', shouldBeNull:false),\
+		 CheckEmpty(fieldPath:'B', shouldBeEmpty:true),\
+		 And(\
+		  Compare(fieldPath:'CString', operator:CONTAINS, values:{SubString}),\
+		  Compare(fieldPath:'DFloatArray', operator:EQUAL, values:{true,false,true,true}),\
+		  And(\
+		   Compare(fieldPath:'E.m_Numbers:any', operator:CONTAINS, values:{100}),\
+		   Compare(fieldPath:'F.m_ComplexWrapperSet.Class:any.someNumber', operator:NOT_EQUAL, values:{1,2})\
+		  ),\
+		  Or(\
+		   Compare(fieldPath:'G', operator:EQUAL, values:{12,13})\
+		  )\
+		 )\
+		)";
+
 		compareString.Replace("\r", "");
 		compareString.Replace("\t", "");
 		compareString.Replace(" ", "");

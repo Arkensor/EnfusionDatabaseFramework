@@ -670,7 +670,8 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_FirstOf_Matches_True()
 
 	EDF_DbFindCondition conditon = EDF_DbFind
 		.Field("m_NestedArrayItems")
-		.FirstOf(EDF_Test_FindConditionEvaluatorPolymorphDerivedA)
+		.OfType(EDF_Test_FindConditionEvaluatorPolymorphDerivedA)
+		.Any()
 		.Field("m_intFieldA")
 		.Equals(10);
 
@@ -687,7 +688,8 @@ class EDF_Test_DbFindConditionEvaluator_AllOf_ConstMatches_True : TestBase
 {
 	static const ref EDF_DbFindCondition s_Condition = EDF_DbFind
 		.Field("m_NestedArrayItems")
-		.AllOf(EDF_Test_FindConditionEvaluatorPolymorphDerivedB)
+		.OfType(EDF_Test_FindConditionEvaluatorPolymorphDerivedB)
+		.All()
 		.Field("m_floatFieldB")
 		.GreaterThanOrEquals(42.0);
 

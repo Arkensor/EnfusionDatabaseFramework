@@ -19,7 +19,7 @@ class EDF_DbFind
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static EDF_DbFindFieldMainConditionBuilder Id()
+	static EDF_DbFindFieldInvertableConditionBuilder Id()
 	{
 		// Return with only primitive field builder options (implicit cast)
 		return EDF_DbFindFieldCollectionHandlingBuilder.Create(EDF_DbEntity.FIELD_ID);
@@ -108,7 +108,7 @@ class EDF_DbFindConditionWithChildren : EDF_DbFindCondition
 			{
 				dbg += string.Format(" %1", line);
 
-				if (nLine != conditionLines.Count() -1) 
+				if (nLine != conditionLines.Count() -1)
 					dbg += "\n";
 			}
 
@@ -141,6 +141,14 @@ class EDF_DbFindAnd : EDF_DbFindConditionWithChildren
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	{
+		saveContext.WriteValue("$type", "And");
+		saveContext.WriteValue("conditions", m_Conditions);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static EDF_DbFindAnd Create(notnull array<ref EDF_DbFindCondition> conditions)
 	{
 		EDF_DbFindAnd inst = new EDF_DbFindAnd(conditions);
@@ -156,6 +164,14 @@ class EDF_DbFindOr : EDF_DbFindConditionWithChildren
 	override protected string GetDebugString()
 	{
 		return "Or" + super.GetDebugString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	{
+		saveContext.WriteValue("$type", "Or");
+		saveContext.WriteValue("conditions", m_Conditions);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -186,6 +202,15 @@ class EDF_DbFindCheckFieldNull : EDF_DbFindFieldCondition
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	{
+		saveContext.WriteValue("$type", "CheckFieldNull");
+		saveContext.WriteValue("fieldPath", m_sFieldPath);
+		saveContext.WriteValue("shouldBeNull", m_bShouldBeNull);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static EDF_DbFindCheckFieldNull Create(string fieldPath, bool shouldBeNull)
 	{
 		auto inst = new EDF_DbFindCheckFieldNull(fieldPath, shouldBeNull);
@@ -212,6 +237,15 @@ class EDF_DbFindCheckFieldEmpty : EDF_DbFindFieldCondition
 		if (m_ShouldBeEmpty) return string.Format("CheckEmpty(fieldPath:'%1', shouldBeEmpty:true)", m_sFieldPath);
 
 		return string.Format("CheckEmpty(fieldPath:'%1', shouldBeEmpty:false)", m_sFieldPath);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	{
+		saveContext.WriteValue("$type", "CheckFieldEmpty");
+		saveContext.WriteValue("fieldPath", m_sFieldPath);
+		saveContext.WriteValue("shouldBeEmpty", m_ShouldBeEmpty);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -285,6 +319,16 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 		valuesString += "}";
 
 		return string.Format("Compare(fieldPath:'%1', operator:%2, values:%3)", m_sFieldPath, typename.EnumToString(EDF_EDbFindOperator, m_eComparisonOperator), valuesString);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	{
+		saveContext.WriteValue("$type", "CompareFieldValues<" + ValueType + ">");
+		saveContext.WriteValue("fieldPath", m_sFieldPath);
+		saveContext.WriteValue("operator", m_eComparisonOperator);
+		saveContext.WriteValue("values", m_aComparisonValues);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -368,7 +412,7 @@ class EDF_DbFindFieldConditionBuilder
 		valuesString.Reserve(values.Count());
 		foreach (typename type : values)
 		{
-			valuesString.Insert(type.ToString());
+			valuesString.Insert(EDF_DbName.Get(type));
 		}
 
 		return valuesString;
@@ -614,7 +658,7 @@ class EDF_DbFindFieldAllValueConditonBuilder : EDF_DbFindFieldPrimitiveValueCond
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(typename comparisonValue)
 	{
-		return Equals(comparisonValue.ToString());
+		return Equals(EDF_DbName.Get(comparisonValue));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -696,7 +740,7 @@ class EDF_DbFindFieldAllValueConditonBuilder : EDF_DbFindFieldPrimitiveValueCond
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Contains(typename comparisonValue)
 	{
-		return ContainsAnyOf(EDF_DbValues<string>.From({comparisonValue.ToString()}));
+		return ContainsAnyOf(EDF_DbValues<string>.From({EDF_DbName.Get(comparisonValue)}));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -814,13 +858,6 @@ class EDF_DbFindFieldAllValueConditonBuilder : EDF_DbFindFieldPrimitiveValueCond
 class EDF_DbFindFieldMainConditionBuilder : EDF_DbFindFieldAllValueConditonBuilder
 {
 	//------------------------------------------------------------------------------------------------
-	EDF_DbFindFieldAllValueConditonBuilder Not()
-	{
-		m_bInverted = true;
-		return this;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	EDF_DbFindFieldCollectionHandlingBuilder Field(string fieldPath)
 	{
 		m_sFieldPath += EDF_DbFindFieldAnnotations.SEPERATOR + fieldPath;
@@ -828,9 +865,19 @@ class EDF_DbFindFieldMainConditionBuilder : EDF_DbFindFieldAllValueConditonBuild
 	}
 };
 
-class EDF_DbFindFieldCollectionHandlingBuilder : EDF_DbFindFieldMainConditionBuilder
+class EDF_DbFindFieldInvertableConditionBuilder : EDF_DbFindFieldMainConditionBuilder
 {
-	protected static ref array<ref EDF_DbFindFieldCollectionHandlingBuilder>> ALLOC_BUFFER;
+	//------------------------------------------------------------------------------------------------
+	EDF_DbFindFieldAllValueConditonBuilder Not()
+	{
+		m_bInverted = true;
+		return this;
+	}
+};
+
+class EDF_DbFindFieldBasicCollectionHandlingBuilder : EDF_DbFindFieldInvertableConditionBuilder
+{
+	protected static ref array<ref EDF_DbFindFieldBasicCollectionHandlingBuilder>> ALLOC_BUFFER;
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindFieldMainConditionBuilder Any()
@@ -845,16 +892,19 @@ class EDF_DbFindFieldCollectionHandlingBuilder : EDF_DbFindFieldMainConditionBui
 		_AppendIfNotPresent(EDF_DbFindFieldAnnotations.ALL);
 		return this;
 	}
+};
 
+class EDF_DbFindFieldCollectionHandlingBuilder : EDF_DbFindFieldBasicCollectionHandlingBuilder
+{
 	//------------------------------------------------------------------------------------------------
-	EDF_DbFindFieldCollectionHandlingBuilder Keys()
+	EDF_DbFindFieldBasicCollectionHandlingBuilder Keys()
 	{
 		_AppendIfNotPresent(EDF_DbFindFieldAnnotations.KEYS);
 		return this;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	EDF_DbFindFieldCollectionHandlingBuilder Values()
+	EDF_DbFindFieldBasicCollectionHandlingBuilder Values()
 	{
 		_AppendIfNotPresent(EDF_DbFindFieldAnnotations.VALUES);
 		return this;
@@ -867,15 +917,9 @@ class EDF_DbFindFieldCollectionHandlingBuilder : EDF_DbFindFieldMainConditionBui
 	}
 
 	//------------------------------------------------------------------------------------------------
-	EDF_DbFindFieldMainConditionBuilder FirstOf(typename complexType)
+	EDF_DbFindFieldBasicCollectionHandlingBuilder OfType(typename type)
 	{
-		return Any().Field(complexType.ToString());
-	}
-
-	//------------------------------------------------------------------------------------------------
-	EDF_DbFindFieldMainConditionBuilder AllOf(typename complexType)
-	{
-		return All().Field(complexType.ToString());
+		return Field(EDF_DbName.Get(type));
 	}
 
 	//------------------------------------------------------------------------------------------------

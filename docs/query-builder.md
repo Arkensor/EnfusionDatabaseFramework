@@ -42,8 +42,7 @@ Summary of the available filed condition builder functions:
 | Any                 | Collection           | True if any collection item matches the condition                  |
 | All                 | Collection           | True if all collection items match the condition                   |
 | At                  | Collection           | Get collection item at index                                       |
-| FirstOf             | Collection           | Evaluates the first collection item that matches the type          |
-| AllOf               | Collection           | Evaluates all collection items that match the type                 |
+| OfType              | Collection           | Evaluates collection items that matches the type                   |
 | Keys                | Collection           | Get the key collection of a map                                    |
 | Values              | Collection           | Get the value collection of a map                                  |
 
