@@ -13,10 +13,11 @@ Besides the `Id()` shortcut any other field can be queried using the `Field()` m
 ```cs
 EDF_DbFindCondition condition = EDF_DbFind.Field("m_Name").Equals("Foo");
 ```
-The field name supports "dot-notation" so you can navigate complex types as well as collections using it.
-- `EDF_DbFind.Field("fieldName.subField")` same as `EDF_DbFind.Field("fieldName").Field("subField")`
-- `EDF_DbFind.Field("floatArray.0")` evaluates the first element of the array on the entity
-- `EDF_DbFind.Field("classArray.FilteredType")` evaluate elements of a complex type array that inherit from the provided typename
+The field name supports "dot-notation" so you can navigate complex types as well as collections using it.  
+It is recommended to use the builder variant, instead of manually setting up the path for compatiblity reasons.
+- `EDF_DbFind.Field("fieldName.subField")` / `EDF_DbFind.Field("fieldName").Field("subField")`
+- `EDF_DbFind.Field("floatArray.0")` / `EDF_DbFind.Field("floatArray").At(0)` evaluates the first element of the array on the entity
+- `EDF_DbFind.Field("classArray.FilteredType")` / `EDF_DbFind.Field("classArray").OfType(FilteredType)` evaluate elements of a complex type array that inherit from the provided typename
 
 ## Field condition builder
 Summary of the available filed condition builder functions:

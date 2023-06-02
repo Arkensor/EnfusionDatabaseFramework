@@ -15,14 +15,14 @@ class EDF_DbFind
 	//------------------------------------------------------------------------------------------------
 	static EDF_DbFindFieldCollectionHandlingBuilder Field(string fieldPath)
 	{
-		return EDF_DbFindFieldCollectionHandlingBuilder.Create(fieldPath);
+		return EDF_DbFindFieldCollectionHandlingBuilder.Create().Field(fieldPath);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static EDF_DbFindFieldInvertableConditionBuilder Id()
 	{
 		// Return with only primitive field builder options (implicit cast)
-		return EDF_DbFindFieldCollectionHandlingBuilder.Create(EDF_DbEntity.FIELD_ID);
+		return EDF_DbFindFieldCollectionHandlingBuilder.Create().Field(EDF_DbEntity.FIELD_ID);
 	}
 };
 
@@ -478,13 +478,6 @@ class EDF_DbFindFieldConditionBuilder
 
 		m_sFieldPath += pathValue;
 	}
-
-	//------------------------------------------------------------------------------------------------
-	void EDF_DbFindFieldConditionBuilder(string fieldPath, bool inverted = false)
-	{
-		m_sFieldPath = fieldPath;
-		m_bInverted = inverted;
-	}
 };
 
 class EDF_DbFindFieldNumericValueConditonBuilder : EDF_DbFindFieldConditionBuilder
@@ -933,7 +926,38 @@ class EDF_DbFindFieldMainConditionBuilder : EDF_DbFindFieldAllValueConditonBuild
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindFieldCollectionHandlingBuilder Field(string fieldPath)
 	{
-		m_sFieldPath += EDF_DbFindFieldAnnotations.SEPERATOR + fieldPath;
+		if (!m_sFieldPath.IsEmpty())
+			m_sFieldPath += EDF_DbFindFieldAnnotations.SEPERATOR;
+
+		m_sFieldPath += fieldPath;
+
+		// Check if user has manually put any typenames in the path for filtering
+		if (!m_bUsesTypenames)
+		{
+			array<string> pathSegments();
+			fieldPath.Split(EDF_DbFindFieldAnnotations.SEPERATOR, pathSegments, true);
+			int count = pathSegments.Count();
+			foreach (int idx, string pathSegment : pathSegments)
+			{
+				string typeString;
+				int modifierIdx = pathSegment.IndexOf(":");
+				if (modifierIdx != -1)
+				{
+					typeString = pathSegment.Substring(0, modifierIdx);
+				}
+				else
+				{
+					typeString = pathSegment;
+				}
+
+				if (typeString.ToType())
+				{
+					m_bUsesTypenames = true;
+					break;
+				}
+			}
+		}
+
 		return EDF_DbFindFieldCollectionHandlingBuilder.Cast(this);
 	}
 };
@@ -997,9 +1021,9 @@ class EDF_DbFindFieldCollectionHandlingBuilder : EDF_DbFindFieldBasicCollectionH
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static EDF_DbFindFieldCollectionHandlingBuilder Create(string fieldPath)
+	static EDF_DbFindFieldCollectionHandlingBuilder Create()
 	{
-		auto inst = new EDF_DbFindFieldCollectionHandlingBuilder(fieldPath);
+		auto inst = new EDF_DbFindFieldCollectionHandlingBuilder();
 		if (!ALLOC_BUFFER) ALLOC_BUFFER = {null};
 		ALLOC_BUFFER.Set(0, inst);
 		return inst;
