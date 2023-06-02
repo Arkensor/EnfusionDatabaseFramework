@@ -78,12 +78,14 @@ EDF_DbFindCondition condition = EDF_DbFind.Or({
 > If you get an error like "formula too complex" you need to split up your conditions into a few sub-conditions and join them together separately, as the script VM has some limits on how nested the builder can be.
 
 ### Performance considerations 
-If possible make the condition constant inside the function, that way it is created only once, even if the function is executed multiple times. For this to be possible all search conditions must be of a known constant value as well.
+If possible make the condition a constant class member, that way it is created only once. For this to be possible all search values must be known constants as well.
 You can also cache more complex conditions as class members if you build them dynamically once and re-use them after.  
 ```cs
+const ref EDF_DbFindCondition s_ConstNameEqualsFoo = EDF_DbFind.Field("m_Name").Equals("Foo");
+
 void MyFunction()
 {
-	const EDF_DbFindCondition constNameEqualsFoo = EDF_DbFind.Field("m_Name").Equals("Foo");
+    // Do something with s_ConstNameEqualsFoo
 	...
 }
 ```

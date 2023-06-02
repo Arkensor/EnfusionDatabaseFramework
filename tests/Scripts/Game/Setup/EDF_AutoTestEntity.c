@@ -39,7 +39,7 @@ class EDF_AutoTestEntity : GenericEntity
 		}
 		else
 		{
-			Print(string.Format("Some tests <color rgba='255,0,0,200'>failed</color>! For details check MyGames/ArmaReforger/profile/</br>%1", resultFile), LogLevel.ERROR);
+			Print(string.Format("Some tests failed! For details check MyGames/ArmaReforger/profile/%1", resultFile), LogLevel.ERROR);
 		}
 
 		// Write results file

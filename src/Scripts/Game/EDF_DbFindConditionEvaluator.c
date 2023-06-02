@@ -47,9 +47,10 @@ class EDF_DbFindConditionEvaluator
 		{
 			case EDF_DbFindAnd:
 			{
-				foreach (EDF_DbFindCondition checkCondition : EDF_DbFindAnd.Cast(condition).m_Conditions)
+				foreach (EDF_DbFindCondition checkCondition : EDF_DbFindAnd.Cast(condition).m_aConditions)
 				{
-					if (!Evaluate(entity, checkCondition)) return false;
+					if (!Evaluate(entity, checkCondition))
+						return false;
 				}
 
 				return true;
@@ -57,9 +58,10 @@ class EDF_DbFindConditionEvaluator
 
 			case EDF_DbFindOr:
 			{
-				foreach (EDF_DbFindCondition checkCondition : EDF_DbFindOr.Cast(condition).m_Conditions)
+				foreach (EDF_DbFindCondition checkCondition : EDF_DbFindOr.Cast(condition).m_aConditions)
 				{
-					if (Evaluate(entity, checkCondition)) return true;
+					if (Evaluate(entity, checkCondition))
+						return true;
 				}
 
 				return false;
@@ -69,9 +71,11 @@ class EDF_DbFindConditionEvaluator
 			{
 				EDF_DbFindFieldCondition fieldCondition = EDF_DbFindFieldCondition.Cast(condition);
 
-				if (!fieldCondition) return false;
+				if (!fieldCondition)
+					return false;
 
-				return EvaluateField(entity, fieldCondition, ParseSegments(fieldCondition), 0);
+				array<ref EDF_DbFindFieldPathSegment> segments = ParseSegments(fieldCondition);
+				return EvaluateField(entity, fieldCondition, segments, 0);
 			}
 		}
 
@@ -90,7 +94,7 @@ class EDF_DbFindConditionEvaluator
 
 		foreach (string segment : segments)
 		{
-			int flags;
+			int flags = 0; // Explicit reset to 0 is required
 
 			while (true)
 			{
@@ -152,6 +156,8 @@ class EDF_DbFindConditionEvaluator
 			return false;
 		}
 
+		ScriptModule scriptModule = GetGame().GetScriptModule();
+
 		EDF_DbFindFieldPathSegment currentSegment = pathSegments.Get(currentSegmentIndex);
 		EDF_ReflectionVariableInfo variableInfo = EDF_ReflectionVariableInfo.Get(instance, currentSegment.m_sFieldName);
 
@@ -171,18 +177,18 @@ class EDF_DbFindConditionEvaluator
 				if (variableInfo.m_eCollectionType != EDF_ReflectionVariableType.NONE)
 				{
 					int collectionCount;
-					GetGame().GetScriptModule().Call(complexFieldValue, "Count", false, collectionCount);
+					scriptModule.Call(complexFieldValue, "Count", false, collectionCount);
 
 					int nextSegmentIndex = currentSegmentIndex + 1;
-
 					EDF_DbFindFieldPathSegment nextSegment = pathSegments.Get(nextSegmentIndex);
 
 					// Handle collection<Class>.typename access operator
 					typename filterType = typename.Empty;
 					if (nextSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.TYPENAME)
 					{
-						filterType = nextSegment.m_sFieldName.ToType();
+						filterType = EDF_DbName.GetTypeByName(nextSegment.m_sFieldName);
 						nextSegmentIndex++; //Skip source.filterType. to condition after the filter
+						currentSegment = nextSegment; // move current segment because :any/:all modifier is on the typename segement
 					}
 
 					// Handle collection<...>.N access operator
@@ -207,10 +213,9 @@ class EDF_DbFindConditionEvaluator
 						Class collectionValueItem;
 
 						string getFnc = "Get";
-
-						// Access n-th map element by key(default) or value
 						if (variableInfo.m_eCollectionType == EDF_ReflectionVariableType.MAP)
 						{
+							// Access n-th map element by key(default) or value
 							if (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.VALUES) //Only if Values() was explicitly set
 							{
 								getFnc = "GetElement";
@@ -221,30 +226,35 @@ class EDF_DbFindConditionEvaluator
 							}
 						}
 
-						if (!GetGame().GetScriptModule().Call(complexFieldValue, getFnc, false, collectionValueItem, nValue) || !collectionValueItem)
+						if (!scriptModule.Call(complexFieldValue, getFnc, false, collectionValueItem, nValue) || !collectionValueItem)
 						{
 							Debug.Error(string.Format("Failed to get collection value at index '%1' on collection '%2' on '%3'.", nValue, complexFieldValue, instance));
 							return false;
 						}
 
-						if (filterType && !collectionValueItem.IsInherited(filterType)) continue;
+						if (filterType && !collectionValueItem.IsInherited(filterType))
+							continue;
 
 						bool evaluationResult = EvaluateField(collectionValueItem, fieldCondition, pathSegments, nextSegmentIndex);
 
 						// A specific index of the collection was checked, just directly return that result what ever it is.
-						if (indexAccessorMode) return evaluationResult;
+						if (indexAccessorMode)
+							return evaluationResult;
 
 						if ((currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.ALL))
 						{
 							// All must be true, but at least one was false, so total result is false
-							if (!evaluationResult) return false;
+							if (!evaluationResult)
+								return false;
 
 							// All elements were iterated and none of them returned false, so the overall result is true
-							if (nValue == collectionCount - 1) return true;
+							if (nValue == collectionCount - 1)
+								return true;
 						}
 
 						//Any(default) must be true, and we got one match, so we can abort and return true
-						if (evaluationResult) return true;
+						if (evaluationResult)
+							return true;
 					}
 
 					//None of the typename filters matched or none of the any-conditions returned true
@@ -314,6 +324,11 @@ class EDF_DbFindConditionEvaluator
 			case EDF_DbFindFieldVectorMultiple:
 			{
 				return EDF_DbFindFieldValueTypedEvaluator<vector>.Evaluate(instance, EDF_DbFindFieldVectorMultiple.Cast(fieldCondition), currentSegment, variableInfo);
+			}
+
+			case EDF_DbFindFieldTypenameMultiple:
+			{
+				return EDF_DbFindFieldValueTypedEvaluator<typename>.Evaluate(instance, EDF_DbFindFieldTypenameMultiple.Cast(fieldCondition), currentSegment, variableInfo);
 			}
 
 			default:
@@ -389,8 +404,6 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 	//------------------------------------------------------------------------------------------------
 	static bool Evaluate(Class instance, EDF_DbFindCompareFieldValues<TValueType> valueCondition, EDF_DbFindFieldPathSegment currentSegment, EDF_ReflectionVariableInfo fieldInfo)
 	{
-		typename valueType = TValueType;
-
 		if (valueCondition.m_aComparisonValues.IsEmpty())
 		{
 			Debug.Error(string.Format("Can not compare field '%1' on '%2' with empty condition.", currentSegment.m_sFieldName, instance));
@@ -399,26 +412,29 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 
 		PreprocessComparisonValues(valueCondition.m_eComparisonOperator, valueCondition.m_aComparisonValues);
 
+		ScriptModule scriptModule = GetGame().GetScriptModule();
+		
 		// Handle collection comparison
 		if (fieldInfo.m_eCollectionType != EDF_ReflectionVariableType.NONE)
 		{
 			Class collectionHolder;
-			if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, collectionHolder)) return false;
+			if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, collectionHolder))
+				return false;
 
 			int collectionCount;
-			if (!GetGame().GetScriptModule().Call(collectionHolder, "Count", false, collectionCount)) return false;
+			if (!GetGame().GetScriptModule().Call(collectionHolder, "Count", false, collectionCount))
+				return false;
 
 			// Handle count of collection comparison
 			if (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.COUNT)
-			{
 				return CompareCollectionCount(collectionCount, valueCondition.m_eComparisonOperator, valueCondition.m_aComparisonValues);
-			}
 
 			bool exactOrderedMatch = (valueCondition.m_eComparisonOperator == EDF_EDbFindOperator.EQUAL) &&
 				((currentSegment.m_iFlags & (EDF_DbFindFieldPathSegmentFlags.ANY | EDF_DbFindFieldPathSegmentFlags.ALL)) == 0);
 
 			// If the count missmatches on full match it can not be equal
-			if (exactOrderedMatch && (collectionCount != valueCondition.m_aComparisonValues.Count())) return false;
+			if (exactOrderedMatch && (collectionCount != valueCondition.m_aComparisonValues.Count()))
+				return false;
 
 			for (int nItem = 0; nItem < collectionCount; nItem++)
 			{
@@ -438,7 +454,18 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 					}
 				}
 
-				if (!GetGame().GetScriptModule().Call(collectionHolder, getFnc, false, fieldValue, nItem)) return false;
+				if (TValueType == typename && fieldInfo.m_tCollectionValueType != typename)
+				{
+					// Special handling to read arra<Class> and compare to array<typename>
+					Class holder;
+					if (!scriptModule.Call(collectionHolder, getFnc, false, holder, nItem) ||
+						!scriptModule.Call(holder, "Type", false, fieldValue, holder))
+						return false;
+				}
+				else if (!scriptModule.Call(collectionHolder, getFnc, false, fieldValue, nItem))
+				{
+					return false;
+				}
 
 				array<TValueType> compareValues = valueCondition.m_aComparisonValues;
 				if (exactOrderedMatch) compareValues = {valueCondition.m_aComparisonValues.Get(nItem)};
@@ -448,18 +475,22 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 				if (exactOrderedMatch || (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.ALL))
 				{
 					// All must match the operator comparison, if one of them failes the final result is false
-					if (!comparisonMatches) return false;
+					if (!comparisonMatches)
+						return false;
 
 					// All including the last item in the collection matched the comparison, so we return true
-					if (nItem == collectionCount - 1) return true;
+					if (nItem == collectionCount - 1)
+						return true;
 				}
 				else
 				{
 					// Any of the item matched, so we can return true early
-					if (comparisonMatches) return true;
+					if (comparisonMatches)
+						return true;
 
 					// None, including the last item, matched the condition so return false
-					if (nItem == collectionCount - 1) return false;
+					if (nItem == collectionCount - 1)
+						return false;
 				}
 			}
 
@@ -469,7 +500,9 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 
 		// Compare primitive value
 		TValueType fieldValue;
-		if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, fieldValue)) return false;
+		if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, fieldValue))
+			return false;
+
 		return Compare(fieldValue, valueCondition.m_eComparisonOperator, valueCondition.m_aComparisonValues);
 	}
 
@@ -491,7 +524,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 	protected static bool CompareCollectionCount(int collectionCount, EDF_EDbFindOperator operator, Class comparisonValues)
 	{
 		array<int> strongTypedComparisonValues = array<int>.Cast(comparisonValues);
-		if (!strongTypedComparisonValues) return false;
+		if (!strongTypedComparisonValues)
+			return false;
 
 		return Compare(collectionCount, operator, strongTypedComparisonValues);
 	}
@@ -517,7 +551,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (int compare : comparisonValues)
 				{
-					if (fieldValue < compare) return true;
+					if (fieldValue < compare)
+						return true;
 				}
 
 				return false;
@@ -527,7 +562,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (int compare : comparisonValues)
 				{
-					if (fieldValue <= compare) return true;
+					if (fieldValue <= compare)
+						return true;
 				}
 
 				return false;
@@ -537,7 +573,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (int compare : comparisonValues)
 				{
-					if (fieldValue > compare) return true;
+					if (fieldValue > compare)
+						return true;
 				}
 
 				return false;
@@ -547,7 +584,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (int compare : comparisonValues)
 				{
-					if (fieldValue >= compare) return true;
+					if (fieldValue >= compare)
+						return true;
 				}
 
 				return false;
@@ -567,7 +605,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (float compare : comparisonValues)
 				{
-					if (float.AlmostEqual(fieldValue, compare)) return true;
+					if (float.AlmostEqual(fieldValue, compare))
+						return true;
 				}
 
 				return false;
@@ -578,7 +617,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (float compare : comparisonValues)
 				{
-					if (float.AlmostEqual(fieldValue, compare)) return false;
+					if (float.AlmostEqual(fieldValue, compare))
+						return false;
 				}
 
 				return true;
@@ -588,7 +628,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (float compare : comparisonValues)
 				{
-					if (fieldValue < compare) return true;
+					if (fieldValue < compare)
+						return true;
 				}
 
 				return false;
@@ -598,7 +639,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (float compare : comparisonValues)
 				{
-					if ((fieldValue < compare) || float.AlmostEqual(fieldValue, compare)) return true;
+					if ((fieldValue < compare) || float.AlmostEqual(fieldValue, compare))
+						return true;
 				}
 
 				return false;
@@ -608,7 +650,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (float compare : comparisonValues)
 				{
-					if (fieldValue > compare) return true;
+					if (fieldValue > compare)
+						return true;
 				}
 
 				return false;
@@ -618,7 +661,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (float compare : comparisonValues)
 				{
-					if ((fieldValue > compare) || float.AlmostEqual(fieldValue, compare)) return true;
+					if ((fieldValue > compare) || float.AlmostEqual(fieldValue, compare))
+						return true;
 				}
 
 				return false;
@@ -700,7 +744,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (vector compare : comparisonValues)
 				{
-					if (float.AlmostEqual(vector.Distance(fieldValue, compare), 0)) return true;
+					if (float.AlmostEqual(vector.Distance(fieldValue, compare), 0))
+						return true;
 				}
 
 				return false;
@@ -711,7 +756,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			{
 				foreach (vector compare : comparisonValues)
 				{
-					if (float.AlmostEqual(vector.Distance(fieldValue, compare), 0)) return false;
+					if (float.AlmostEqual(vector.Distance(fieldValue, compare), 0))
+						return false;
 				}
 
 				return true;
@@ -763,6 +809,39 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 				}
 
 				return false;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool Compare(typename fieldValue, EDF_EDbFindOperator operator, array<typename> comparisonValues)
+	{
+		switch (operator)
+		{
+			case EDF_EDbFindOperator.EQUAL:
+			case EDF_EDbFindOperator.CONTAINS:
+			{
+				foreach (typename compare : comparisonValues)
+				{
+					if (fieldValue.IsInherited(compare))
+						return true;
+				}
+
+				return false;
+			}
+
+			case EDF_EDbFindOperator.NOT_EQUAL:
+			case EDF_EDbFindOperator.NOT_CONTAINS:
+			{
+				foreach (typename compare : comparisonValues)
+				{
+					if (fieldValue.IsInherited(compare))
+						return false;
+				}
+
+				return true;
 			}
 		}
 

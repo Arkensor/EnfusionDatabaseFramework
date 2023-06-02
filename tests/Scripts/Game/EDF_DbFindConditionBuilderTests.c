@@ -21,7 +21,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_And_EmptyArgs_EmptyCondition()
 	EDF_DbFindAnd condition = EDF_DbFind.And({});
 
 	// Assert
-	return new EDF_TestResult(condition.m_Conditions.Count() == 0);
+	return new EDF_TestResult(condition.m_aConditions.Count() == 0);
 };
 
 //------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_And_MultipleConditions_MultipleWr
 	EDF_DbFindAnd condition = EDF_DbFind.And({new EDF_DbFindCondition(), new EDF_DbFindCondition()});
 
 	// Assert
-	return new EDF_TestResult(condition.m_Conditions.Count() == 2);
+	return new EDF_TestResult(condition.m_aConditions.Count() == 2);
 };
 
 //------------------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Or_EmptyArgs_EmptyCondition()
 	EDF_DbFindOr condition = EDF_DbFind.Or({});
 
 	// Assert
-	return new EDF_TestResult(condition.m_Conditions.Count() == 0);
+	return new EDF_TestResult(condition.m_aConditions.Count() == 0);
 };
 
 //------------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Or_MultipleConditions_MultipleWra
 	EDF_DbFindOr condition = EDF_DbFind.Or({new EDF_DbFindCondition(), new EDF_DbFindCondition()});
 
 	// Assert
-	return new EDF_TestResult(condition.m_Conditions.Count() == 2);
+	return new EDF_TestResult(condition.m_aConditions.Count() == 2);
 };
 
 //------------------------------------------------------------------------------------------------

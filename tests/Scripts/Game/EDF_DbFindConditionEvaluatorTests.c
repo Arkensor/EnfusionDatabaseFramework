@@ -2,16 +2,16 @@ class EDF_DbFindConditionEvaluatorTests : TestSuite
 {
 	//------------------------------------------------------------------------------------------------
 	[Step(EStage.Setup)]
-    void Setup()
-    {
-    }
+	void Setup()
+	{
+	}
 
 	//------------------------------------------------------------------------------------------------
-    [Step(EStage.TearDown)]
-    void TearDown()
-    {
-    }
-}
+	[Step(EStage.TearDown)]
+	void TearDown()
+	{
+	}
+};
 
 class EDF_Test_FindConditionEvaluatorContainerItem : EDF_DbEntity
 {
@@ -36,9 +36,9 @@ class EDF_Test_FindConditionEvaluatorContainerItem : EDF_DbEntity
 	{
 		m_FloatSet = new set<float>();
 		m_FloatSet.Insert(42.42);
-		m_FloatSet.Insert( 1337.1337);
+		m_FloatSet.Insert(1337.1337);
 	}
-}
+};
 
 class EDF_Test_FindConditionEvaluatorContainer : EDF_DbEntity
 {
@@ -70,7 +70,7 @@ class EDF_Test_FindConditionEvaluatorContainer : EDF_DbEntity
 		m_IntMap.Set("1337", 1337);
 		m_IntMap.Set("42", 42);
 	}
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -86,7 +86,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_CorrectInt_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -102,7 +102,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_IncorrectInt_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -118,7 +118,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_CorrectFloat_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -134,7 +134,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_IncorrectFloat_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -150,7 +150,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_CorrectBool_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -166,7 +166,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_IncorrectBool_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -182,7 +182,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_CorrectString_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -198,7 +198,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_IncorrectString_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -214,7 +214,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_CorrectVector_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -230,7 +230,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_IncorrectVector_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -246,7 +246,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Contains_StringField_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -265,7 +265,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_And_OneTrue_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -284,7 +284,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_And_BothTrue_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -303,7 +303,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Or_NoneTrue_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -322,7 +322,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Or_OneTrue_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -338,7 +338,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_EqualsAnyOf_OneTrue_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -354,7 +354,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_EqualsAnyOf_NoneTrue_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -370,7 +370,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_LessThan_FloatLess_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -386,7 +386,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_LessThanOrEqual_IntGreater_Fals
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -402,7 +402,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_GreaterThanOrEqual_VectorLess_T
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -418,7 +418,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Between_InRange_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -434,7 +434,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Not_Matching_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -450,7 +450,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Null_NullField_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -466,7 +466,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Empty_FilledCollection_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -482,7 +482,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Count_AnyOfIncludingTwo_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -498,7 +498,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Any_MatchingValue_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -514,7 +514,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_All_OneNotMatching_False()
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -530,7 +530,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Keys_OneMatching_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -546,7 +546,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Values_OneMatching_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -562,7 +562,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_At_IdxZeroNestedVectorContained
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -578,7 +578,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAnyOf_PartialIntersect_
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -594,7 +594,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAllOf_PartialIntersect_
 
 	// Assert
 	return new EDF_TestResult(!matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -610,7 +610,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_ArrayMatches_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -626,12 +626,12 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Contains_StringArrayItemMatches
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 class EDF_Test_FindConditionEvaluatorPolymorphBase : EDF_DbEntity
 {
 	ref array<ref EDF_Test_FindConditionEvaluatorPolymorphBase> m_NestedArrayItems = {};
-}
+};
 
 class EDF_Test_FindConditionEvaluatorPolymorphDerivedA : EDF_Test_FindConditionEvaluatorPolymorphBase
 {
@@ -642,7 +642,7 @@ class EDF_Test_FindConditionEvaluatorPolymorphDerivedA : EDF_Test_FindConditionE
 	{
 		m_intFieldA = value;
 	}
-}
+};
 
 class EDF_Test_FindConditionEvaluatorPolymorphDerivedB : EDF_Test_FindConditionEvaluatorPolymorphBase
 {
@@ -653,7 +653,7 @@ class EDF_Test_FindConditionEvaluatorPolymorphDerivedB : EDF_Test_FindConditionE
 	{
 		m_floatFieldB = value;
 	}
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
@@ -680,13 +680,13 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_FirstOf_Matches_True()
 
 	// Assert
 	return new EDF_TestResult(matches);
-}
+};
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
 class EDF_Test_DbFindConditionEvaluator_AllOf_ConstMatches_True : TestBase
 {
-	static const ref EDF_DbFindCondition s_Condition = EDF_DbFind
+	const ref EDF_DbFindCondition s_Condition = EDF_DbFind
 		.Field("m_NestedArrayItems")
 		.OfType(EDF_Test_FindConditionEvaluatorPolymorphDerivedB)
 		.All()
@@ -711,4 +711,122 @@ class EDF_Test_DbFindConditionEvaluator_AllOf_ConstMatches_True : TestBase
 		// Assert
 		SetResult(new EDF_TestResult(matches));
 	}
-}
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+class EDF_Test_DbFindConditionEvaluator_AnyEqualsTypename_Match_True : TestBase
+{
+	[Step(EStage.Main)]
+	void DoTest()
+	{
+		EDF_DbFindCondition condition = EDF_DbFind.Field("m_NestedArrayItems")
+			.Any()
+			.Equals(EDF_Test_FindConditionEvaluatorPolymorphDerivedB);
+
+		// Arrange
+		EDF_Test_FindConditionEvaluatorPolymorphBase container();
+		container.m_NestedArrayItems.Insert(new EDF_Test_FindConditionEvaluatorPolymorphDerivedA());
+		container.m_NestedArrayItems.Insert(new EDF_Test_FindConditionEvaluatorPolymorphDerivedB());
+
+		// Act
+		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
+
+		// Assert
+		SetResult(new EDF_TestResult(matches));
+	}
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+class EDF_Test_DbFindConditionEvaluator_AllEqualsTypename_MixedTypes_False : TestBase
+{
+	[Step(EStage.Main)]
+	void DoTest()
+	{
+		EDF_DbFindCondition condition = EDF_DbFind.Field("m_NestedArrayItems")
+			.All()
+			.Equals(EDF_Test_FindConditionEvaluatorPolymorphDerivedB);
+
+		// Arrange
+		EDF_Test_FindConditionEvaluatorPolymorphBase container();
+		container.m_NestedArrayItems.Insert(new EDF_Test_FindConditionEvaluatorPolymorphDerivedA());
+		container.m_NestedArrayItems.Insert(new EDF_Test_FindConditionEvaluatorPolymorphDerivedB());
+
+		// Act
+		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
+
+		// Assert
+		SetResult(new EDF_TestResult(!matches));
+	}
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+class EDF_Test_DbFindConditionEvaluator_ContainsTypename_Match_True : TestBase
+{
+	[Step(EStage.Main)]
+	void DoTest()
+	{
+		EDF_DbFindCondition condition = EDF_DbFind.Field("m_NestedArrayItems")
+			.Contains(EDF_Test_FindConditionEvaluatorPolymorphDerivedB);
+
+		// Arrange
+		EDF_Test_FindConditionEvaluatorPolymorphBase container();
+		container.m_NestedArrayItems.Insert(new EDF_Test_FindConditionEvaluatorPolymorphDerivedA());
+		container.m_NestedArrayItems.Insert(new EDF_Test_FindConditionEvaluatorPolymorphDerivedB());
+
+		// Act
+		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
+
+		// Assert
+		SetResult(new EDF_TestResult(matches));
+	}
+};
+
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+class EDF_Test_DbFindConditionEvaluator_NotContainsTypename_SingleType_True : TestBase
+{
+	[Step(EStage.Main)]
+	void DoTest()
+	{
+		EDF_DbFindCondition condition = EDF_DbFind.Field("m_NestedArrayItems")
+			.Not()
+			.Contains(EDF_Test_FindConditionEvaluatorPolymorphDerivedB);
+
+		// Arrange
+		EDF_Test_FindConditionEvaluatorPolymorphBase container();
+		container.m_NestedArrayItems.Insert(new EDF_Test_FindConditionEvaluatorPolymorphDerivedA());
+		container.m_NestedArrayItems.Insert(new EDF_Test_FindConditionEvaluatorPolymorphDerivedA());
+
+		// Act
+		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
+
+		// Assert
+		SetResult(new EDF_TestResult(matches));
+	}
+};
+
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+class EDF_Test_DbFindConditionEvaluator_ContainsTypename_Empty_False : TestBase
+{
+	[Step(EStage.Main)]
+	void DoTest()
+	{
+		EDF_DbFindCondition condition = EDF_DbFind.Field("m_NestedArrayItems")
+			.Contains(EDF_Test_FindConditionEvaluatorPolymorphDerivedB);
+
+		// Arrange
+		EDF_Test_FindConditionEvaluatorPolymorphBase container();
+
+		// Act
+		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
+
+		// Assert
+		SetResult(new EDF_TestResult(!matches));
+	}
+};

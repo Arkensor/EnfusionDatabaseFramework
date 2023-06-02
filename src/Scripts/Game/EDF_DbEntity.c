@@ -51,10 +51,7 @@ class EDF_DbName
 	static string Get(typename entityType)
 	{
 		string name;
-		if (s_mMapping)
-			name = s_mMapping.Get(entityType);
-
-		if (!name)
+		if (!s_mMapping || !s_mMapping.Find(entityType, name))
 			name = entityType.ToString();
 
 		return name;
@@ -63,10 +60,11 @@ class EDF_DbName
 	//------------------------------------------------------------------------------------------------
 	static typename GetTypeByName(string name)
 	{
-		if (s_mReverseMapping)
-			return s_mReverseMapping.Get(name);
+		typename resultType;
+		if (!s_mReverseMapping || !s_mReverseMapping.Find(name, resultType))
+			resultType = name.ToType();
 
-		return name.ToType();
+		return resultType;
 	}
 
 	//------------------------------------------------------------------------------------------------
