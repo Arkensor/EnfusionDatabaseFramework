@@ -13,6 +13,7 @@ modded class SCR_BaseGameMode
 	{
 		// TODO: Find better event for "session" teardown that works on dedicated servers, workbench and player hosted missions.
 		EDF_DbEntityIdGenerator.Reset();
+		EDF_WebProxyDbDriverCallback.Reset();
 		EDF_DbRepositoryFactory.ResetCache();
 	}
 }

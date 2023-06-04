@@ -38,7 +38,7 @@ Summary of the available filed condition builder functions:
 | ContainsAnyOf       | String               | Same as `Contains` with multiple comparison values                 |
 | ContainsAnyOf       | Collection           | Same as `Contains` with multiple comparison values                 |
 | ContainsAllOf       | Collection           | Collection must at least contain all the comparison values         |
-| Length              | String               | Character count of string comparison                               |
+| Length              | String               | UTF8 length of string                                              |
 | Count               | Collection           | Number of elements inside the collection                           |
 | Any                 | Collection           | True if any collection item matches the condition                  |
 | All                 | Collection           | True if all collection items match the condition                   |

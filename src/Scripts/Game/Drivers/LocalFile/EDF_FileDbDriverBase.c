@@ -48,14 +48,17 @@ class EDF_FileDbDriverBase : EDF_DbDriver
 	//------------------------------------------------------------------------------------------------
 	override EDF_EDbOperationStatusCode AddOrUpdate(notnull EDF_DbEntity entity)
 	{
-		if (!entity.HasId()) return EDF_EDbOperationStatusCode.FAILURE_ID_NOT_SET;
+		if (!entity.HasId())
+			return EDF_EDbOperationStatusCode.FAILURE_ID_NOT_SET;
 
 		FileIO.MakeDirectory(_GetTypeDirectory(entity.Type()));
 
 		EDF_EDbOperationStatusCode statusCode = WriteToDisk(entity);
-		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS) return statusCode;
+		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
+			return statusCode;
 
-		if (m_bUseCache) m_pEntityCache.Add(entity);
+		if (m_bUseCache)
+			m_pEntityCache.Add(entity);
 
 		// Add id to pool of all known ids
 		GetIdsByType(entity.Type()).Insert(entity.GetId());
@@ -69,9 +72,11 @@ class EDF_FileDbDriverBase : EDF_DbDriver
 		if (!entityId) return EDF_EDbOperationStatusCode.FAILURE_ID_NOT_SET;
 
 		EDF_EDbOperationStatusCode statusCode = DeleteFromDisk(entityType, entityId);
-		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS) return statusCode;
+		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
+			return statusCode;
 
-		if (m_bUseCache) m_pEntityCache.Remove(entityId);
+		if (m_bUseCache)
+			m_pEntityCache.Remove(entityId);
 
 		// Remove id from pool of all known ids
 		set<string> ids = GetIdsByType(entityType);
@@ -79,9 +84,7 @@ class EDF_FileDbDriverBase : EDF_DbDriver
 
 		// If collection of that entity type is empty remove the folder too to keep the file structure clean
 		if (ids.IsEmpty())
-		{
 			FileIO.DeleteFile(_GetTypeDirectory(entityType));
-		}
 
 		return EDF_EDbOperationStatusCode.SUCCESS;
 	}
@@ -231,7 +234,10 @@ class EDF_FileDbDriverBase : EDF_DbDriver
 	{
 		string file = string.Format("%1/%2%3", _GetTypeDirectory(entityType), entityId, GetFileExtension());
 
-		if (FileIO.FileExist(file) && !FileIO.DeleteFile(file))
+		if (!FileIO.FileExist(file))
+			return EDF_EDbOperationStatusCode.FAILURE_ID_NOT_FOUND;
+
+		if (!FileIO.DeleteFile(file))
 			return EDF_EDbOperationStatusCode.FAILURE_DB_UNAVAILABLE;
 
 		return EDF_EDbOperationStatusCode.SUCCESS;

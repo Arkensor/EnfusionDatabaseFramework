@@ -4,9 +4,10 @@ enum EDF_DbFindFieldPathSegmentFlags
 	TYPENAME = 2,
 	ANY = 4,
 	ALL = 8,
-	KEYS = 16,
-	VALUES = 32,
-	COUNT = 64
+	COUNT = 16,
+	LENGTH = 32,
+	KEYS = 64,
+	VALUES = 128
 };
 
 class EDF_DbFindFieldPathSegment
@@ -119,6 +120,12 @@ class EDF_DbFindConditionEvaluator
 				if (segment.Replace(EDF_DbFindFieldAnnotations.VALUES, "") > 0)
 				{
 					flags |= EDF_DbFindFieldPathSegmentFlags.VALUES;
+					continue;
+				}
+
+				if (segment.Replace(EDF_DbFindFieldAnnotations.LENGTH, "") > 0)
+				{
+					flags |= EDF_DbFindFieldPathSegmentFlags.LENGTH;
 					continue;
 				}
 
@@ -391,7 +398,9 @@ class EDF_DbFindFielEmptyChecker<Class TValueType>
 		if (value.Type().IsInherited(array) || value.Type().IsInherited(set) || value.Type().IsInherited(map))
 		{
 			int collectionCount;
-			if (!GetGame().GetScriptModule().Call(value, "Count", false, collectionCount)) return false;
+			if (!GetGame().GetScriptModule().Call(value, "Count", false, collectionCount))
+				return false;
+
 			return collectionCount == 0;
 		}
 
@@ -413,7 +422,7 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 		PreprocessComparisonValues(valueCondition.m_eComparisonOperator, valueCondition.m_aComparisonValues);
 
 		ScriptModule scriptModule = GetGame().GetScriptModule();
-		
+
 		// Handle collection comparison
 		if (fieldInfo.m_eCollectionType != EDF_ReflectionVariableType.NONE)
 		{
@@ -456,7 +465,7 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 
 				if (TValueType == typename && fieldInfo.m_tCollectionValueType != typename)
 				{
-					// Special handling to read arra<Class> and compare to array<typename>
+					// Special handling to read array<Class> and compare to array<typename>
 					Class holder;
 					if (!scriptModule.Call(collectionHolder, getFnc, false, holder, nItem) ||
 						!scriptModule.Call(holder, "Type", false, fieldValue, holder))

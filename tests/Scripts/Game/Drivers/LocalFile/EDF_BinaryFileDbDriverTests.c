@@ -4,14 +4,14 @@ class EDF_BinaryFileDbDriverTests : TestSuite
 
 	//------------------------------------------------------------------------------------------------
 	[Step(EStage.Setup)]
-    void Setup()
-    {
-    }
+	void Setup()
+	{
+	}
 
 	//------------------------------------------------------------------------------------------------
-    [Step(EStage.TearDown)]
-    void TearDown()
-    {
+	[Step(EStage.TearDown)]
+	void TearDown()
+	{
 		string dir = string.Format("%1/%2", EDF_FileDbDriverBase.DB_BASE_DIR, DB_NAME);
 
 		array<string> paths = {};
@@ -23,7 +23,7 @@ class EDF_BinaryFileDbDriverTests : TestSuite
 		}
 
 		FileIO.DeleteFile(dir);
-    }
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void WriteEntity(string dbDir, EDF_Test_BinFileDbDriverEntity entity)
@@ -39,7 +39,7 @@ class EDF_BinaryFileDbDriverTests : TestSuite
 	{
 		FileIO.DeleteFile(string.Format("%1/%2.bin", dbDir, entityId));
 	}
-}
+};
 
 class EDF_Test_BinFileDbDriverEntity : EDF_DbEntity
 {
@@ -47,15 +47,17 @@ class EDF_Test_BinFileDbDriverEntity : EDF_DbEntity
 	string m_sStringValue;
 
 	//------------------------------------------------------------------------------------------------
-	void EDF_Test_BinFileDbDriverEntity(string id, float floatValue, string stringValue)
+	static EDF_Test_BinFileDbDriverEntity Create(string id, float floatValue, string stringValue)
 	{
-		SetId(id);
-		m_fFloatValue = floatValue;
-		m_sStringValue = stringValue;
+		EDF_Test_BinFileDbDriverEntity entity();
+		entity.SetId(id);
+		entity.m_fFloatValue = floatValue;
+		entity.m_sStringValue = stringValue;
+		return entity;
 	}
-}
+};
 
-class EDF_Test_BinFileDbDriverEntityr_TestBase : TestBase
+class EDF_Test_BinFileDbDriverEntity_TestBase : TestBase
 {
 	ref EDF_BinaryFileDbDriver driver;
 
@@ -65,10 +67,10 @@ class EDF_Test_BinFileDbDriverEntityr_TestBase : TestBase
 	{
 		driver = new EDF_BinaryFileDbDriver();
 	}
-}
+};
 
 [Test("EDF_BinaryFileDbDriverTests")]
-class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully : EDF_Test_BinFileDbDriverEntityr_TestBase
+class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully : EDF_Test_BinFileDbDriverEntity_TestBase
 {
 	//------------------------------------------------------------------------------------------------
 	[Step(EStage.Setup)]
@@ -83,7 +85,7 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 	[Step(EStage.Main)]
 	void ActAndAsset()
 	{
-		EDF_Test_BinFileDbDriverEntity entity("TEST0000-0000-0001-0000-000000000001", 42.42, "Hello World");
+		auto entity = EDF_Test_BinFileDbDriverEntity.Create("TEST0000-0000-0001-0000-000000000001", 42.42, "Hello World");
 		EDF_EDbOperationStatusCode statusCode = driver.AddOrUpdate(entity);
 
 		// Assert
@@ -121,4 +123,4 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 	{
 		EDF_BinaryFileDbDriverTests.DeleteEntity(driver._GetTypeDirectory(EDF_Test_BinFileDbDriverEntity), "TEST0000-0000-0001-0000-000000000001");
 	}
-}
+};

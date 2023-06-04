@@ -1,4 +1,4 @@
-class EDF_DbEntitySortDirection
+class EDF_EDbEntitySortDirection
 {
 	static const string ASCENDING = "ASC";
 	static const string DESCENDING = "DESC";

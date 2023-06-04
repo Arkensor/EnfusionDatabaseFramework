@@ -164,7 +164,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateFindMultipleByIdDesc_No
 	array<ref EDF_DbEntity> results = bufferedDriver.FindAll(
 		EDF_Test_DbDriverBufferWrapperEntity,
 		EDF_DbFind.Id().EqualsAnyOf(EDF_DbValues<string>.From({"TEST0000-0000-0001-0000-000000000002", "TEST0000-0000-0001-0000-000000000003"})),
-		orderBy: {{"m_iValue", EDF_DbEntitySortDirection.DESCENDING}}
+		orderBy: {{"m_iValue", EDF_EDbEntitySortDirection.DESCENDING}}
 	).GetEntities();
 
 	if (results.Count() != 2)
@@ -304,7 +304,7 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_FindAllPaginatedOrdered_HalfFlushe
 	// Assert
 
 	EDF_DbFindCondition condition = null; //EDF_DbFind.Id().Equals(entity.GetId())
-	array<ref TStringArray> orderBy = {{"m_iValue", EDF_DbEntitySortDirection.ASCENDING}}; //null;
+	array<ref TStringArray> orderBy = {{"m_iValue", EDF_EDbEntitySortDirection.ASCENDING}}; //null;
 
 	array<ref EDF_DbEntity> page1 = bufferedDriver.FindAll(EDF_Test_DbDriverBufferWrapperEntity, condition, orderBy, offset: 0, limit: 3).GetEntities();
 	array<ref EDF_DbEntity> page2 = bufferedDriver.FindAll(EDF_Test_DbDriverBufferWrapperEntity, condition, orderBy, offset: 3, limit: 3).GetEntities();

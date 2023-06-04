@@ -57,7 +57,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayInt_AscSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_iIntValue", EDF_DbEntitySortDirection.ASCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_iIntValue", EDF_EDbEntitySortDirection.ASCENDING}});
 
 	// Assert
 	return new EDF_TestResult(
@@ -78,7 +78,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayInt_DescSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_iIntValue", EDF_DbEntitySortDirection.DESCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_iIntValue", EDF_EDbEntitySortDirection.DESCENDING}});
 
 	// Assert
 	return new EDF_TestResult(
@@ -99,7 +99,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayFloat_AscSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_fFloatValue", EDF_DbEntitySortDirection.ASCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_fFloatValue", EDF_EDbEntitySortDirection.ASCENDING}});
 
 	// Assert
 	return new EDF_TestResult(
@@ -120,7 +120,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayFloat_DescSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_fFloatValue", EDF_DbEntitySortDirection.DESCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_fFloatValue", EDF_EDbEntitySortDirection.DESCENDING}});
 
 	// Assert
 	return new EDF_TestResult(
@@ -162,7 +162,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayBool_AscSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_bBoolValue", EDF_DbEntitySortDirection.ASCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_bBoolValue", EDF_EDbEntitySortDirection.ASCENDING}});
 
 	// Assert
 	return new EDF_TestResult(
@@ -183,7 +183,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayBool_DescSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_bBoolValue", EDF_DbEntitySortDirection.DESCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_bBoolValue", EDF_EDbEntitySortDirection.DESCENDING}});
 
 	// Assert
 	return new EDF_TestResult(
@@ -205,7 +205,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayString_AscSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_sStringValue", EDF_DbEntitySortDirection.ASCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_sStringValue", EDF_EDbEntitySortDirection.ASCENDING}});
 
 	// Assert
 	return new EDF_TestResult(
@@ -228,7 +228,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayString_DescSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_sStringValue", EDF_DbEntitySortDirection.DESCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_sStringValue", EDF_EDbEntitySortDirection.DESCENDING}});
 
 	// Assert
 	return new EDF_TestResult(
@@ -251,7 +251,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayVector_AscSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_vVectorValue", EDF_DbEntitySortDirection.ASCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_vVectorValue", EDF_EDbEntitySortDirection.ASCENDING}});
 
 	// Assert
 	return new EDF_TestResult(
@@ -274,7 +274,7 @@ TestResultBase EDF_Test_DbEntitySorter_GetSorted_ArrayVector_DescSorted()
 	};
 
 	// Act
-	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_vVectorValue", EDF_DbEntitySortDirection.DESCENDING}});
+	array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_vVectorValue", EDF_EDbEntitySortDirection.DESCENDING}});
 
 	// Assert
 	return new EDF_TestResult(

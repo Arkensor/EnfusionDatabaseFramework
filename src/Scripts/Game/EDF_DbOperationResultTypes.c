@@ -2,12 +2,17 @@ enum EDF_EDbOperationStatusCode
 {
 	SUCCESS,
 
-	// System failure
+	// Framework failure
+	FAILURE_NOT_IMPLEMENTED,
+	
+	// Database failure
 	FAILURE_DB_UNAVAILABLE,
+	FAILURE_RESPONSE_MALFORMED,
 
 	// User failure
 	FAILURE_DATA_MALFORMED,
 	FAILURE_ID_NOT_SET,
+	FAILURE_ID_NOT_FOUND,
 
 	// Unknown
 	FAILURE_UNKNOWN

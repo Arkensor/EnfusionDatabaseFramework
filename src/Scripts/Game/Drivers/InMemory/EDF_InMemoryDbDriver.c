@@ -49,6 +49,9 @@ class EDF_InMemoryDbDriver : EDF_DbDriver
 		if (!entityId)
 			return EDF_EDbOperationStatusCode.FAILURE_ID_NOT_SET;
 
+		if (!m_pDb.Get(entityType, entityId))
+			return EDF_EDbOperationStatusCode.FAILURE_ID_NOT_FOUND;
+
 		m_pDb.Remove(entityType, entityId);
 		return EDF_EDbOperationStatusCode.SUCCESS;
 	}
@@ -61,8 +64,8 @@ class EDF_InMemoryDbDriver : EDF_DbDriver
 		// See if we can only load selected few entities by id or we need the entire collection to search through
 		set<string> loadIds(), skipIds();
 		bool needsFilter = false;
-		if (EDF_DbFindCondition.CollectConditionIds(condition, loadIds, skipIds) && 
-			!loadIds.IsEmpty() &&  // There must be something to load explictly
+		if (EDF_DbFindCondition.CollectConditionIds(condition, loadIds, skipIds) &&
+			!loadIds.IsEmpty() && // There must be something to load explictly
 			skipIds.IsEmpty()) // and no "load xxx but skip these"
 		{
 			entities = {};
