@@ -98,7 +98,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_Length_ModifierPresent()
 	EDF_DbFindFieldNumericValueConditonBuilder builder = EDF_DbFind.Field("stringField").Length();
 
 	// Assert
-	return new EDF_TestResult(builder.m_sFieldPath.EndsWith("stringField:count"));
+	return new EDF_TestResult(builder.m_sFieldPath.EndsWith("stringField" + EDF_DbFindFieldAnnotations.LENGTH));
 };
 
 //------------------------------------------------------------------------------------------------
@@ -220,19 +220,19 @@ class EDF_Test_DbFindConditionBuilder_Field_ComplexBuild_DebugStringEqual : Test
 
 		// Assert
 		string compareString = "Or(\
-		 CheckNull(fieldPath:'A', shouldBeNull:false),\
-		 CheckEmpty(fieldPath:'B', shouldBeEmpty:true),\
-		 And(\
-		  Compare(fieldPath:'CString', operator:CONTAINS, values:{SubString}),\
-		  Compare(fieldPath:'DFloatArray', operator:EQUAL, values:{true,false,true,true}),\
-		  And(\
-		   Compare(fieldPath:'E.m_Numbers:any', operator:CONTAINS, values:{100}),\
-		   Compare(fieldPath:'F.m_ComplexWrapperSet.Class:any.someNumber', operator:NOT_EQUAL, values:{1,2})\
-		  ),\
-		  Or(\
-		   Compare(fieldPath:'G', operator:EQUAL, values:{12,13})\
-		  )\
-		 )\
+			CheckNull(fieldPath:'A', shouldBeNull:false),\
+			CheckEmpty(fieldPath:'B', shouldBeEmpty:true),\
+			And(\
+				Compare(fieldPath:'CString', operator:CONTAINS, values:{SubString}),\
+				Compare(fieldPath:'DFloatArray', operator:ARR_EQUAL, values:{true,false,true,true}),\
+				And(\
+					Compare(fieldPath:'E.m_Numbers:any', operator:CONTAINS, values:{100}),\
+					Compare(fieldPath:'F.m_ComplexWrapperSet.Class:any.someNumber', operator:NOT_EQUAL, values:{1,2})\
+				),\
+				Or(\
+					Compare(fieldPath:'G', operator:EQUAL, values:{12,13})\
+				)\
+			)\
 		)";
 
 		compareString.Replace("\r", "");

@@ -125,12 +125,6 @@ class EDF_DbFindConditionWithChildren : EDF_DbFindCondition
 
 		return dbg + ")";
 	}
-
-	//------------------------------------------------------------------------------------------------
-	void EDF_DbFindConditionWithChildren(notnull array<ref EDF_DbFindCondition> conditions)
-	{
-		m_aConditions = conditions;
-	}
 };
 
 class EDF_DbFindAnd : EDF_DbFindConditionWithChildren
@@ -152,7 +146,9 @@ class EDF_DbFindAnd : EDF_DbFindConditionWithChildren
 	//------------------------------------------------------------------------------------------------
 	static EDF_DbFindAnd Create(notnull array<ref EDF_DbFindCondition> conditions)
 	{
-		EDF_DbFindAnd inst = new EDF_DbFindAnd(conditions);
+		EDF_DbFindAnd inst();
+		inst.m_aConditions = conditions;
+
 		if (!ALLOC_BUFFER) ALLOC_BUFFER = {null};
 		ALLOC_BUFFER.Set(0, inst);
 		return inst;
@@ -178,7 +174,9 @@ class EDF_DbFindOr : EDF_DbFindConditionWithChildren
 	//------------------------------------------------------------------------------------------------
 	static EDF_DbFindOr Create(notnull array<ref EDF_DbFindCondition> conditions)
 	{
-		EDF_DbFindOr inst = new EDF_DbFindOr(conditions);
+		EDF_DbFindOr inst();
+		inst.m_aConditions = conditions;
+
 		if (!ALLOC_BUFFER) ALLOC_BUFFER = {null};
 		ALLOC_BUFFER.Set(0, inst);
 		return inst;
@@ -258,18 +256,14 @@ class EDF_DbFindCheckFieldNull : EDF_DbFindFieldCondition
 	//------------------------------------------------------------------------------------------------
 	static EDF_DbFindCheckFieldNull Create(string fieldPath, bool shouldBeNull, bool usesTypename)
 	{
-		auto inst = new EDF_DbFindCheckFieldNull(fieldPath, shouldBeNull, usesTypename);
+		EDF_DbFindCheckFieldNull inst();
+		inst.m_sFieldPath = fieldPath;
+		inst.m_bShouldBeNull = shouldBeNull;
+		inst.m_bUsesTypename = usesTypename;
+
 		if (!ALLOC_BUFFER) ALLOC_BUFFER = {null};
 		ALLOC_BUFFER.Set(0, inst);
 		return inst;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void EDF_DbFindCheckFieldNull(string fieldPath, bool shouldBeNull, bool usesTypename)
-	{
-		m_sFieldPath = fieldPath;
-		m_bShouldBeNull = shouldBeNull;
-		m_bUsesTypename = usesTypename;
 	}
 };
 
@@ -295,18 +289,14 @@ class EDF_DbFindCheckFieldEmpty : EDF_DbFindFieldCondition
 	//------------------------------------------------------------------------------------------------
 	static EDF_DbFindCheckFieldEmpty Create(string fieldPath, bool shouldBeEmpty, bool usesTypename)
 	{
-		auto inst = new EDF_DbFindCheckFieldEmpty(fieldPath, shouldBeEmpty, usesTypename);
+		EDF_DbFindCheckFieldEmpty inst();
+		inst.m_sFieldPath = fieldPath;
+		inst.m_ShouldBeEmpty = shouldBeEmpty;
+		inst.m_bUsesTypename = usesTypename;
+
 		if (!ALLOC_BUFFER) ALLOC_BUFFER = {null};
 		ALLOC_BUFFER.Set(0, inst);
 		return inst;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void EDF_DbFindCheckFieldEmpty(string fieldPath, bool shouldBeEmpty, bool usesTypename)
-	{
-		m_sFieldPath = fieldPath;
-		m_ShouldBeEmpty = shouldBeEmpty;
-		m_bUsesTypename = usesTypename;
 	}
 };
 
@@ -402,19 +392,21 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 		notnull array<ValueType> comparisonValues,
 		bool usesTypename)
 	{
-		auto inst = new EDF_DbFindCompareFieldValues<ValueType>(fieldPath, comparisonOperator, comparisonValues, usesTypename);
+		if (comparisonValues.IsEmpty())
+		{
+			Debug.Error("Db find condition comparison values can not be empty!");
+			return null;
+		}
+
+		EDF_DbFindCompareFieldValues<ValueType> inst();
+		inst.m_sFieldPath = fieldPath;
+		inst.m_eComparisonOperator = comparisonOperator;
+		inst.m_aComparisonValues = comparisonValues;
+		inst.m_bUsesTypename = usesTypename;
+
 		if (!ALLOC_BUFFER_TVALUES) ALLOC_BUFFER_TVALUES = {null};
 		ALLOC_BUFFER_TVALUES.Set(0, inst);
 		return inst;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void EDF_DbFindCompareFieldValues(string fieldPath, EDF_EDbFindOperator comparisonOperator, notnull array<ValueType> comparisonValues, bool usesTypename)
-	{
-		m_sFieldPath = fieldPath;
-		m_eComparisonOperator = comparisonOperator;
-		m_aComparisonValues = comparisonValues;
-		m_bUsesTypename = usesTypename;
 	}
 };
 
@@ -477,6 +469,48 @@ class EDF_DbFindFieldConditionBuilder
 
 		m_sFieldPath += pathValue;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	protected EDF_EDbFindOperator InvertIfNeeded(EDF_EDbFindOperator operator)
+	{
+		if (!m_bInverted)
+			return operator;
+
+		switch (operator)
+		{
+			case EDF_EDbFindOperator.EQUAL:
+				return EDF_EDbFindOperator.NOT_EQUAL;
+
+			case EDF_EDbFindOperator.NOT_EQUAL:
+				return EDF_EDbFindOperator.EQUAL;
+
+			case EDF_EDbFindOperator.LESS_THAN:
+				return EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL;
+
+			case EDF_EDbFindOperator.LESS_THAN_OR_EQUAL:
+				return EDF_EDbFindOperator.GREATER_THAN;
+
+			case EDF_EDbFindOperator.GREATER_THAN:
+				return EDF_EDbFindOperator.LESS_THAN_OR_EQUAL;
+
+			case EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL:
+				return EDF_EDbFindOperator.LESS_THAN;
+
+			case EDF_EDbFindOperator.CONTAINS:
+				return EDF_EDbFindOperator.NOT_CONTAINS;
+
+			case EDF_EDbFindOperator.NOT_CONTAINS:
+				return EDF_EDbFindOperator.CONTAINS;
+
+			case EDF_EDbFindOperator.ARR_EQUAL:
+				return EDF_EDbFindOperator.ARR_NOT_EQUAL;
+
+			case EDF_EDbFindOperator.ARR_NOT_EQUAL:
+				return EDF_EDbFindOperator.ARR_EQUAL;
+		}
+
+		return -1;
+	}
 };
 
 class EDF_DbFindFieldNumericValueConditonBuilder : EDF_DbFindFieldConditionBuilder
@@ -484,97 +518,73 @@ class EDF_DbFindFieldNumericValueConditonBuilder : EDF_DbFindFieldConditionBuild
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(int comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(float comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition EqualsAnyOf(notnull array<int> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition EqualsAnyOf(notnull array<float> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition LessThan(int comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.LESS_THAN), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition LessThan(float comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.LESS_THAN), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition LessThanOrEquals(int comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.LESS_THAN_OR_EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition LessThanOrEquals(float comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.LESS_THAN_OR_EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition GreaterThan(int comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.GREATER_THAN), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition GreaterThan(float comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.GREATER_THAN), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition GreaterThanOrEquals(int comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition GreaterThanOrEquals(float comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -617,57 +627,43 @@ class EDF_DbFindFieldPrimitiveValueConditonBuilder : EDF_DbFindFieldNumericValue
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(bool comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(string comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(vector comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition EqualsAnyOf(notnull array<string> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition EqualsAnyOf(notnull array<vector> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition GreaterThan(vector comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.GREATER_THAN), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition GreaterThanOrEquals(vector comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.LESS_THAN, {comparisonValue}, m_bUsesTypenames);
-
-		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL, {comparisonValue}, m_bUsesTypenames);
+		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.GREATER_THAN_OR_EQUAL), {comparisonValue}, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -679,9 +675,7 @@ class EDF_DbFindFieldPrimitiveValueConditonBuilder : EDF_DbFindFieldNumericValue
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAnyOf(notnull array<string> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -709,65 +703,49 @@ class EDF_DbFindFieldAllValueConditonBuilder : EDF_DbFindFieldPrimitiveValueCond
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(typename comparisonValue)
 	{
-		if (m_bInverted) return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_EQUAL, {comparisonValue}, true);
-
-		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.EQUAL, {comparisonValue}, true);
+		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.EQUAL), {comparisonValue}, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition EqualsAnyOf(notnull array<typename> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, true);
-
-		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, true);
+		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(notnull array<int> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_NOT_EQUAL, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_EQUAL, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.ARR_EQUAL), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(notnull array<float> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_NOT_EQUAL, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_EQUAL, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.ARR_EQUAL), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(notnull array<bool> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_NOT_EQUAL, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_EQUAL, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.ARR_EQUAL), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(notnull array<string> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_NOT_EQUAL, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_EQUAL, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.ARR_EQUAL), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(notnull array<vector> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_NOT_EQUAL, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_EQUAL, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.ARR_EQUAL), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition Equals(notnull array<typename> comparisonValues)
 	{
-		if (m_bInverted) return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_NOT_EQUAL, comparisonValues, true);
-
-		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.ARR_EQUAL, comparisonValues, true);
+		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.ARR_EQUAL), comparisonValues, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -804,110 +782,77 @@ class EDF_DbFindFieldAllValueConditonBuilder : EDF_DbFindFieldPrimitiveValueCond
 	EDF_DbFindCondition ContainsAnyOf(notnull array<int> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ANY);
-
-		if (m_bInverted) return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAnyOf(notnull array<float> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ANY);
-
-		if (m_bInverted) return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAnyOf(notnull array<bool> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ANY);
-
-		if (m_bInverted) return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAnyOf(notnull array<vector> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ANY);
-
-		if (m_bInverted) return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAnyOf(notnull array<typename> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ANY);
-
-		if (m_bInverted) return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, true);
-
-		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, true);
+		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAllOf(notnull array<int> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ALL);
-
-		if (m_bInverted) return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldIntMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAllOf(notnull array<float> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ALL);
-
-		if (m_bInverted) return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldFloatMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAllOf(notnull array<bool> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ALL);
-
-		if (m_bInverted) return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldBoolMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAllOf(notnull array<string> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ALL);
-
-		if (m_bInverted) return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldStringMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAllOf(notnull array<vector> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ALL);
-
-		if (m_bInverted) return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, m_bUsesTypenames);
-
-		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, m_bUsesTypenames);
+		return EDF_DbFindFieldVectorMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, m_bUsesTypenames);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EDF_DbFindCondition ContainsAllOf(notnull array<typename> comparisonValues)
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.ALL);
-
-		if (m_bInverted) return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.NOT_CONTAINS, comparisonValues, true);
-
-		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, EDF_EDbFindOperator.CONTAINS, comparisonValues, true);
+		return EDF_DbFindFieldTypenameMultiple.Create(m_sFieldPath, InvertIfNeeded(EDF_EDbFindOperator.CONTAINS), comparisonValues, true);
 	}
 
 	//------------------------------------------------------------------------------------------------

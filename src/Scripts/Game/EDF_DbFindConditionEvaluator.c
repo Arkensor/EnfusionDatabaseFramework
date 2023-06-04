@@ -438,8 +438,10 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			if (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.COUNT)
 				return CompareCollectionCount(collectionCount, valueCondition.m_eComparisonOperator, valueCondition.m_aComparisonValues);
 
-			bool exactOrderedMatch = (valueCondition.m_eComparisonOperator == EDF_EDbFindOperator.EQUAL) &&
-				((currentSegment.m_iFlags & (EDF_DbFindFieldPathSegmentFlags.ANY | EDF_DbFindFieldPathSegmentFlags.ALL)) == 0);
+			EDF_EDbFindOperator comparisonOperator = valueCondition.m_eComparisonOperator;
+			bool exactOrderedMatch = comparisonOperator == EDF_EDbFindOperator.ARR_EQUAL;
+			if (exactOrderedMatch)
+				comparisonOperator = EDF_EDbFindOperator.EQUAL;
 
 			// If the count missmatches on full match it can not be equal
 			if (exactOrderedMatch && (collectionCount != valueCondition.m_aComparisonValues.Count()))
@@ -477,9 +479,10 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 				}
 
 				array<TValueType> compareValues = valueCondition.m_aComparisonValues;
-				if (exactOrderedMatch) compareValues = {valueCondition.m_aComparisonValues.Get(nItem)};
+				if (exactOrderedMatch)
+					compareValues = {valueCondition.m_aComparisonValues.Get(nItem)};
 
-				bool comparisonMatches = Compare(fieldValue, valueCondition.m_eComparisonOperator, compareValues);
+				bool comparisonMatches = Compare(fieldValue, comparisonOperator, compareValues);
 
 				if (exactOrderedMatch || (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.ALL))
 				{
@@ -505,6 +508,17 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 
 			// Fall through
 			return false;
+		}
+
+		// Special case of string lenth which is int value condition but string holder
+		if (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.LENGTH)
+		{
+			string stringData;
+			if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, stringData))
+				return false;
+
+			Managed arr = valueCondition.m_aComparisonValues;
+			return Compare(stringData.Length(), valueCondition.m_eComparisonOperator, array<int>.Cast(arr));
 		}
 
 		// Compare primitive value
