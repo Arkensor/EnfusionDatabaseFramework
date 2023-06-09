@@ -19,6 +19,7 @@ class EDF_Test_FindConditionEvaluatorContainerItem : EDF_DbEntity
 	float m_Float = 42.42;
 	bool m_Bool = true;
 	string m_String = "hello WoRld";
+	string m_Utf8String = "こんにちは世界";
 	vector m_Vector = Vector(1, 3, 7);
 
 	EDF_Test_FindConditionEvaluatorContainerItem m_NullField;
@@ -516,6 +517,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Count_AnyOfIncludingTwo_True()
 	return new EDF_TestResult(matches);
 };
 
+//------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
 TestResultBase EDF_Test_DbFindConditionEvaluator_Length_Equals_True()
 {
@@ -523,6 +525,22 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Length_Equals_True()
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
 	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Length().Equals(11);
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_Length_MatchingUtf8String_True()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_Utf8String").Length().Equals(7);
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);

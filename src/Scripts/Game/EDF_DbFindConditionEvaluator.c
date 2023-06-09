@@ -583,7 +583,7 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 				return false;
 
 			Managed arr = valueCondition.m_aComparisonValues;
-			return Compare(stringData.Length(), valueCondition.m_eComparisonOperator, array<int>.Cast(arr));
+			return Compare(StringLengthUtf8(stringData), valueCondition.m_eComparisonOperator, array<int>.Cast(arr));
 		}
 
 		// Compare primitive value
@@ -616,6 +616,21 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			return false;
 
 		return Compare(collectionCount, operator, strongTypedComparisonValues);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! TODO: Replace by native method once https://feedback.bistudio.com/T173104 is fixed
+	protected static int StringLengthUtf8(string utf8string)
+	{
+		int length = 0;
+		for (int nChar = 0, chars = utf8string.Length(); nChar < chars; nChar++)
+		{
+			int char = utf8string.ToAscii(nChar);
+			if (!(char & 0x80) || (char & 0x40))
+				length++;
+		}
+
+		return length;
 	}
 
 	//------------------------------------------------------------------------------------------------
