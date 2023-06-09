@@ -95,7 +95,7 @@ class EDF_FileDbDriverBase : EDF_DbDriver
 		// See if we can only load selected few entities by id or we need the entire collection to search through
 		set<string> loadIds(), skipIds();
 		bool needsFilter = false;
-		if (!EDF_DbFindCondition.CollectConditionIds(condition, loadIds, skipIds) || loadIds.IsEmpty() || !skipIds.IsEmpty())
+		if (!EDF_DbFindConditionEvaluator.CollectConditionIds(condition, loadIds, skipIds) || loadIds.IsEmpty() || !skipIds.IsEmpty())
 		{
 			// Condition(s) require more information than just ids so all need to be loaded and also filtered by condition
 			loadIds = GetIdsByType(entityType, skipIds);

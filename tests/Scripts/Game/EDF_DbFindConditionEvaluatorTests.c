@@ -170,18 +170,50 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_IncorrectBool_False()
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
-TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_CorrectString_True()
+TestResultBase EDF_Test_DbFindConditionEvaluator_EqualsCaseSenstive_CorrectString_True()
 {
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Equals("Hello World");
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Equals("hello WoRld");
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 
 	// Assert
 	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_EqualsCaseSensitve_DifferentCase_False()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Equals("hello world");
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(!matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantEquals_DifferentCase_True()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Invariant().Equals("HELLO world");
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(!matches);
 };
 
 //------------------------------------------------------------------------------------------------
@@ -234,12 +266,12 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_IncorrectVector_False()
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
-TestResultBase EDF_Test_DbFindConditionEvaluator_Contains_StringField_True()
+TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantContains_StringField_True()
 {
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Contains("Hello");
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Invariant().Contains("Hello");
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -438,12 +470,12 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Not_Matching_False()
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
-TestResultBase EDF_Test_DbFindConditionEvaluator_Null_NullField_True()
+TestResultBase EDF_Test_DbFindConditionEvaluator_NullOrDefault_NullField_True()
 {
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_NullField").Null();
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_NullField").NullOrDefault();
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -454,12 +486,12 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Null_NullField_True()
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
-TestResultBase EDF_Test_DbFindConditionEvaluator_Empty_FilledCollection_False()
+TestResultBase EDF_Test_DbFindConditionEvaluator_NullOrDefault_FilledCollection_False()
 {
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_BoolArray").Empty();
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_BoolArray").NullOrDefault();
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -581,6 +613,22 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_At_IdxZeroNestedVectorContained
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_ArrayMatches_True()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatArray").Equals(EDF_DbValues<float>.From({42.42, 1337.1337}));
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
 TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAnyOf_PartialIntersect_True()
 {
 	// Arrange
@@ -593,6 +641,22 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAnyOf_PartialIntersect_
 
 	// Assert
 	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAnyOf_NoIntersect_False()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatSet").ContainsAnyOf(EDF_DbValues<float>.From({69.696969}));
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(!matches);
 };
 
 //------------------------------------------------------------------------------------------------
@@ -613,12 +677,12 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAllOf_PartialIntersect_
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
-TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_ArrayMatches_True()
+TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAllOf_FullIntersect_True()
 {
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatArray").Equals(EDF_DbValues<float>.From({42.42, 1337.1337}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_IntArray").ContainsAllOf(EDF_DbValues<int>.From({1337, 42}));
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -629,18 +693,66 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_ArrayMatches_True()
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
-TestResultBase EDF_Test_DbFindConditionEvaluator_Contains_StringArrayItemMatches_True()
+TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAllOf_FullIntersectSingleValue_True()
 {
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_StringArray").Contains("World");
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_VectorArray").ContainsAllOf(EDF_DbValues<vector>.From({"1 0 1"}));
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 
 	// Assert
 	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAllOf_PartialMoreValues_False()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_VectorArray").ContainsAllOf(EDF_DbValues<vector>.From({"1 0 1", "6 6 6"}));
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(!matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantContains_StringArrayItemMatches_True()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_StringArray").Invariant().Contains("World");
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantContains_StringArrayNoMatches_False()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_StringArray").Invariant().Contains("I do not exist :)");
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(!matches);
 };
 
 class EDF_Test_FindConditionEvaluatorPolymorphBase : EDF_DbEntity

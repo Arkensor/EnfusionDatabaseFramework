@@ -64,7 +64,7 @@ class EDF_InMemoryDbDriver : EDF_DbDriver
 		// See if we can only load selected few entities by id or we need the entire collection to search through
 		set<string> loadIds(), skipIds();
 		bool needsFilter = false;
-		if (EDF_DbFindCondition.CollectConditionIds(condition, loadIds, skipIds) &&
+		if (EDF_DbFindConditionEvaluator.CollectConditionIds(condition, loadIds, skipIds) &&
 			!loadIds.IsEmpty() && // There must be something to load explictly
 			skipIds.IsEmpty()) // and no "load xxx but skip these"
 		{

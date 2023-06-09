@@ -110,6 +110,20 @@ class EDF_Test_WebProxyDbDriverEntityTArray<Class T> : EDF_DbEntity
 	}
 };
 
+class EDF_Test_WebProxyDbDriverEntityTNestedArray<Class T> : EDF_DbEntity
+{
+	ref array<ref array<T>> m_aValues;
+
+	//------------------------------------------------------------------------------------------------
+	static EDF_Test_WebProxyDbDriverEntityTNestedArray<T> Create(string id, array<ref array<T>> values = null)
+	{
+		EDF_Test_WebProxyDbDriverEntityTNestedArray<T> entity();
+		entity.SetId(id);
+		entity.m_aValues = values;
+		return entity;
+	}
+};
+
 //[Test("EDF_WebProxyDbDriverTests")]
 class EDF_Test_WebProxyDbDriver_AddOrUpdateAsync_NewEntity_Added : EDF_Test_WebProxyDbDriver_TestBase
 {
@@ -127,7 +141,7 @@ class EDF_Test_WebProxyDbDriver_AddOrUpdateAsync_NewEntity_Added : EDF_Test_WebP
 	//------------------------------------------------------------------------------------------------
 	void OnResult(EDF_EDbOperationStatusCode statusCode)
 	{
-		PrintFormat(Type().ToString()+" Result: %1", statusCode == EDF_EDbOperationStatusCode.SUCCESS);
+		PrintFormat("%1 OnResult: %2", ClassName(), statusCode == EDF_EDbOperationStatusCode.SUCCESS);
 		//SetResult(new EDF_TestResult(statusCode == EDF_EDbOperationStatusCode.SUCCESS));
 	}
 
@@ -175,7 +189,7 @@ class EDF_Test_WebProxyDbDriver_RemoveAsync_ExitingEntity_Removed : EDF_Test_Web
 	//------------------------------------------------------------------------------------------------
 	void OnResult(EDF_EDbOperationStatusCode statusCode)
 	{
-		PrintFormat(Type().ToString()+" Result: %1", statusCode == EDF_EDbOperationStatusCode.SUCCESS);
+		PrintFormat("%1 OnResult: %2", ClassName(), statusCode == EDF_EDbOperationStatusCode.SUCCESS);
 	}
 };
 
@@ -196,7 +210,7 @@ class EDF_Test_WebProxyDbDriver_RemoveAsync_UnknownEntity_NotFound : EDF_Test_We
 	//------------------------------------------------------------------------------------------------
 	void OnResult(EDF_EDbOperationStatusCode statusCode)
 	{
-		PrintFormat(Type().ToString()+" Result: %1", statusCode == EDF_EDbOperationStatusCode.FAILURE_ID_NOT_FOUND);
+		PrintFormat("%1 OnResult: %2", ClassName(), statusCode == EDF_EDbOperationStatusCode.FAILURE_ID_NOT_FOUND);
 	}
 };
 
@@ -226,11 +240,11 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_ExitingId_Returned : EDF_Test_WebPr
 	//------------------------------------------------------------------------------------------------
 	void OnResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_Test_WebProxyDbDriverEntityA> results)
 	{
-		bool succes = statusCode == EDF_EDbOperationStatusCode.SUCCESS &&
+		bool SUCCESS = statusCode == EDF_EDbOperationStatusCode.SUCCESS &&
 			results.Count() == 1 &&
 			results.Get(0).GetId() == "00000000-0000-0004-0000-000000000001";
 
-		PrintFormat(Type().ToString()+" Result: %1", succes);
+		PrintFormat("%1 OnResult: %2", ClassName(), SUCCESS);
 	}
 };
 
@@ -256,7 +270,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_OrderedLimitedOffset_CorrectResults
 	//------------------------------------------------------------------------------------------------
 	void Act()
 	{
-		EDF_DbFindCondition condition = EDF_DbFind.Id().Contains("0000-0005-0000");
+		EDF_DbFindCondition condition = EDF_DbFind.Id().Contains("00000000-0000-0005-0000");
 		array<ref TStringArray> orderBy = {{"m_fFloatValue", EDF_EDbEntitySortDirection.DESCENDING}, {"m_sStringValue", "asc"}};
 		int limit = 4;
 		int offset = 1;
@@ -277,10 +291,168 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_OrderedLimitedOffset_CorrectResults
 	//------------------------------------------------------------------------------------------------
 	void OnResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_Test_WebProxyDbDriverEntityA> results)
 	{
-		bool succes = true;
-		PrintFormat(Type().ToString()+" Result: %1", succes);
+		bool SUCCESS = results.Count() == 4 &&
+			results.Get(0).GetId() == "00000000-0000-0005-0000-000000000006" &&
+			results.Get(1).GetId() == "00000000-0000-0005-0000-000000000003" &&
+			results.Get(2).GetId() == "00000000-0000-0005-0000-000000000005" &&
+			results.Get(3).GetId() == "00000000-0000-0005-0000-000000000002";
+
+		PrintFormat("%1 OnResult: %2", ClassName(), SUCCESS);
 	}
 };
+
+//[Test("EDF_WebProxyDbDriverTests")]
+class EDF_Test_WebProxyDbDriver_FindAllAsync_NullOrDefault_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
+{
+	//------------------------------------------------------------------------------------------------
+	[Step(EStage.Main)]
+	void Arrange()
+	{
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<int>.Create("00000000-0000-0006-0000-000000000001", 0));
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<int>.Create("00000000-0000-0006-0000-000000000002", 42));
+
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<float>.Create("00000000-0000-0006-0000-000000000003", 0.0));
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<float>.Create("00000000-0000-0006-0000-000000000004", 42.42));
+
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<bool>.Create("00000000-0000-0006-0000-000000000005", false));
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<bool>.Create("00000000-0000-0006-0000-000000000006", true));
+
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<string>.Create("00000000-0000-0006-0000-000000000007", string.Empty));
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<string>.Create("00000000-0000-0006-0000-000000000008", "Hello"));
+
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<vector>.Create("00000000-0000-0006-0000-000000000009", vector.Zero));
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<vector>.Create("00000000-0000-0006-0000-000000000010", "1 2 3"),
+			new EDF_DbOperationStatusOnlyCallback(this, "Act"));
+
+		SetResult(new EDF_TestResult(true));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Act()
+	{
+		EDF_DbFindCallbackMultipleUntyped matchCallback(this, "OnMatchResult");
+
+		typename type = String("EDF_Test_WebProxyDbDriverEntityT<int>").ToType();
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").NullOrDefault(), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Not().NullOrDefault(), callback: matchCallback);
+
+		type = String("EDF_Test_WebProxyDbDriverEntityT<float>").ToType();
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").NullOrDefault(), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Not().NullOrDefault(), callback: matchCallback);
+
+		type = String("EDF_Test_WebProxyDbDriverEntityT<bool>").ToType();
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").NullOrDefault(), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Not().NullOrDefault(), callback: matchCallback);
+
+		type = String("EDF_Test_WebProxyDbDriverEntityT<string>").ToType();
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").NullOrDefault(), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Not().NullOrDefault(), callback: matchCallback);
+
+		type = String("EDF_Test_WebProxyDbDriverEntityT<vector>").ToType();
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").NullOrDefault(), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Not().NullOrDefault(), callback: matchCallback);
+
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0006-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+	}
+};
+
+//[Test("EDF_WebProxyDbDriverTests")]
+class EDF_Test_WebProxyDbDriver_FindAllAsync_LengthOperator_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
+{
+	//------------------------------------------------------------------------------------------------
+	[Step(EStage.Main)]
+	void Arrange()
+	{
+		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<string>.Create("00000000-0000-0007-0000-000000000001", "MarioE"));
+
+		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<string>.Create("00000000-0000-0007-0000-000000000001", {"Hello", "World", "!"});
+		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
+
+		SetResult(new EDF_TestResult(true));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Act()
+	{
+		EDF_DbFindCallbackMultipleUntyped matchCallback(this, "OnMatchResult");
+
+		// Should match
+		typename type = m_pEntity.Type();
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Length().GreaterThan(3), callback: matchCallback);
+
+		// maybe for projection stage filter out all fields being accessed for length -> string property or array of strings
+			// leave condition in but on evaluate instead of the actual field name do field_lengths?
+			// https://www.thecodebuzz.com/mongodb-nested-array-string-field-value-length-query/
+			// alternative is regex
+
+		//type = String("EDF_Test_WebProxyDbDriverEntityT<string>").ToType();
+		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Length().Equals(6), callback: matchCallback);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0007-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+	}
+};
+
+
+//[Test("EDF_WebProxyDbDriverTests")]
+class EDF_Test_WebProxyDbDriver_FindAllAsync_CountOperator_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
+{
+	//------------------------------------------------------------------------------------------------
+	[Step(EStage.Main)]
+	void Arrange()
+	{
+		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<int>.Create("00000000-0000-0008-0000-000000000001", {1, 2, 3});
+		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
+
+		SetResult(new EDF_TestResult(true));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Act()
+	{
+		EDF_DbFindCallbackMultipleUntyped matchCallback(this, "OnMatchResult");
+
+		// Should match
+		typename type = m_pEntity.Type();
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Count().Equals(3), callback: matchCallback);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0008-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+	}
+};
+
 
 //[Test("EDF_WebProxyDbDriverTests")]
 class EDF_Test_WebProxyDbDriver_FindAllAsync_IntSingleOperators_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
@@ -289,7 +461,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntSingleOperators_OperatorBased : 
 	[Step(EStage.Main)]
 	void Arrange()
 	{
-		m_pEntity = EDF_Test_WebProxyDbDriverEntityT<int>.Create("00000000-0000-0006-0000-000000000001", 1337);
+		m_pEntity = EDF_Test_WebProxyDbDriverEntityT<int>.Create("00000000-0000-0009-0000-000000000001", 1337);
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
 		SetResult(new EDF_TestResult(true));
@@ -309,7 +481,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntSingleOperators_OperatorBased : 
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").LessThanOrEquals(1337), callback: matchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").GreaterThan(42), callback: matchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").GreaterThanOrEquals(1337), callback: matchCallback);
-		
+
 		// Should not match
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Equals(42), callback: noMatchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Not().Equals(1337), callback: noMatchCallback);
@@ -322,29 +494,38 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntSingleOperators_OperatorBased : 
 	//------------------------------------------------------------------------------------------------
 	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_Test_WebProxyDbDriverEntityT<int>> results)
 	{
-		bool succes = statusCode == EDF_EDbOperationStatusCode.SUCCESS &&
-			results.Count() == 1 &&
-			results.Get(0).GetId() == "00000000-0000-0006-0000-000000000001";
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0009-0000-"))
+				matches++;
+		}
 
-		PrintFormat(Type().ToString() + "OnMatchResult: %1", succes);
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void OnNoMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_Test_WebProxyDbDriverEntityT<int>> results)
 	{
-		bool succes = statusCode == EDF_EDbOperationStatusCode.SUCCESS && results.Count() == 0;
-		PrintFormat(Type().ToString() + "OnNoMatchResult: %1", succes);
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0009-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
 	}
 };
 
-[Test("EDF_WebProxyDbDriverTests")]
+//[Test("EDF_WebProxyDbDriverTests")]
 class EDF_Test_WebProxyDbDriver_FindAllAsync_IntArrayOperators_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
 {
 	//------------------------------------------------------------------------------------------------
 	[Step(EStage.Main)]
 	void Arrange()
 	{
-		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<int>.Create("00000000-0000-0006-0000-000000000001", {1337, 42});
+		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<int>.Create("00000000-0000-0010-0000-000000000001", {1337, 42});
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
 		SetResult(new EDF_TestResult(true));
@@ -354,26 +535,297 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntArrayOperators_OperatorBased : E
 	void Act()
 	{
 		typename type = m_pEntity.Type();
-		EDF_DbFindCallbackMultiple<EDF_Test_WebProxyDbDriverEntityTArray<int>> matchCallback(this, "OnMatchResult");
-		EDF_DbFindCallbackMultiple<EDF_Test_WebProxyDbDriverEntityTArray<int>> noMatchCallback(this, "OnNoMatchResult");
-		
-		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Values").any, callback: matchCallback);
+		EDF_DbFindCallbackMultipleUntyped matchCallback(this, "OnMatchResult");
+		EDF_DbFindCallbackMultipleUntyped noMatchCallback(this, "OnNoMatchResult");
+
+		// Should match
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Not().NullOrDefault(), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Contains(1337), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Contains(42), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAnyOf(EDF_DbValues<int>.From({41, 42, 43})), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAllOf(EDF_DbValues<int>.From({42, 1337})), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Equals(EDF_DbValues<int>.From({1337, 42})), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().GreaterThan(69), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().LessThan(2000), callback: matchCallback);
+
+		// Should not match
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").NullOrDefault(), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Contains(69), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAnyOf(EDF_DbValues<int>.From({69, 96})), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAllOf(EDF_DbValues<int>.From({42, 69})), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Equals(EDF_DbValues<int>.From({42, 1337})), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().GreaterThanOrEquals(1338), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().LessThanOrEquals(40), callback: noMatchCallback);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_Test_WebProxyDbDriverEntityT<int>> results)
+	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
 	{
-		bool succes = statusCode == EDF_EDbOperationStatusCode.SUCCESS &&
-			results.Count() == 1 &&
-			results.Get(0).GetId() == "00000000-0000-0006-0000-000000000001";
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0010-0000-"))
+				matches++;
+		}
 
-		PrintFormat(Type().ToString() + "OnMatchResult: %1", succes);
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnNoMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_Test_WebProxyDbDriverEntityT<int>> results)
+	void OnNoMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
 	{
-		bool succes = statusCode == EDF_EDbOperationStatusCode.SUCCESS && results.Count() == 0;
-		PrintFormat(Type().ToString() + "OnNoMatchResult: %1", succes);
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0010-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+	}
+};
+
+//[Test("EDF_WebProxyDbDriverTests")]
+class EDF_Test_WebProxyDbDriver_FindAllAsync_IntNestedArrayOperators_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
+{
+	//------------------------------------------------------------------------------------------------
+	[Step(EStage.Main)]
+	void Arrange()
+	{
+		array<ref array<int>> values();
+		values.Insert({1337, 42});
+		values.Insert({69, 96});
+
+		m_pEntity = EDF_Test_WebProxyDbDriverEntityTNestedArray<int>.Create("00000000-0000-0011-0000-000000000001", values);
+		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
+
+		SetResult(new EDF_TestResult(true));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Act()
+	{
+		typename type = m_pEntity.Type();
+		EDF_DbFindCallbackMultipleUntyped matchCallback(this, "OnMatchResult");
+		EDF_DbFindCallbackMultipleUntyped noMatchCallback(this, "OnNoMatchResult");
+
+		// Should match
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(69), callback: matchCallback);
+		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf(EDF_DbValues<int>.From({42, 69})), callback: matchCallback);
+		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Equals(EDF_DbValues<int>.From({69, 96})), callback: matchCallback);
+
+		// Should not match
+		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(666), callback: noMatchCallback);
+		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf(EDF_DbValues<int>.From({41, 42, 43})), callback: noMatchCallback);
+		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().Equals(EDF_DbValues<int>.From({69, 96})), callback: noMatchCallback);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0011-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnNoMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0011-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+	}
+};
+
+//[Test("EDF_WebProxyDbDriverTests")]
+class EDF_Test_WebProxyDbDriver_FindAllAsync_FloatNestedArrayOperators_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
+{
+	//------------------------------------------------------------------------------------------------
+	[Step(EStage.Main)]
+	void Arrange()
+	{
+		array<ref array<float>> values();
+		values.Insert({13.37, 42.42});
+		values.Insert({69.69, 96.96});
+
+		m_pEntity = EDF_Test_WebProxyDbDriverEntityTNestedArray<float>.Create("00000000-0000-0012-0000-000000000001", values);
+		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
+
+		SetResult(new EDF_TestResult(true));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Act()
+	{
+		typename type = m_pEntity.Type();
+		EDF_DbFindCallbackMultipleUntyped matchCallback(this, "OnMatchResult");
+		EDF_DbFindCallbackMultipleUntyped noMatchCallback(this, "OnNoMatchResult");
+
+		// Should match
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(13.37), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Any().GreaterThanOrEquals(96.96), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().All().LessThan(100), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().All().Not().NullOrDefault(), callback: matchCallback);
+
+		// Should not match
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(66.66), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Any().GreaterThan(97), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Any().NullOrDefault(), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().All().Equals(404), callback: noMatchCallback);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0012-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnNoMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0012-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+	}
+};
+
+//[Test("EDF_WebProxyDbDriverTests")]
+class EDF_Test_WebProxyDbDriver_FindAllAsync_BoolNestedArrayOperators_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
+{
+	//------------------------------------------------------------------------------------------------
+	[Step(EStage.Main)]
+	void Arrange()
+	{
+		array<ref array<bool>> values();
+		values.Insert({true, true});
+		values.Insert({true, false});
+		values.Insert({false, false});
+
+		m_pEntity = EDF_Test_WebProxyDbDriverEntityTNestedArray<bool>.Create("00000000-0000-0013-0000-000000000001", values);
+		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
+
+		SetResult(new EDF_TestResult(true));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Act()
+	{
+		typename type = m_pEntity.Type();
+		EDF_DbFindCallbackMultipleUntyped matchCallback(this, "OnMatchResult");
+		EDF_DbFindCallbackMultipleUntyped noMatchCallback(this, "OnNoMatchResult");
+
+		// Should match
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(true), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Equals(EDF_DbValues<bool>.From({true, false})), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Any().Equals(false), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().All().NullOrDefault(), callback: matchCallback);
+
+		// Should not match
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().Equals(EDF_DbValues<bool>.From({true, true})), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().All().NullOrDefault(), callback: noMatchCallback);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0013-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnNoMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0013-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+	}
+};
+
+//[Test("EDF_WebProxyDbDriverTests")]
+class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedArrayOperators_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
+{
+	//------------------------------------------------------------------------------------------------
+	[Step(EStage.Main)]
+	void Arrange()
+	{
+		array<ref array<string>> values();
+		values.Insert({"Hello", "World", "!"});
+		values.Insert({"ArmA", "Reforger"});
+
+		m_pEntity = EDF_Test_WebProxyDbDriverEntityTNestedArray<string>.Create("00000000-0000-0014-0000-000000000001", values);
+		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
+
+		SetResult(new EDF_TestResult(true));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Act()
+	{
+		typename type = m_pEntity.Type();
+		EDF_DbFindCallbackMultipleUntyped matchCallback(this, "OnMatchResult");
+		EDF_DbFindCallbackMultipleUntyped noMatchCallback(this, "OnNoMatchResult");
+
+		// Should match
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains("HeLlO"), callback: matchCallback);
+
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0014-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnNoMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0014-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
 	}
 };

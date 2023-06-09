@@ -20,32 +20,30 @@ It is recommended to use the builder variant, instead of manually setting up the
 - `EDF_DbFind.Field("classArray.FilteredType")` / `EDF_DbFind.Field("classArray").OfType(FilteredType)` evaluate elements of a complex type array that inherit from the provided typename
 
 ## Field condition builder
-Summary of the available filed condition builder functions:
-| Function            | Used on              | Description                                                        |
-|---------------------|----------------------|--------------------------------------------------------------------|
-| Not                 | *                    | Inverts the next statement                                         |
-| Null                | Complex/Collection   | Checks if the field is null                                        |
-| Empty               | Primitive/Collection | Checks if the field is empty collection or primitive value default |
-| Equals              | *                    | Full equality check                                                |
-| EqualsAnyOf         | Primitive            | Equality check comparison against multiple values                  |
-| LessThan            | Numeric              | `<` operator                                                       |
-| LessThanOrEquals    | Numeric              | `<=` operator                                                      |
-| GreaterThan         | Numeric              | `>` operator                                                       |
-| GreaterThanOrEquals | Numeric              | `>=` operator                                                      |
-| Between             | Numeric              | LOWER `<` VALUE `<` UPPER                                          |
-| Contains            | String               | Case-sensitive string in string search                             |
-| Contains            | Collection           | Value inside collection                                            |
-| ContainsAnyOf       | String               | Same as `Contains` with multiple comparison values                 |
-| ContainsAnyOf       | Collection           | Same as `Contains` with multiple comparison values                 |
-| ContainsAllOf       | Collection           | Collection must at least contain all the comparison values         |
-| Length              | String               | UTF8 length of string                                              |
-| Count               | Collection           | Number of elements inside the collection                           |
-| Any                 | Collection           | True if any collection item matches the condition                  |
-| All                 | Collection           | True if all collection items match the condition                   |
-| At                  | Collection           | Get collection item at index                                       |
-| OfType              | Collection           | Evaluates collection items that matches the type                   |
-| Keys                | Collection           | Get the key collection of a map                                    |
-| Values              | Collection           | Get the value collection of a map                                  |
+Summary of the available filed condition builder functions (`set<T>` counts as `array<T>`):
+| Function            | Used on          | Description                                              |
+|---------------------|------------------|----------------------------------------------------------|
+| Not                 | *                | Inverts the next statement                               |
+| NullOrDefault       | *                | Field is null, an empty array or primitive value default |
+| Equals              | *                | Full equality check                                      |
+| EqualsAnyOf         | Primitive        | Equality check comparison against multiple values        |
+| LessThan            | Numeric          | `<` operator                                             |
+| LessThanOrEquals    | Numeric          | `<=` operator                                            |
+| GreaterThan         | Numeric          | `>` operator                                             |
+| GreaterThanOrEquals | Numeric          | `>=` operator                                            |
+| Between             | Numeric          | LOWER `<` VALUE `<` UPPER                                |
+| Invariant           | String           | Makes the condition case-insensitive                     |
+| Length              | String           | Length of string                                         |
+| Count               | Array/Map        | Number of elements inside the collection                 |
+| Contains            | String/Array/Map | Contains the value                                       |
+| ContainsAnyOf       | String/Array/Map | Contains at least one of the values                      |
+| ContainsAllOf       | String/Array/Map | Contains at least all the values                         |
+| Any                 | Array            | True if any array item matches the condition             |
+| All                 | Array            | True if all array items match the condition              |
+| At                  | Array            | Get array item at index                                  |
+| OfType              | Array            | Evaluates array items that match the type                |
+| Keys                | Map              | Get the key array of a map                               |
+| Values              | Map              | Get the value array of a map                             |
 
 To combine multiple conditions together you can use `And()` and `Or()` to build like so
 ```cs
@@ -74,9 +72,23 @@ EDF_DbFindCondition condition = EDF_DbFind.Or({
     })
 });
 ```
-
 > **Note**
 > If you get an error like "formula too complex" you need to split up your conditions into a few sub-conditions and join them together separately, as the script VM has some limits on how nested the builder can be.
+
+### Query cheat sheet
+
+#### Collection only contains certain values:
+```cs
+EDF_DbFind.Field("Collection").All().EqualsAnyOf({a, b, c})
+```
+
+#### Collection unordered equality:
+```cs
+EDF_DbFind.And({
+    EDF_DbFind.Field("Collection").ContainsAllOf({a, b, c}), 
+    DF_DbFind.Field("Collection").Count().Equals(3)
+})
+```
 
 ### Performance considerations 
 If possible make the condition a constant class member, that way it is created only once. For this to be possible all search values must be known constants as well.

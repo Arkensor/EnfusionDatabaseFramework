@@ -273,7 +273,7 @@ sealed class EDF_WebProxyDbDriverFindRequest
 
 class EDF_WebProxyDbDriver : EDF_DbDriver
 {
-	protected ref RestContext m_pContext;
+	protected RestContext m_pContext;
 	protected string m_sAddtionalParams;
 
 	//------------------------------------------------------------------------------------------------
@@ -286,9 +286,7 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 			url += "s";
 
 		url += string.Format("://%1:%2/%3", webConnectInfo.m_sProxyHost, webConnectInfo.m_iProxyPort, webConnectInfo.m_sDatabaseName);
-		//Print("Init getting context");
 		m_pContext = GetGame().GetRestApi().GetContext(url);
-		//Print(m_pContext);
 
 		if (webConnectInfo.m_aParameters)
 		{
@@ -358,8 +356,6 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 				callback.Invoke(EDF_EDbOperationStatusCode.FAILURE_NOT_IMPLEMENTED, new array<ref EDF_DbEntity>());
 		}
 
-		//Print("FindAllAynnc - context: ");
-		////Print(m_pContext);
 		EDF_WebProxyDbDriverCallback cb(callback, entityType);
 		string request = string.Format("/%1%2", EDF_DbName.Get(entityType), m_sAddtionalParams);
 		string data = Serialize(new EDF_WebProxyDbDriverFindRequest(condition, orderBy, limit, offset));
@@ -378,7 +374,7 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string MoveTypeDiscriminator(string data)
+	protected string MoveTypeDiscriminatorIn(string data)
 	{
 		int typeDiscriminatorIdx = data.IndexOf("\"$type\"");
 		if (typeDiscriminatorIdx == -1)
@@ -420,7 +416,9 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 	//------------------------------------------------------------------------------------------------
 	void ~EDF_WebProxyDbDriver()
 	{
-		//Print(ToString()+"dtor(). Context cleard");
+		if (!m_pContext)
+			return;
+
 		m_pContext.reset();
 		m_pContext = null;
 	}

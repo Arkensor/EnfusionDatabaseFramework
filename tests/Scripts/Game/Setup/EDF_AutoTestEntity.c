@@ -11,6 +11,8 @@ class EDF_AutoTestEntity : GenericEntity
 			return;
 
 		Run();
+		
+		GetGame().RequestClose();
 	}
 
 	//------------------------------------------------------------------------------------------------

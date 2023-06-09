@@ -198,8 +198,8 @@ class EDF_Test_DbFindConditionBuilder_Field_ComplexBuild_DebugStringEqual : Test
 	{
 		// Arrange
 		EDF_DbFindCondition condition = EDF_DbFind.Or({
-			EDF_DbFind.Field("A").Not().Null(),
-			EDF_DbFind.Field("B").Empty(),
+			EDF_DbFind.Field("A").Not().NullOrDefault(),
+			EDF_DbFind.Field("B").NullOrDefault(),
 			EDF_DbFind.And({
 				EDF_DbFind.Field("CString").Contains("SubString"),
 				EDF_DbFind.Field("DFloatArray").Equals(EDF_DbValues<bool>.From({true, false, true, true})),
@@ -215,24 +215,25 @@ class EDF_Test_DbFindConditionBuilder_Field_ComplexBuild_DebugStringEqual : Test
 
 		// Act
 		string debugString = condition.GetDebugString();
+		//Print(debugString);
 		debugString.Replace("\t", "");
 		debugString.Replace(" ", "");
 
 		// Assert
 		string compareString = "Or(\
-			CheckNull(fieldPath:'A', shouldBeNull:false),\
-			CheckEmpty(fieldPath:'B', shouldBeEmpty:true),\
-			And(\
-				Compare(fieldPath:'CString', operator:CONTAINS, values:{SubString}),\
-				Compare(fieldPath:'DFloatArray', operator:ARR_EQUAL, values:{true,false,true,true}),\
-				And(\
-					Compare(fieldPath:'E.m_Numbers:any', operator:CONTAINS, values:{100}),\
-					Compare(fieldPath:'F.m_ComplexWrapperSet.Class:any.someNumber', operator:NOT_EQUAL, values:{1,2})\
-				),\
-				Or(\
-					Compare(fieldPath:'G', operator:EQUAL, values:{12,13})\
-				)\
-			)\
+		 CheckNullOrDefault(fieldPath:'A', shouldBeNullOrDefault:false),\
+		 CheckNullOrDefault(fieldPath:'B', shouldBeNullOrDefault:true),\
+		 And(\
+		  Compare(fieldPath:'CString', operator:CONTAINS, values:{SubString}),\
+		  Compare(fieldPath:'DFloatArray', operator:ARRAY_EQUAL, values:{true,false,true,true}),\
+		  And(\
+		   Compare(fieldPath:'E.m_Numbers', operator:CONTAINS, values:{100}),\
+		   Compare(fieldPath:'F.m_ComplexWrapperSet.Class:any.someNumber', operator:NOT_EQUAL, values:{1,2})\
+		  ),\
+		  Or(\
+		   Compare(fieldPath:'G', operator:EQUAL, values:{12,13})\
+		  )\
+		 )\
 		)";
 
 		compareString.Replace("\r", "");
