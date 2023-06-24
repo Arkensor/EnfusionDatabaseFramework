@@ -295,34 +295,214 @@ class EDF_DbFindConditionEvaluator
 				return EDF_DbFindFieldFieldNullOrDefaultChecker<Class>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), currentSegment, variableInfo);
 			}
 
-			case EDF_DbFindFieldIntMultiple:
+			case EDF_DbFindFieldInt:
 			{
-				return EDF_DbFindFieldValueTypedEvaluator<int>.Evaluate(instance, EDF_DbFindFieldIntMultiple.Cast(fieldCondition), currentSegment, variableInfo);
+				EDF_DbFindFieldInt typedCondition = EDF_DbFindFieldInt.Cast(fieldCondition);
+				return EDF_DbFindFieldValueTypedEvaluator<int>.Evaluate(
+					instance,
+					typedCondition.m_aComparisonValues,
+					typedCondition.m_eComparisonOperator,
+					typedCondition.m_bStringsInvariant,
+					typedCondition.m_bStringsPartialMatches,
+					currentSegment,
+					variableInfo);
 			}
 
-			case EDF_DbFindFieldFloatMultiple:
+			case EDF_DbFindFieldIntArray:
 			{
-				return EDF_DbFindFieldValueTypedEvaluator<float>.Evaluate(instance, EDF_DbFindFieldFloatMultiple.Cast(fieldCondition), currentSegment, variableInfo);
+				EDF_DbFindFieldIntArray typedCondition = EDF_DbFindFieldIntArray.Cast(fieldCondition);
+				foreach (array<int> compareValues : typedCondition.m_aComparisonValues)
+				{
+					if (EDF_DbFindFieldValueTypedEvaluator<int>.Evaluate(
+						instance,
+						compareValues,
+						typedCondition.m_eComparisonOperator,
+						typedCondition.m_bStringsInvariant,
+						typedCondition.m_bStringsPartialMatches,
+						currentSegment,
+						variableInfo,
+						true))
+					{
+						return true;
+					}
+				}
+
+				return false;
 			}
 
-			case EDF_DbFindFieldBoolMultiple:
+			case EDF_DbFindFieldFloat:
 			{
-				return EDF_DbFindFieldValueTypedEvaluator<bool>.Evaluate(instance, EDF_DbFindFieldBoolMultiple.Cast(fieldCondition), currentSegment, variableInfo);
+				EDF_DbFindFieldFloat typedCondition = EDF_DbFindFieldFloat.Cast(fieldCondition);
+				return EDF_DbFindFieldValueTypedEvaluator<float>.Evaluate(
+					instance,
+					typedCondition.m_aComparisonValues,
+					typedCondition.m_eComparisonOperator,
+					typedCondition.m_bStringsInvariant,
+					typedCondition.m_bStringsPartialMatches,
+					currentSegment,
+					variableInfo);
 			}
 
-			case EDF_DbFindFieldStringMultiple:
+			case EDF_DbFindFieldFloatArray:
 			{
-				return EDF_DbFindFieldValueTypedEvaluator<string>.Evaluate(instance, EDF_DbFindFieldStringMultiple.Cast(fieldCondition), currentSegment, variableInfo);
+				EDF_DbFindFieldFloatArray typedCondition = EDF_DbFindFieldFloatArray.Cast(fieldCondition);
+				foreach (array<float> compareValues : typedCondition.m_aComparisonValues)
+				{
+					if (EDF_DbFindFieldValueTypedEvaluator<float>.Evaluate(
+						instance,
+						compareValues,
+						typedCondition.m_eComparisonOperator,
+						typedCondition.m_bStringsInvariant,
+						typedCondition.m_bStringsPartialMatches,
+						currentSegment,
+						variableInfo,
+						true))
+					{
+						return true;
+					}
+				}
+
+				return false;
 			}
 
-			case EDF_DbFindFieldVectorMultiple:
+			case EDF_DbFindFieldBool:
 			{
-				return EDF_DbFindFieldValueTypedEvaluator<vector>.Evaluate(instance, EDF_DbFindFieldVectorMultiple.Cast(fieldCondition), currentSegment, variableInfo);
+				EDF_DbFindFieldBool typedCondition = EDF_DbFindFieldBool.Cast(fieldCondition);
+				return EDF_DbFindFieldValueTypedEvaluator<bool>.Evaluate(
+					instance,
+					typedCondition.m_aComparisonValues,
+					typedCondition.m_eComparisonOperator,
+					typedCondition.m_bStringsInvariant,
+					typedCondition.m_bStringsPartialMatches,
+					currentSegment,
+					variableInfo);
 			}
 
-			case EDF_DbFindFieldTypenameMultiple:
+			case EDF_DbFindFieldBoolArray:
 			{
-				return EDF_DbFindFieldValueTypedEvaluator<typename>.Evaluate(instance, EDF_DbFindFieldTypenameMultiple.Cast(fieldCondition), currentSegment, variableInfo);
+				EDF_DbFindFieldBoolArray typedCondition = EDF_DbFindFieldBoolArray.Cast(fieldCondition);
+				foreach (array<bool> compareValues : typedCondition.m_aComparisonValues)
+				{
+					if (EDF_DbFindFieldValueTypedEvaluator<bool>.Evaluate(
+						instance,
+						compareValues,
+						typedCondition.m_eComparisonOperator,
+						typedCondition.m_bStringsInvariant,
+						typedCondition.m_bStringsPartialMatches,
+						currentSegment,
+						variableInfo,
+						true))
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			case EDF_DbFindFieldString:
+			{
+				EDF_DbFindFieldString typedCondition = EDF_DbFindFieldString.Cast(fieldCondition);
+				return EDF_DbFindFieldValueTypedEvaluator<string>.Evaluate(
+					instance,
+					typedCondition.m_aComparisonValues,
+					typedCondition.m_eComparisonOperator,
+					typedCondition.m_bStringsInvariant,
+					typedCondition.m_bStringsPartialMatches,
+					currentSegment,
+					variableInfo);
+			}
+
+			case EDF_DbFindFieldStringArray:
+			{
+				EDF_DbFindFieldStringArray typedCondition = EDF_DbFindFieldStringArray.Cast(fieldCondition);
+				foreach (array<string> compareValues : typedCondition.m_aComparisonValues)
+				{
+					if (EDF_DbFindFieldValueTypedEvaluator<string>.Evaluate(
+						instance,
+						compareValues,
+						typedCondition.m_eComparisonOperator,
+						typedCondition.m_bStringsInvariant,
+						typedCondition.m_bStringsPartialMatches,
+						currentSegment,
+						variableInfo,
+						true))
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			case EDF_DbFindFieldVector:
+			{
+				EDF_DbFindFieldVector typedCondition = EDF_DbFindFieldVector.Cast(fieldCondition);
+				return EDF_DbFindFieldValueTypedEvaluator<vector>.Evaluate(
+					instance,
+					typedCondition.m_aComparisonValues,
+					typedCondition.m_eComparisonOperator,
+					typedCondition.m_bStringsInvariant,
+					typedCondition.m_bStringsPartialMatches,
+					currentSegment,
+					variableInfo);
+			}
+
+			case EDF_DbFindFieldVectorArray:
+			{
+				EDF_DbFindFieldVectorArray typedCondition = EDF_DbFindFieldVectorArray.Cast(fieldCondition);
+				foreach (array<vector> compareValues : typedCondition.m_aComparisonValues)
+				{
+					if (EDF_DbFindFieldValueTypedEvaluator<vector>.Evaluate(
+						instance,
+						compareValues,
+						typedCondition.m_eComparisonOperator,
+						typedCondition.m_bStringsInvariant,
+						typedCondition.m_bStringsPartialMatches,
+						currentSegment,
+						variableInfo,
+						true))
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			case EDF_DbFindFieldTypename:
+			{
+				EDF_DbFindFieldTypename typedCondition = EDF_DbFindFieldTypename.Cast(fieldCondition);
+				return EDF_DbFindFieldValueTypedEvaluator<typename>.Evaluate(
+					instance,
+					typedCondition.m_aComparisonValues,
+					typedCondition.m_eComparisonOperator,
+					typedCondition.m_bStringsInvariant,
+					typedCondition.m_bStringsPartialMatches,
+					currentSegment,
+					variableInfo);
+			}
+
+			case EDF_DbFindFieldTypenameArray:
+			{
+				EDF_DbFindFieldTypenameArray typedCondition = EDF_DbFindFieldTypenameArray.Cast(fieldCondition);
+				foreach (array<typename> compareValues : typedCondition.m_aComparisonValues)
+				{
+					if (EDF_DbFindFieldValueTypedEvaluator<typename>.Evaluate(
+						instance,
+						compareValues,
+						typedCondition.m_eComparisonOperator,
+						typedCondition.m_bStringsInvariant,
+						typedCondition.m_bStringsPartialMatches,
+						currentSegment,
+						variableInfo,
+						true))
+					{
+						return true;
+					}
+				}
+
+				return false;
 			}
 
 			default:
@@ -340,7 +520,7 @@ class EDF_DbFindConditionEvaluator
 	//! Collects id field comparision values and returns true if there are no other fields that conditions need to be applied to
 	static bool CollectConditionIds(EDF_DbFindCondition condition, out set<string> findIds, out set<string> skipIds)
 	{
-		EDF_DbFindFieldStringMultiple stringMultipleCondition = EDF_DbFindFieldStringMultiple.Cast(condition);
+		EDF_DbFindFieldString stringMultipleCondition = EDF_DbFindFieldString.Cast(condition);
 		if (stringMultipleCondition)
 		{
 			if (stringMultipleCondition.m_sFieldPath != EDF_DbEntity.FIELD_ID ||
@@ -448,51 +628,74 @@ class EDF_DbFindFieldFieldNullOrDefaultChecker<Class TValueType>
 class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 {
 	//------------------------------------------------------------------------------------------------
-	static bool Evaluate(Class instance, EDF_DbFindCompareFieldValues<TValueType> valueCondition, EDF_DbFindFieldPathSegment currentSegment, EDF_ReflectionVariableInfo fieldInfo)
+	static bool Evaluate(
+		Class instance,
+		array<TValueType> comparisonValues,
+		EDF_EDbFindOperator comparisonOperator,
+		bool invariant,
+		bool partialMatch,
+		EDF_DbFindFieldPathSegment currentSegment,
+		EDF_ReflectionVariableInfo fieldInfo,
+		bool strictArrayEquality = false)
 	{
-		if (valueCondition.m_aComparisonValues.IsEmpty())
+		if (comparisonValues.IsEmpty())
 		{
 			Debug.Error(string.Format("Can not compare field '%1' on '%2' with empty condition.", currentSegment.m_sFieldName, instance));
 			return false;
 		}
 
-		if (valueCondition.m_bStringsInvariant)
-			MakeInvariant(valueCondition.m_eComparisonOperator, valueCondition.m_aComparisonValues);
+		// We need an explicit var here or else the array gets lost when just re-assigned into function param directly.
+		array<TValueType> invariantValues;
+		if (invariant)
+		{
+			invariantValues = MakeInvariant(comparisonValues);
+			comparisonValues = invariantValues;
+		}
 
 		ScriptModule scriptModule = GetGame().GetScriptModule();
 
 		// Handle collection comparison
+		int matchIdx = -1;
 		if (fieldInfo.m_eCollectionType != EDF_ReflectionVariableType.NONE)
 		{
-			bool containsAll = valueCondition.m_eComparisonOperator == EDF_EDbFindOperator.CONTAINS_ALL;
-			bool containsAllOperation = containsAll || valueCondition.m_eComparisonOperator == EDF_EDbFindOperator.NOT_CONTAINS_ALL;
+			bool containsAll = comparisonOperator == EDF_EDbFindOperator.CONTAINS_ALL;
+			bool containsAllOperation = containsAll || comparisonOperator== EDF_EDbFindOperator.NOT_CONTAINS_ALL;
 
 			Class collectionHolder;
 			if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, collectionHolder))
 				return false;
 
 			int collectionCount;
-			if (!GetGame().GetScriptModule().Call(collectionHolder, "Count", false, collectionCount))
+			if (!scriptModule.Call(collectionHolder, "Count", false, collectionCount))
 				return false;
 
 			// Handle count of collection comparison
 			if (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.COUNT)
-				return CompareCollectionCount(collectionCount, valueCondition.m_eComparisonOperator, valueCondition.m_aComparisonValues);
+				return CompareCollectionCount(collectionCount, comparisonOperator, comparisonValues);
 
-			bool strictArrayEquality = valueCondition.m_eComparisonOperator == EDF_EDbFindOperator.ARRAY_EQUAL ||
-				valueCondition.m_eComparisonOperator == EDF_EDbFindOperator.ARRAY_NOT_EQUAL;
-
-			int comparisonCount = valueCondition.m_aComparisonValues.Count();
+			int comparisonCount = comparisonValues.Count();
 			if ((strictArrayEquality || containsAllOperation) && (collectionCount != comparisonCount))
 			{
-				if (valueCondition.m_eComparisonOperator == EDF_EDbFindOperator.ARRAY_EQUAL)
+				if (comparisonOperator == EDF_EDbFindOperator.EQUAL)
 					return false;
 
-				if (valueCondition.m_eComparisonOperator == EDF_EDbFindOperator.ARRAY_NOT_EQUAL)
+				if (comparisonOperator == EDF_EDbFindOperator.NOT_EQUAL)
 					return true;
 
 				if (collectionCount < comparisonCount)
-					return valueCondition.m_eComparisonOperator == EDF_EDbFindOperator.NOT_CONTAINS_ALL;
+					return comparisonOperator == EDF_EDbFindOperator.NOT_CONTAINS_ALL;
+			}
+
+			if (TValueType == string && !partialMatch)
+			{
+				if (comparisonOperator == EDF_EDbFindOperator.CONTAINS || comparisonOperator == EDF_EDbFindOperator.CONTAINS_ALL)
+				{
+					comparisonOperator = EDF_EDbFindOperator.EQUAL;
+				}
+				else
+				{
+					comparisonOperator = EDF_EDbFindOperator.NOT_EQUAL;
+				}
 			}
 
 			for (int nItem = 0; nItem < collectionCount; nItem++)
@@ -526,22 +729,22 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 					return false;
 				}
 
-				array<TValueType> compareValues = valueCondition.m_aComparisonValues;
+				array<TValueType> compareValues = comparisonValues;
 				if (strictArrayEquality)
-					compareValues = {valueCondition.m_aComparisonValues.Get(nItem)};
+					compareValues = {comparisonValues.Get(nItem)};
 
-				int matchIdx = -1;
-				bool comparisonMatches = Compare(fieldValue, valueCondition.m_eComparisonOperator, compareValues, matchIdx, valueCondition.m_bStringsInvariant);
+				matchIdx = -1;
+				bool comparisonMatches = Compare(fieldValue, comparisonOperator, compareValues, matchIdx, invariant, partialMatch);
 
 				if (containsAllOperation)
 				{
 					if (comparisonMatches)
 					{
 						// All were contained
-						if (valueCondition.m_aComparisonValues.Count() == 1)
+						if (comparisonValues.Count() == 1)
 							return containsAll;
 
-						valueCondition.m_aComparisonValues.RemoveOrdered(matchIdx);
+						comparisonValues.RemoveOrdered(matchIdx);
 					}
 
 					continue;
@@ -582,8 +785,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, stringData))
 				return false;
 
-			Managed arr = valueCondition.m_aComparisonValues;
-			return Compare(StringLengthUtf8(stringData), valueCondition.m_eComparisonOperator, array<int>.Cast(arr));
+			Managed arr = comparisonValues;
+			return Compare(StringLengthUtf8(stringData), comparisonOperator, array<int>.Cast(arr));
 		}
 
 		// Compare primitive value
@@ -591,25 +794,28 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 		if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, fieldValue))
 			return false;
 
-		return Compare(fieldValue, valueCondition.m_eComparisonOperator, valueCondition.m_aComparisonValues);
+		return Compare(fieldValue, comparisonOperator, comparisonValues, matchIdx, invariant, partialMatch);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	// Default do nothing implementation
-	protected static void MakeInvariant(EDF_EDbFindOperator operator, Class comparisonValues);
+	protected static array<TValueType> MakeInvariant(Class comparisonValues);
 
 	//------------------------------------------------------------------------------------------------
-	protected static void MakeInvariant(EDF_EDbFindOperator operator, array<string> comparisonValues)
+	protected static array<string> MakeInvariant(array<string> comparisonValues)
 	{
-		foreach (int idx, string comparisonValue : comparisonValues)
+		array<string> copy();
+		copy.Reserve(comparisonValues.Count());
+		foreach (string comparisonValue : comparisonValues)
 		{
 			comparisonValue.ToLower();
-			comparisonValues.Set(idx, comparisonValue);
+			copy.Insert(comparisonValue);
 		}
+		return copy;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool CompareCollectionCount(int collectionCount, EDF_EDbFindOperator operator, Class comparisonValues)
+	protected static bool CompareCollectionCount(int collectionCount, EDF_EDbFindOperator operator, Managed comparisonValues)
 	{
 		array<int> strongTypedComparisonValues = array<int>.Cast(comparisonValues);
 		if (!strongTypedComparisonValues)
@@ -634,12 +840,11 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool Compare(int fieldValue, EDF_EDbFindOperator operator, array<int> comparisonValues, out int matchIdx = -1, bool invariant = false)
+	protected static bool Compare(int fieldValue, EDF_EDbFindOperator operator, array<int> comparisonValues, out int matchIdx = -1, bool invariant = false, bool partialMatch = false)
 	{
 		switch (operator)
 		{
 			case EDF_EDbFindOperator.EQUAL:
-			case EDF_EDbFindOperator.ARRAY_EQUAL:
 			case EDF_EDbFindOperator.CONTAINS:
 			case EDF_EDbFindOperator.CONTAINS_ALL:
 			{
@@ -648,7 +853,6 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			}
 
 			case EDF_EDbFindOperator.NOT_EQUAL:
-			case EDF_EDbFindOperator.ARRAY_NOT_EQUAL:
 			case EDF_EDbFindOperator.NOT_CONTAINS:
 			case EDF_EDbFindOperator.NOT_CONTAINS_ALL:
 			{
@@ -717,12 +921,11 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool Compare(float fieldValue, EDF_EDbFindOperator operator, array<float> comparisonValues, out int matchIdx = -1, bool invariant = false)
+	protected static bool Compare(float fieldValue, EDF_EDbFindOperator operator, array<float> comparisonValues, out int matchIdx = -1, bool invariant = false, bool partialMatch = false)
 	{
 		switch (operator)
 		{
 			case EDF_EDbFindOperator.EQUAL:
-			case EDF_EDbFindOperator.ARRAY_EQUAL:
 			case EDF_EDbFindOperator.CONTAINS:
 			case EDF_EDbFindOperator.CONTAINS_ALL:
 			{
@@ -739,7 +942,6 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			}
 
 			case EDF_EDbFindOperator.NOT_EQUAL:
-			case EDF_EDbFindOperator.ARRAY_NOT_EQUAL:
 			case EDF_EDbFindOperator.NOT_CONTAINS:
 			case EDF_EDbFindOperator.NOT_CONTAINS_ALL:
 			{
@@ -816,12 +1018,11 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool Compare(bool fieldValue, EDF_EDbFindOperator operator, array<bool> comparisonValues, out int matchIdx = -1, bool invariant = false)
+	protected static bool Compare(bool fieldValue, EDF_EDbFindOperator operator, array<bool> comparisonValues, out int matchIdx = -1, bool invariant = false, bool partialMatch = false)
 	{
 		switch (operator)
 		{
 			case EDF_EDbFindOperator.EQUAL:
-			case EDF_EDbFindOperator.ARRAY_EQUAL:
 			case EDF_EDbFindOperator.CONTAINS:
 			case EDF_EDbFindOperator.CONTAINS_ALL:
 			{
@@ -830,7 +1031,6 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			}
 
 			case EDF_EDbFindOperator.NOT_EQUAL:
-			case EDF_EDbFindOperator.ARRAY_NOT_EQUAL:
 			case EDF_EDbFindOperator.NOT_CONTAINS:
 			case EDF_EDbFindOperator.NOT_CONTAINS_ALL:
 			{
@@ -843,7 +1043,7 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool Compare(string fieldValue, EDF_EDbFindOperator operator, array<string> comparisonValues, out int matchIdx = -1, bool invariant = false)
+	protected static bool Compare(string fieldValue, EDF_EDbFindOperator operator, array<string> comparisonValues, out int matchIdx = -1, bool invariant = false, bool partialMatch = false)
 	{
 		if (invariant)
 			fieldValue.ToLower();
@@ -851,22 +1051,15 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 		switch (operator)
 		{
 			case EDF_EDbFindOperator.EQUAL:
-			case EDF_EDbFindOperator.ARRAY_EQUAL:
-			{
-				matchIdx = comparisonValues.Find(fieldValue);
-				return matchIdx != -1;
-			}
-
-			case EDF_EDbFindOperator.NOT_EQUAL:
-			case EDF_EDbFindOperator.ARRAY_NOT_EQUAL:
-			{
-				matchIdx = comparisonValues.Find(fieldValue);
-				return matchIdx == -1;
-			}
-
 			case EDF_EDbFindOperator.CONTAINS:
 			case EDF_EDbFindOperator.CONTAINS_ALL:
 			{
+				if (operator == EDF_EDbFindOperator.EQUAL && !partialMatch)
+				{
+					matchIdx = comparisonValues.Find(fieldValue);
+					return matchIdx != -1;
+				}
+
 				foreach (int idx, string compare : comparisonValues)
 				{
 					if (fieldValue.Contains(compare))
@@ -879,9 +1072,16 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 				return false;
 			}
 
+			case EDF_EDbFindOperator.NOT_EQUAL:
 			case EDF_EDbFindOperator.NOT_CONTAINS:
 			case EDF_EDbFindOperator.NOT_CONTAINS_ALL:
 			{
+				if (operator == EDF_EDbFindOperator.NOT_EQUAL && !partialMatch)
+				{
+					matchIdx = comparisonValues.Find(fieldValue);
+					return matchIdx == -1;
+				}
+
 				foreach (int idx, string compare : comparisonValues)
 				{
 					if (fieldValue.Contains(compare))
@@ -899,12 +1099,11 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool Compare(vector fieldValue, EDF_EDbFindOperator operator, array<vector> comparisonValues, out int matchIdx = -1, bool invariant = false)
+	protected static bool Compare(vector fieldValue, EDF_EDbFindOperator operator, array<vector> comparisonValues, out int matchIdx = -1, bool invariant = false, bool partialMatch = false)
 	{
 		switch (operator)
 		{
 			case EDF_EDbFindOperator.EQUAL:
-			case EDF_EDbFindOperator.ARRAY_EQUAL:
 			case EDF_EDbFindOperator.CONTAINS:
 			case EDF_EDbFindOperator.CONTAINS_ALL:
 			{
@@ -921,7 +1120,6 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			}
 
 			case EDF_EDbFindOperator.NOT_EQUAL:
-			case EDF_EDbFindOperator.ARRAY_NOT_EQUAL:
 			case EDF_EDbFindOperator.NOT_CONTAINS:
 			case EDF_EDbFindOperator.NOT_CONTAINS_ALL:
 			{
@@ -1006,12 +1204,11 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool Compare(typename fieldValue, EDF_EDbFindOperator operator, array<typename> comparisonValues, out int matchIdx = -1, bool invariant = false)
+	protected static bool Compare(typename fieldValue, EDF_EDbFindOperator operator, array<typename> comparisonValues, out int matchIdx = -1, bool invariant = false, bool partialMatch = false)
 	{
 		switch (operator)
 		{
 			case EDF_EDbFindOperator.EQUAL:
-			case EDF_EDbFindOperator.ARRAY_EQUAL:
 			case EDF_EDbFindOperator.CONTAINS:
 			case EDF_EDbFindOperator.CONTAINS_ALL:
 			{
@@ -1028,7 +1225,6 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 			}
 
 			case EDF_EDbFindOperator.NOT_EQUAL:
-			case EDF_EDbFindOperator.ARRAY_NOT_EQUAL:
 			case EDF_EDbFindOperator.NOT_CONTAINS:
 			case EDF_EDbFindOperator.NOT_CONTAINS_ALL:
 			{

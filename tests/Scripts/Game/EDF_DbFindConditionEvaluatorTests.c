@@ -214,7 +214,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantEquals_DifferentCase_T
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 
 	// Assert
-	return new EDF_TestResult(!matches);
+	return new EDF_TestResult(matches);
 };
 
 //------------------------------------------------------------------------------------------------
@@ -273,6 +273,38 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantContains_StringField_T
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
 	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Invariant().Contains("Hello");
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantEquals_PartialMatch_False()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Invariant().Equals("Wor");
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(!matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantPartialEquals_PartialMatch_True()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_String").Invariant().Partial().Equals("Wor");
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -755,6 +787,38 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantContains_StringArrayIt
 
 	// Assert
 	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantPartialContains_ArrayPartialMatch_True()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_StringArray").Invariant().Partial().Contains("Wor");
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_InvariantContains_ArrayPartialMatch_False()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_StringArray").Invariant().Contains("Wor");
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(!matches);
 };
 
 //------------------------------------------------------------------------------------------------
