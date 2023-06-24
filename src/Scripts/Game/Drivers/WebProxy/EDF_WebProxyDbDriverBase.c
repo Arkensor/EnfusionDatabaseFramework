@@ -148,6 +148,7 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 		SCR_JsonLoadContext reader();
 		array<ref EDF_DbEntity> resultEntities();
 
+		// Read per line individually until json load context has polymorph support: https://feedback.bistudio.com/T173074
 		array<string> lines();
 		data.Split("\n", lines, true);
 		for (int nLine = 1, count = lines.Count() - 1; nLine < count; nLine++)
@@ -285,7 +286,8 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 		if (webConnectInfo.m_bSecureConnection)
 			url += "s";
 
-		url += string.Format("://%1:%2/%3", webConnectInfo.m_sProxyHost, webConnectInfo.m_iProxyPort, webConnectInfo.m_sDatabaseName);
+		// !!! Must have trailing / or the blocking methods don't like invoking it
+		url += string.Format("://%1:%2/%3/", webConnectInfo.m_sProxyHost, webConnectInfo.m_iProxyPort, webConnectInfo.m_sDatabaseName);
 		m_pContext = GetGame().GetRestApi().GetContext(url);
 
 		if (webConnectInfo.m_aParameters)
@@ -310,44 +312,66 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 	//------------------------------------------------------------------------------------------------
 	override EDF_EDbOperationStatusCode AddOrUpdate(notnull EDF_DbEntity entity)
 	{
-		// All the sync methods can not be implemented until https://feedback.bistudio.com/T166390 is fixed.
-		// Want to rely on blocking http requests? Go ask BI to please fix the ticket!!!
-		return EDF_EDbOperationStatusCode.FAILURE_NOT_IMPLEMENTED;
+		typename entityType = entity.Type();
+		string request = string.Format("%1/%2%3", EDF_DbName.Get(entityType), entity.GetId(), m_sAddtionalParams);
+		string data = Serialize(entity);
+		m_pContext.PUT_now(request, data);
+		return EDF_EDbOperationStatusCode.SUCCESS;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override EDF_EDbOperationStatusCode Remove(typename entityType, string entityId)
 	{
-		return EDF_EDbOperationStatusCode.FAILURE_NOT_IMPLEMENTED;
+		string request = string.Format("%1/%2%3", EDF_DbName.Get(entityType), entityId, m_sAddtionalParams);
+		m_pContext.DELETE_now(request, string.Empty);
+		return EDF_EDbOperationStatusCode.SUCCESS;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override EDF_DbFindResultMultiple<EDF_DbEntity> FindAll(typename entityType, EDF_DbFindCondition condition = null, array<ref TStringArray> orderBy = null, int limit = -1, int offset = -1)
 	{
+		// Can not be implemented until https://feedback.bistudio.com/T166390 is fixed. Hopefully AR 0.9.9 or 0.9.10
 		return new EDF_DbFindResultMultiple<EDF_DbEntity>(EDF_EDbOperationStatusCode.FAILURE_NOT_IMPLEMENTED, {});
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void AddOrUpdateAsync(notnull EDF_DbEntity entity, EDF_DbOperationStatusOnlyCallback callback = null)
 	{
+		if (s_bForceBlocking)
+		{
+			EDF_EDbOperationStatusCode statusCode = AddOrUpdate(entity);
+			if (callback)
+				callback.Invoke(statusCode);
+
+			return;
+		}
+
 		typename entityType = entity.Type();
-		EDF_WebProxyDbDriverCallback cb(callback);
-		string request = string.Format("/%1/%2%3", EDF_DbName.Get(entityType), entity.GetId(), m_sAddtionalParams);
+		string request = string.Format("%1/%2%3", EDF_DbName.Get(entityType), entity.GetId(), m_sAddtionalParams);
 		string data = Serialize(entity);
-		m_pContext.PUT(cb, request, data);
+		m_pContext.PUT(new EDF_WebProxyDbDriverCallback(callback), request, data);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void RemoveAsync(typename entityType, string entityId, EDF_DbOperationStatusOnlyCallback callback = null)
 	{
-		EDF_WebProxyDbDriverCallback cb(callback);
-		string request = string.Format("/%1/%2%3", EDF_DbName.Get(entityType), entityId, m_sAddtionalParams);
-		m_pContext.DELETE(cb, request, string.Empty);
+		if (s_bForceBlocking)
+		{
+			EDF_EDbOperationStatusCode statusCode = Remove(entityType, entityId);
+			if (callback)
+				callback.Invoke(statusCode);
+
+			return;
+		}
+
+		string request = string.Format("%1/%2%3", EDF_DbName.Get(entityType), entityId, m_sAddtionalParams);
+		m_pContext.DELETE(new EDF_WebProxyDbDriverCallback(callback), request, string.Empty);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void FindAllAsync(typename entityType, EDF_DbFindCondition condition = null, array<ref TStringArray> orderBy = null, int limit = -1, int offset = -1, EDF_DbFindCallbackBase callback = null)
 	{
+		/*
 		EDF_DbFindFieldCondition findField = EDF_DbFindFieldCondition.Cast(condition);
 		if (findField && findField.m_bUsesTypename)
 		{
@@ -355,15 +379,27 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 			if (callback)
 				callback.Invoke(EDF_EDbOperationStatusCode.FAILURE_NOT_IMPLEMENTED, new array<ref EDF_DbEntity>());
 		}
+		*/
 
-		EDF_WebProxyDbDriverCallback cb(callback, entityType);
-		string request = string.Format("/%1%2", EDF_DbName.Get(entityType), m_sAddtionalParams);
+		if (s_bForceBlocking)
+		{
+			EDF_DbFindResultMultiple<EDF_DbEntity> results = FindAll(entityType, condition, orderBy, limit, offset);
+			if (callback)
+				callback.Invoke(results.GetStatusCode(), results.GetEntities());
+
+			return;
+		}
+
+		string request = string.Format("%1%2", EDF_DbName.Get(entityType), m_sAddtionalParams);
 		string data = Serialize(new EDF_WebProxyDbDriverFindRequest(condition, orderBy, limit, offset));
-		m_pContext.POST(cb, request, data);
+		//Print(request);
+		//Print(data);
+		System.ExportToClipboard(data);
+		m_pContext.POST(new EDF_WebProxyDbDriverCallback(callback, entityType), request, data);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string Serialize(Managed data)
+	static string Serialize(Managed data)
 	{
 		ContainerSerializationSaveContext writer();
 		JsonSaveContainer jsonContainer = new JsonSaveContainer();
@@ -374,7 +410,8 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string MoveTypeDiscriminatorIn(string data)
+	//! TODO: Rely on https://feedback.bistudio.com/T173074 instead once added
+	static string MoveTypeDiscriminatorIn(string data)
 	{
 		int typeDiscriminatorIdx = data.IndexOf("\"$type\"");
 		if (typeDiscriminatorIdx == -1)
@@ -403,6 +440,57 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 
 			dataPosition = injectionIndex;
 			typeDiscriminatorIdx = data.IndexOfFrom(skipOver, "\"$type\"");
+			if (typeDiscriminatorIdx == -1)
+			{
+				processedString += data.Substring(dataPosition, dataLength - dataPosition);
+				break;
+			}
+		}
+
+		return processedString;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string MoveTypeDiscriminatorOut(string data)
+	{
+		int typeDiscriminatorIdx = data.IndexOf("\"$type\"");
+		if (typeDiscriminatorIdx == -1)
+			return data;
+
+		string processedString;
+		int dataPosition;
+		int dataLength = data.Length();
+
+		while (true)
+		{
+			// Extract discriminator
+			int discriminatorLength = data.IndexOfFrom(typeDiscriminatorIdx, ",") - typeDiscriminatorIdx + 1;
+			string typeDiscrimiantor = data.Substring(typeDiscriminatorIdx, discriminatorLength);
+
+			// Find injection position
+			int injectAt = -1, remainingBrackes = 2;
+			for (int nChar = typeDiscriminatorIdx - 1; nChar >= 0; nChar--)
+			{
+				if ((data.Get(nChar) == "\"") && (--remainingBrackes == 0))
+				{
+					injectAt = nChar;
+					break;
+				}
+			}
+
+			// Get data in front
+			processedString += data.Substring(dataPosition, injectAt - dataPosition);
+
+			// Inject type discriminator
+			processedString += typeDiscrimiantor;
+
+			// Add data from in between
+			processedString += data.Substring(injectAt, typeDiscriminatorIdx - injectAt);
+
+			// Continue behind original position
+			dataPosition = typeDiscriminatorIdx + discriminatorLength;
+
+			typeDiscriminatorIdx = data.IndexOfFrom(dataPosition, "\"$type\"");
 			if (typeDiscriminatorIdx == -1)
 			{
 				processedString += data.Substring(dataPosition, dataLength - dataPosition);

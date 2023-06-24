@@ -124,6 +124,59 @@ class EDF_Test_WebProxyDbDriverEntityTNestedArray<Class T> : EDF_DbEntity
 	}
 };
 
+class EDF_Test_WebProxyDbDriverComplexUnwrapEntityInnerWrapper
+{
+	ref EDF_Test_WebProxyDbDriverEntityTNestedArray<string> m_pNestedArrayHolder;
+};
+
+class EDF_Test_WebProxyDbDriverComplexUnwrapEntityMiddleWrapperSecond
+{
+	ref EDF_Test_WebProxyDbDriverComplexUnwrapEntityInnerWrapper m_pInnerWrapper;
+};
+
+class EDF_Test_WebProxyDbDriverComplexUnwrapEntityMiddleWrapperFirst
+{
+	string m_sArma = "ArmA"; // Take this Lou >:)
+	ref EDF_Test_WebProxyDbDriverComplexUnwrapEntityMiddleWrapperSecond m_pInnerWrapper;
+};
+
+class EDF_Test_WebProxyDbDriverComplexUnwrapEntityOuterWrapper
+{
+	ref array<ref array<ref EDF_Test_WebProxyDbDriverComplexUnwrapEntityMiddleWrapperFirst>> m_aMiddleWrappers;
+};
+
+class EDF_Test_WebProxyDbDriverComplexUnwrapEntity : EDF_DbEntity
+{
+	ref array<string> m_aStrings;
+	ref array<ref array<string>> m_aOtherArray;
+	ref map<int, ref map<int, string>> m_mNestedMap;
+	ref array<ref array<ref map<int, ref array<ref array<string>>>>> m_aValues;
+	ref array<ref array<ref EDF_Test_WebProxyDbDriverEntityTNestedArray<string>>> m_aNestedValues;
+
+	ref EDF_Test_WebProxyDbDriverComplexUnwrapEntityOuterWrapper m_pOuterWrapper;
+
+	//------------------------------------------------------------------------------------------------
+	static EDF_Test_WebProxyDbDriverComplexUnwrapEntity Create(
+		string id,
+		array<string> strings,
+		array<ref array<string>> otherArray,
+		map<int, ref map<int, string>> nestedMap,
+		array<ref array<ref map<int, ref array<ref array<string>>>>> values,
+		array<ref array<ref EDF_Test_WebProxyDbDriverEntityTNestedArray<string>>> nestedValues,
+		EDF_Test_WebProxyDbDriverComplexUnwrapEntityOuterWrapper outerWrapper)
+	{
+		EDF_Test_WebProxyDbDriverComplexUnwrapEntity entity();
+		entity.SetId(id);
+		entity.m_aStrings = strings;
+		entity.m_aOtherArray = otherArray;
+		entity.m_mNestedMap = nestedMap;
+		entity.m_aValues = values;
+		entity.m_aNestedValues = nestedValues;
+		entity.m_pOuterWrapper = outerWrapper;
+		return entity;
+	}
+};
+
 //[Test("EDF_WebProxyDbDriverTests")]
 class EDF_Test_WebProxyDbDriver_AddOrUpdateAsync_NewEntity_Added : EDF_Test_WebProxyDbDriver_TestBase
 {
@@ -823,6 +876,163 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedArrayOperators_Operator
 		foreach (EDF_DbEntity result : results)
 		{
 			if (result.GetId().StartsWith("00000000-0000-0014-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+	}
+};
+
+//[Test("EDF_WebProxyDbDriverTests")]
+class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedNestedArrayOperators_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
+{
+	//------------------------------------------------------------------------------------------------
+	[Step(EStage.Main)]
+	void Arrange()
+	{
+		array<ref array<string>> values1();
+		values1.Insert({"Hello", "World", "!"});
+		values1.Insert({"ArmA", "Reforger"});
+
+		array<ref array<string>> values2();
+		values2.Insert({"Berlin", "Prague"});
+		values2.Insert({"Hype", "Train"});
+
+		map<int, ref array<ref array<string>>> values();
+		values.Set(42, values1);
+		values.Insert(1337, values2);
+
+		array<ref map<int, ref array<ref array<string>>>> maps();
+		maps.Insert(values);
+
+		array<ref array<ref map<int, ref array<ref array<string>>>>> mapHolders();
+		mapHolders.Insert(maps);
+
+		array<ref array<string>> secondArrayArray();
+		secondArrayArray.Insert({"End", "My", "Suffering"});
+
+		map<int, string> childMap1();
+		childMap1.Set(0, "The");
+		childMap1.Set(1, "real");
+		childMap1.Set(2, "slim");
+		childMap1.Set(3, "shady");
+
+		map<int, string> childMap2();
+		childMap2.Set(0, "A");
+		childMap2.Set(1, "B");
+		childMap2.Set(2, "C");
+		childMap2.Set(3, "D");
+
+		map<int, ref map<int, string>> nestedMap();
+		nestedMap.Set(1001, childMap1);
+		nestedMap.Set(1002, childMap2);
+
+		array<ref EDF_Test_WebProxyDbDriverEntityTNestedArray<string>> nestedArray1();
+		nestedArray1.Insert(EDF_Test_WebProxyDbDriverEntityTNestedArray<string>.Create("00000000-0000-0015-0000-000000000XXX", values1));
+		array<ref array<ref EDF_Test_WebProxyDbDriverEntityTNestedArray<string>>> nestedArray();
+		nestedArray.Insert(nestedArray1);
+
+		EDF_Test_WebProxyDbDriverComplexUnwrapEntityOuterWrapper outerWrapper();
+		EDF_Test_WebProxyDbDriverComplexUnwrapEntityMiddleWrapperFirst middleFirst1();
+		EDF_Test_WebProxyDbDriverComplexUnwrapEntityMiddleWrapperFirst middleFirst2();
+		outerWrapper.m_aMiddleWrappers = {{middleFirst1, middleFirst2}};
+
+		EDF_Test_WebProxyDbDriverComplexUnwrapEntityMiddleWrapperSecond middleSecond1();
+		EDF_Test_WebProxyDbDriverComplexUnwrapEntityMiddleWrapperSecond middleSecond2();
+		middleFirst1.m_pInnerWrapper = middleSecond1;
+		middleFirst2.m_pInnerWrapper = middleSecond2;
+
+		EDF_Test_WebProxyDbDriverComplexUnwrapEntityInnerWrapper inner1();
+		EDF_Test_WebProxyDbDriverComplexUnwrapEntityInnerWrapper inner2();
+		middleSecond1.m_pInnerWrapper = inner1;
+		middleSecond2.m_pInnerWrapper = inner2;
+
+		inner1.m_pNestedArrayHolder = EDF_Test_WebProxyDbDriverEntityTNestedArray<string>.Create("00000000-0000-0015-0000-000000000XXX", {{"Hello", "Reforger"}});
+		inner2.m_pNestedArrayHolder = EDF_Test_WebProxyDbDriverEntityTNestedArray<string>.Create("00000000-0000-0015-0000-000000000XXX", {{"Arma", "World", "!"}});
+
+		array<string> strings = {"Just", "normal", "Strings"};
+
+		m_pEntity = EDF_Test_WebProxyDbDriverComplexUnwrapEntity.Create("00000000-0000-0015-0000-000000000001", strings, secondArrayArray, nestedMap, mapHolders, nestedArray, outerWrapper);
+		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
+
+		SetResult(new EDF_TestResult(true));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Act()
+	{
+		typename type = m_pEntity.Type();
+		EDF_DbFindCallbackMultipleUntyped matchCallback(this, "OnMatchResult");
+		EDF_DbFindCallbackMultipleUntyped noMatchCallback(this, "OnNoMatchResult");
+
+		// Should match
+
+		EDF_DbFindCondition nestedCondition = EDF_DbFind
+			.Field("m_aNestedValues")
+			.Any()
+			.Any()
+			.Field("m_aValues")
+			.Any()
+			.Invariant()
+			.ContainsAllOf(EDF_DbValues<string>.From({"arma", "reforger"}));
+
+		EDF_DbFindCondition nestedPathWrapperCondition = EDF_DbFind
+			.Field("m_pOuterWrapper")
+			.Field("m_aMiddleWrappers")
+			.Any()
+			.Any()
+			.Field("m_pInnerWrapper")
+			.Field("m_pInnerWrapper")
+			.Field("m_pNestedArrayHolder")
+			.Field("m_aValues")
+			.Any()
+			.Any()
+			.Length()
+			.Equals(1);
+
+		EDF_DbFindCondition nestedPathMultiFieldCondition = EDF_DbFind
+			.Field("m_pOuterWrapper.m_aMiddleWrappers")
+			.Any()
+			.Any()
+			.Field("m_sArma")
+			.Length()
+			.GreaterThan(1);
+
+		// todo change first to all to see if it still works
+		EDF_DbFindCondition condition = EDF_DbFind.And({
+			EDF_DbFind.Field("m_aStrings").Any().Length().Equals(4),
+			EDF_DbFind.Field("m_aOtherArray").Any().Invariant().Contains("Suffering"),
+			EDF_DbFind.Field("m_aOtherArray").All().Count().Equals(3),
+			EDF_DbFind.Field("m_mNestedMap").Values().Values().Invariant().Contains("ShAdY"),
+			EDF_DbFind.Field("m_aValues").Any().Values().Any().All().Length().Equals(6),
+			nestedCondition,
+			nestedPathWrapperCondition,
+			nestedPathMultiFieldCondition
+		});
+
+		m_pDriver.FindAllAsync(type, condition, callback: matchCallback);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0015-0000-"))
+				matches++;
+		}
+
+		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnNoMatchResult(EDF_EDbOperationStatusCode statusCode, array<ref EDF_DbEntity> results)
+	{
+		int matches;
+		foreach (EDF_DbEntity result : results)
+		{
+			if (result.GetId().StartsWith("00000000-0000-0015-0000-"))
 				matches++;
 		}
 

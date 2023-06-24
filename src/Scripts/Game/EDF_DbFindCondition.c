@@ -244,6 +244,7 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 	EDF_EDbFindOperator m_eComparisonOperator;
 	ref array<ValueType> m_aComparisonValues;
 	bool m_bStringsInvariant;
+	bool m_bStringsPartialMatches;
 
 	//------------------------------------------------------------------------------------------------
 	override protected string GetDebugString()
@@ -293,6 +294,13 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 		typename valueType = ValueType;
 		saveContext.WriteValue("$type", "DbFindCompareFieldValues<" + valueType + ">");
 		SerializationWritePath(saveContext);
+
+		if (m_bStringsInvariant)
+			saveContext.WriteValue("stringsInvariant", true);
+
+		if (m_bStringsPartialMatches)
+			saveContext.WriteValue("stringsPartialMatches", true);
+
 		saveContext.WriteValue("comparisonOperator", m_eComparisonOperator);
 
 		if (valueType.IsInherited(typename))
@@ -311,9 +319,6 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 			saveContext.WriteValue("comparisonValues", m_aComparisonValues);
 		}
 
-		if (m_bStringsInvariant)
-			saveContext.WriteValue("stringsInvariant", true);
-
 		return true;
 	}
 
@@ -323,7 +328,8 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 		EDF_EDbFindOperator comparisonOperator,
 		notnull array<ValueType> comparisonValues,
 		bool usesTypename,
-		bool stringsInvariant = false)
+		bool stringsInvariant = false,
+		bool stringsPartialMatches = false)
 	{
 		if (comparisonValues.IsEmpty())
 		{
@@ -337,6 +343,7 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 		inst.m_aComparisonValues = comparisonValues;
 		inst.m_bUsesTypename = usesTypename;
 		inst.m_bStringsInvariant = stringsInvariant;
+		inst.m_bStringsPartialMatches = stringsPartialMatches;
 
 		if (!ALLOC_BUFFER_TVALUES) ALLOC_BUFFER_TVALUES = {null};
 		ALLOC_BUFFER_TVALUES.Set(0, inst);
@@ -388,6 +395,7 @@ class EDF_DbFindFieldConditionBuilder
 	string m_sFieldPath;
 	bool m_bInverted;
 	bool m_bStringsInvariant;
+	bool m_bStringsPartialMatches;
 	bool m_bUsesTypenames;
 
 	//------------------------------------------------------------------------------------------------
@@ -628,6 +636,13 @@ class EDF_DbFindFieldPrimitiveValueConditonBuilder : EDF_DbFindFieldNumericValue
 	EDF_DbFindFieldCollectionHandlingBuilder Invariant()
 	{
 		m_bStringsInvariant = true;
+		return EDF_DbFindFieldCollectionHandlingBuilder.Cast(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	EDF_DbFindFieldCollectionHandlingBuilder Partial()
+	{
+		m_bStringsPartialMatches = true;
 		return EDF_DbFindFieldCollectionHandlingBuilder.Cast(this);
 	}
 };
@@ -877,7 +892,7 @@ class EDF_DbFindFieldCollectionHandlingBuilder : EDF_DbFindFieldBasicCollectionH
 	}
 
 	//------------------------------------------------------------------------------------------------
-	EDF_DbFindFieldBasicCollectionHandlingBuilder Values()
+	EDF_DbFindFieldCollectionHandlingBuilder Values()
 	{
 		_AppendModifier(EDF_DbFindFieldAnnotations.VALUES);
 		return this;

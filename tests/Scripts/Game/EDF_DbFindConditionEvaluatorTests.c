@@ -929,7 +929,6 @@ class EDF_Test_DbFindConditionEvaluator_ContainsTypename_Match_True : TestBase
 	}
 };
 
-
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
 class EDF_Test_DbFindConditionEvaluator_NotContainsTypename_SingleType_True : TestBase
@@ -953,7 +952,6 @@ class EDF_Test_DbFindConditionEvaluator_NotContainsTypename_SingleType_True : Te
 		SetResult(new EDF_TestResult(matches));
 	}
 };
-
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
