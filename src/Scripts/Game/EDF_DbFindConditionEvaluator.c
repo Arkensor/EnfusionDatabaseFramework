@@ -1,25 +1,140 @@
-enum EDF_DbFindFieldPathSegmentFlags
+enum EDF_DbFindFieldPathSegmentModifier
 {
-	NUMBER = 1,
-	TYPENAME = 2,
-	ANY = 4,
-	ALL = 8,
+	ANY = 1,
+	ALL = 2,
+	KEYS = 4,
+	VALUES = 8,
 	COUNT = 16,
-	LENGTH = 32,
-	KEYS = 64,
-	VALUES = 128
+	LENGTH = 32
 };
 
 class EDF_DbFindFieldPathSegment
 {
 	string m_sFieldName;
-	int m_iFlags;
+	int m_iCollectionIndex;
+	typename m_tCollectionTypeFilter;
+	int m_iModifiers;
 
 	//------------------------------------------------------------------------------------------------
-	void EDF_DbFindFieldPathSegment(string fieldName, int flags)
+	static array<ref EDF_DbFindFieldPathSegment> ParseSegments(EDF_DbFindFieldCondition fieldCondition)
 	{
-		m_sFieldName = fieldName;
-		m_iFlags = flags;
+		array<ref EDF_DbFindFieldPathSegment> resultSegments();
+
+		array<string> pathSplits();
+		fieldCondition.m_sFieldPath.Split(EDF_DbFindFieldAnnotations.SEPERATOR, pathSplits, true);
+		resultSegments.Reserve(pathSplits.Count());
+
+		foreach (string pathSplit : pathSplits)
+		{
+			array<string> modifierSplits();
+			pathSplit.Trim().Split(":", modifierSplits, true);
+
+			int count = modifierSplits.Count();
+			if (count == 0)
+				return null;
+
+			EDF_DbFindFieldPathSegment currentSegment(modifierSplits.Get(0));
+
+			int modifiers = 0;
+			for (int nSplit = 1; nSplit < count; nSplit++)
+			{
+				switch (modifierSplits.Get(nSplit))
+				{
+					case "any":
+					{
+						if (modifiers & (EDF_DbFindFieldPathSegmentModifier.ANY | EDF_DbFindFieldPathSegmentModifier.ALL))
+							CompleteSegment(resultSegments, currentSegment, modifiers);
+
+						modifiers |= EDF_DbFindFieldPathSegmentModifier.ANY;
+						break;
+					}
+
+					case "all":
+					{
+						if (modifiers & (EDF_DbFindFieldPathSegmentModifier.ANY | EDF_DbFindFieldPathSegmentModifier.ALL))
+							CompleteSegment(resultSegments, currentSegment, modifiers);
+
+						modifiers |= EDF_DbFindFieldPathSegmentModifier.ALL;
+						break;
+					}
+
+					case "keys":
+					{
+						if (modifiers & (EDF_DbFindFieldPathSegmentModifier.KEYS | EDF_DbFindFieldPathSegmentModifier.VALUES))
+							CompleteSegment(resultSegments, currentSegment, modifiers);
+
+						modifiers |= EDF_DbFindFieldPathSegmentModifier.KEYS;
+						break;
+					}
+
+					case "values":
+					{
+						if (modifiers & (EDF_DbFindFieldPathSegmentModifier.KEYS | EDF_DbFindFieldPathSegmentModifier.VALUES))
+							CompleteSegment(resultSegments, currentSegment, modifiers);
+
+						modifiers |= EDF_DbFindFieldPathSegmentModifier.VALUES;
+						break;
+					}
+
+					case "count":
+					{
+						modifiers |= EDF_DbFindFieldPathSegmentModifier.COUNT;
+						break;
+					}
+
+					case "length":
+					{
+						modifiers |= EDF_DbFindFieldPathSegmentModifier.LENGTH;
+						break;
+					}
+
+					default:
+					{
+						Debug.Error(string.Format("Unknown modifier %1 in query path.", modifierSplits.Get(nSplit)));
+						return null;
+					}
+				}
+			}
+
+			CompleteSegment(resultSegments, currentSegment, modifiers);
+		}
+
+		return resultSegments;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void CompleteSegment(array<ref EDF_DbFindFieldPathSegment> resultSegments, out EDF_DbFindFieldPathSegment currentSegment, out int modifiers)
+	{
+		currentSegment.m_iModifiers = modifiers;
+		resultSegments.Insert(currentSegment);
+		currentSegment = new EDF_DbFindFieldPathSegment(string.Empty);
+		modifiers = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void EDF_DbFindFieldPathSegment(string fieldName)
+	{
+		m_iCollectionIndex = -1;
+		if (!fieldName.IsEmpty())
+		{
+			int asIntValue = fieldName.ToInt();
+			if (asIntValue != 0 || fieldName == "0")
+			{
+				m_iCollectionIndex = asIntValue;
+			}
+			else
+			{
+				typename type = fieldName.ToType();
+				if (type)
+				{
+					m_tCollectionTypeFilter = type;
+				}
+				else
+				{
+					m_sFieldName = fieldName;
+				}
+			}
+		}
 	}
 };
 
@@ -75,7 +190,7 @@ class EDF_DbFindConditionEvaluator
 				if (!fieldCondition)
 					return false;
 
-				array<ref EDF_DbFindFieldPathSegment> segments = ParseSegments(fieldCondition);
+				array<ref EDF_DbFindFieldPathSegment> segments = EDF_DbFindFieldPathSegment.ParseSegments(fieldCondition);
 				return EvaluateField(entity, fieldCondition, segments, 0);
 			}
 		}
@@ -84,77 +199,7 @@ class EDF_DbFindConditionEvaluator
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static array<ref EDF_DbFindFieldPathSegment> ParseSegments(EDF_DbFindFieldCondition fieldCondition)
-	{
-		array<ref EDF_DbFindFieldPathSegment> resultSegments();
-
-		array<string> segments();
-		fieldCondition.m_sFieldPath.Split(EDF_DbFindFieldAnnotations.SEPERATOR, segments, true);
-
-		resultSegments.Reserve(segments.Count());
-
-		foreach (string segment : segments)
-		{
-			int flags = 0; // Explicit reset to 0 is required
-
-			while (true)
-			{
-				if (segment.Replace(EDF_DbFindFieldAnnotations.ANY, "") > 0)
-				{
-					flags |= EDF_DbFindFieldPathSegmentFlags.ANY;
-					continue;
-				}
-
-				if (segment.Replace(EDF_DbFindFieldAnnotations.ALL, "") > 0)
-				{
-					flags |= EDF_DbFindFieldPathSegmentFlags.ALL;
-					continue;
-				}
-
-				if (segment.Replace(EDF_DbFindFieldAnnotations.KEYS, "") > 0)
-				{
-					flags |= EDF_DbFindFieldPathSegmentFlags.KEYS;
-					continue;
-				}
-
-				if (segment.Replace(EDF_DbFindFieldAnnotations.VALUES, "") > 0)
-				{
-					flags |= EDF_DbFindFieldPathSegmentFlags.VALUES;
-					continue;
-				}
-
-				if (segment.Replace(EDF_DbFindFieldAnnotations.LENGTH, "") > 0)
-				{
-					flags |= EDF_DbFindFieldPathSegmentFlags.LENGTH;
-					continue;
-				}
-
-				if (segment.Replace(EDF_DbFindFieldAnnotations.COUNT, "") > 0)
-				{
-					flags |= EDF_DbFindFieldPathSegmentFlags.COUNT;
-					continue;
-				}
-
-				break;
-			}
-
-			int asIntValue = segment.ToInt();
-			if (asIntValue != 0 || segment == "0")
-			{
-				flags |= EDF_DbFindFieldPathSegmentFlags.NUMBER;
-			}
-			else if (segment.ToType())
-			{
-				flags |= EDF_DbFindFieldPathSegmentFlags.TYPENAME;
-			}
-
-			resultSegments.Insert(new EDF_DbFindFieldPathSegment(segment, flags));
-		}
-
-		return resultSegments;
-	}
-
-	//------------------------------------------------------------------------------------------------
+	//TODO: Get rid of this partially duplicate implemenmtion with the templated evaluator. Try to solve with a single method that has recursion instead.
 	protected static bool EvaluateField(Class instance, EDF_DbFindFieldCondition fieldCondition, array<ref EDF_DbFindFieldPathSegment> pathSegments, int currentSegmentIndex)
 	{
 		if (currentSegmentIndex >= pathSegments.Count())
@@ -174,37 +219,42 @@ class EDF_DbFindConditionEvaluator
 			if (variableInfo.m_tVaribleType.IsInherited(Class))
 			{
 				Class complexFieldValue;
-				if (!instance.Type().GetVariableValue(instance, variableInfo.m_iVariableindex, complexFieldValue))
+
+				bool isCollection = variableInfo.m_eCollectionType != EDF_ReflectionVariableCollectionType.NONE;
+				if (isCollection && currentSegment.m_sFieldName.IsEmpty())
+				{
+					// Processing a nested collection so passed in instance is already the target field value to further evaluate
+					complexFieldValue = instance;
+				}
+				else if (!instance.Type().GetVariableValue(instance, variableInfo.m_iVariableIndex, complexFieldValue))
 				{
 					Debug.Error(string.Format("Failed to read field '%1' of type '%2' on '%3'.", currentSegment.m_sFieldName, variableInfo.m_tVaribleType, instance));
 					return false;
 				}
 
 				// Expand collections
-				if (variableInfo.m_eCollectionType != EDF_ReflectionVariableType.NONE)
+				if (isCollection)
 				{
-					int collectionCount;
-					scriptModule.Call(complexFieldValue, "Count", false, collectionCount);
-
 					int nextSegmentIndex = currentSegmentIndex + 1;
 					EDF_DbFindFieldPathSegment nextSegment = pathSegments.Get(nextSegmentIndex);
 
 					// Handle collection<Class>.typename access operator
-					typename filterType = typename.Empty;
-					if (nextSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.TYPENAME)
+					typename filterType = nextSegment.m_tCollectionTypeFilter;
+					if (filterType)
 					{
-						filterType = EDF_DbName.GetTypeByName(nextSegment.m_sFieldName);
 						nextSegmentIndex++; //Skip source.filterType. to condition after the filter
 						currentSegment = nextSegment; // move current segment because :any/:all modifier is on the typename segement
 					}
 
+					int collectionCount;
+					scriptModule.Call(complexFieldValue, "Count", false, collectionCount);
+
 					// Handle collection<...>.N access operator
 					int collectionStartIndex = 0;
 					bool indexAccessorMode = false;
-					if (nextSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.NUMBER)
+					if (nextSegment.m_iCollectionIndex != -1)
 					{
-						collectionStartIndex = nextSegment.m_sFieldName.ToInt();
-
+						collectionStartIndex = nextSegment.m_iCollectionIndex;
 						if (collectionStartIndex >= collectionCount)
 						{
 							Debug.Error(string.Format("Tried to access ilegal collection index '%1' of type '%2' on '%3'. Collection only contained '%4' items.", collectionStartIndex, variableInfo.m_tVaribleType, instance, collectionCount));
@@ -220,16 +270,20 @@ class EDF_DbFindConditionEvaluator
 						Class collectionValueItem;
 
 						string getFnc = "Get";
-						if (variableInfo.m_eCollectionType == EDF_ReflectionVariableType.MAP)
+						if (variableInfo.m_eCollectionType == EDF_ReflectionVariableCollectionType.MAP)
 						{
-							// Access n-th map element by key(default) or value
-							if (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.VALUES) //Only if Values() was explicitly set
+							if (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.KEYS)
+							{
+								getFnc = "GetKey";
+							}
+							else if (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.VALUES)
 							{
 								getFnc = "GetElement";
 							}
 							else
 							{
-								getFnc = "GetKey";
+								Debug.Error(string.Format("Tried to access a map<K,V> without specifing if the keys or value collection should be accessed."));
+								return false;
 							}
 						}
 
@@ -248,7 +302,7 @@ class EDF_DbFindConditionEvaluator
 						if (indexAccessorMode)
 							return evaluationResult;
 
-						if ((currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.ALL))
+						if (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.ALL)
 						{
 							// All must be true, but at least one was false, so total result is false
 							if (!evaluationResult)
@@ -285,14 +339,14 @@ class EDF_DbFindConditionEvaluator
 			{
 				switch (variableInfo.m_tVaribleType)
 				{
-					case int: return EDF_DbFindFieldFieldNullOrDefaultChecker<int>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), currentSegment, variableInfo);
-					case float: return EDF_DbFindFieldFieldNullOrDefaultChecker<float>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), currentSegment, variableInfo);
-					case bool: return EDF_DbFindFieldFieldNullOrDefaultChecker<bool>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), currentSegment, variableInfo);
-					case string: return EDF_DbFindFieldFieldNullOrDefaultChecker<string>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), currentSegment, variableInfo);
-					case vector: return EDF_DbFindFieldFieldNullOrDefaultChecker<vector>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), currentSegment, variableInfo);
+					case int: return EDF_DbFindFieldFieldNullOrDefaultChecker<int>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), variableInfo);
+					case float: return EDF_DbFindFieldFieldNullOrDefaultChecker<float>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), variableInfo);
+					case bool: return EDF_DbFindFieldFieldNullOrDefaultChecker<bool>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), variableInfo);
+					case string: return EDF_DbFindFieldFieldNullOrDefaultChecker<string>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), variableInfo);
+					case vector: return EDF_DbFindFieldFieldNullOrDefaultChecker<vector>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), variableInfo);
 				}
 
-				return EDF_DbFindFieldFieldNullOrDefaultChecker<Class>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), currentSegment, variableInfo);
+				return EDF_DbFindFieldFieldNullOrDefaultChecker<Class>.Evaluate(instance, EDF_DbFindCheckFieldNullOrDefault.Cast(fieldCondition), variableInfo);
 			}
 
 			case EDF_DbFindFieldInt:
@@ -566,10 +620,14 @@ class EDF_DbFindConditionEvaluator
 class EDF_DbFindFieldFieldNullOrDefaultChecker<Class TValueType>
 {
 	//------------------------------------------------------------------------------------------------
-	static bool Evaluate(Class instance, EDF_DbFindCheckFieldNullOrDefault valueCondition, EDF_DbFindFieldPathSegment currentSegment, EDF_ReflectionVariableInfo fieldInfo)
+	static bool Evaluate(Class instance, EDF_DbFindCheckFieldNullOrDefault valueCondition, EDF_ReflectionVariableInfo fieldInfo)
 	{
+		// Nested collection value evaluation
+		if (fieldInfo.m_iVariableIndex == -1)
+			return IsNullOrDefault(instance) == valueCondition.m_ShouldBeNullOrDefault;
+
 		TValueType fieldValue;
-		if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, fieldValue))
+		if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableIndex, fieldValue))
 			return false;
 
 		return IsNullOrDefault(fieldValue) == valueCondition.m_ShouldBeNullOrDefault;
@@ -656,21 +714,41 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 
 		// Handle collection comparison
 		int matchIdx = -1;
-		if (fieldInfo.m_eCollectionType != EDF_ReflectionVariableType.NONE)
+		if (fieldInfo.m_eCollectionType != EDF_ReflectionVariableCollectionType.NONE)
 		{
+			/*
+			if (fieldInfo.m_tCollectionValueType.IsInherited(Class) && 
+				(TValueType != typename) && 
+				!(currentSegment.m_iModifiers & (EDF_DbFindFieldPathSegmentModifier.KEYS | EDF_DbFindFieldPathSegmentModifier.LENGTH | EDF_DbFindFieldPathSegmentModifier.COUNT)))
+			{
+				Debug.Error(string.Format(
+					"Can not compare non primitive collection item type '%3' on '%2::%1'. Check that you are not missing an Any()/All() query builder instruction!",
+					currentSegment.m_sFieldName,
+					instance,
+					fieldInfo.m_tCollectionValueType.ToString()));
+				return false;
+			}
+			*/
+
 			bool containsAll = comparisonOperator == EDF_EDbFindOperator.CONTAINS_ALL;
 			bool containsAllOperation = containsAll || comparisonOperator== EDF_EDbFindOperator.NOT_CONTAINS_ALL;
 
 			Class collectionHolder;
-			if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, collectionHolder))
+			if (fieldInfo.m_iVariableIndex == -1)
+			{
+				collectionHolder = instance;
+			}
+			else if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableIndex, collectionHolder))
+			{
 				return false;
+			}
 
 			int collectionCount;
 			if (!scriptModule.Call(collectionHolder, "Count", false, collectionCount))
 				return false;
 
 			// Handle count of collection comparison
-			if (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.COUNT)
+			if (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.COUNT)
 				return CompareCollectionCount(collectionCount, comparisonOperator, comparisonValues);
 
 			int comparisonCount = comparisonValues.Count();
@@ -704,29 +782,21 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 
 				string getFnc = "Get";
 
-				if (fieldInfo.m_eCollectionType == EDF_ReflectionVariableType.MAP)
+				if (fieldInfo.m_eCollectionType == EDF_ReflectionVariableCollectionType.MAP)
 				{
-					if (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.VALUES) //Only if Values() was explicitly set
+					if (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.KEYS)
+					{
+						getFnc = "GetKey";
+					}
+					else if (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.VALUES)
 					{
 						getFnc = "GetElement";
 					}
 					else
 					{
-						getFnc = "GetKey";
-					}
-				}
-
-				if (TValueType == typename && fieldInfo.m_tCollectionValueType != typename)
-				{
-					// Special handling to read array<Class> and compare to array<typename>
-					Class holder;
-					if (!scriptModule.Call(collectionHolder, getFnc, false, holder, nItem) ||
-						!scriptModule.Call(holder, "Type", false, fieldValue, holder))
+						Debug.Error(string.Format("Tried to access a map<K,V> without specifing if the keys or value collection should be accessed."));
 						return false;
-				}
-				else if (!scriptModule.Call(collectionHolder, getFnc, false, fieldValue, nItem))
-				{
-					return false;
+					}
 				}
 
 				array<TValueType> compareValues = comparisonValues;
@@ -734,7 +804,34 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 					compareValues = {comparisonValues.Get(nItem)};
 
 				matchIdx = -1;
-				bool comparisonMatches = Compare(fieldValue, comparisonOperator, compareValues, matchIdx, invariant, partialMatch);
+				bool comparisonMatches = false;
+
+				if (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.LENGTH)
+				{
+					string keyString;
+					if (!scriptModule.Call(collectionHolder, getFnc, false, keyString, nItem) || !keyString)
+						return false;
+
+					Managed arr = comparisonValues;
+					return Compare(StringLengthUtf8(keyString), comparisonOperator, array<int>.Cast(arr), matchIdx);
+				}
+				else
+				{
+					if (TValueType == typename && fieldInfo.m_tCollectionValueType != typename)
+					{
+						// Special handling to read array<Class> and compare to array<typename>
+						Class holder;
+						if (!scriptModule.Call(collectionHolder, getFnc, false, holder, nItem) ||
+							!scriptModule.Call(holder, "Type", false, fieldValue, holder))
+							return false;
+					}
+					else if (!scriptModule.Call(collectionHolder, getFnc, false, fieldValue, nItem))
+					{
+						return false;
+					}
+
+					comparisonMatches = Compare(fieldValue, comparisonOperator, compareValues, matchIdx, invariant, partialMatch);
+				}
 
 				if (containsAllOperation)
 				{
@@ -750,7 +847,7 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 					continue;
 				}
 
-				if (strictArrayEquality || (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.ALL))
+				if (strictArrayEquality || (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.ALL))
 				{
 					// All must match the operator comparison, if one of them failes the final result is false
 					if (!comparisonMatches)
@@ -779,10 +876,10 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 		}
 
 		// Special case of string lenth which is int value condition but string holder
-		if (currentSegment.m_iFlags & EDF_DbFindFieldPathSegmentFlags.LENGTH)
+		if (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.LENGTH)
 		{
 			string stringData;
-			if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, stringData))
+			if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableIndex, stringData))
 				return false;
 
 			Managed arr = comparisonValues;
@@ -791,7 +888,7 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 
 		// Compare primitive value
 		TValueType fieldValue;
-		if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableindex, fieldValue))
+		if (!instance.Type().GetVariableValue(instance, fieldInfo.m_iVariableIndex, fieldValue))
 			return false;
 
 		return Compare(fieldValue, comparisonOperator, comparisonValues, matchIdx, invariant, partialMatch);

@@ -203,7 +203,7 @@ class EDF_DbEntitySorter
 			}
 
 			Class complexHolder;
-			if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableindex, complexHolder)) return;
+			if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, complexHolder)) return;
 			GetSortValue(complexHolder, fieldSplits, currentIndex + 1, sortValue, valueType);
 		}
 
@@ -213,7 +213,7 @@ class EDF_DbEntitySorter
 			case int:
 			{
 				int outVal;
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableindex, outVal)) return;
+				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal)) return;
 				sortValue = outVal.ToString();
 				return;
 			}
@@ -221,7 +221,7 @@ class EDF_DbEntitySorter
 			case float:
 			{
 				float outVal;
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableindex, outVal)) return;
+				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal)) return;
 				sortValue = outVal.ToString();
 				return;
 			}
@@ -229,21 +229,21 @@ class EDF_DbEntitySorter
 			case bool:
 			{
 				bool outVal;
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableindex, outVal)) return;
+				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal)) return;
 				sortValue = outVal.ToString();
 				return;
 			}
 
 			case string:
 			{
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableindex, sortValue)) return;
+				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, sortValue)) return;
 				return;
 			}
 
 			case vector:
 			{
 				vector outVal;
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableindex, outVal)) return;
+				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal)) return;
 				sortValue = outVal.ToString(false);
 				return;
 			}
