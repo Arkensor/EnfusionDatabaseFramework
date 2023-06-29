@@ -588,6 +588,22 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Length_MatchingUtf8String_True(
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionEvaluatorTests")]
+TestResultBase EDF_Test_DbFindConditionEvaluator_AnyLength_Matching_True()
+{
+	// Arrange
+	EDF_Test_FindConditionEvaluatorContainerItem entity();
+
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_StringArray").All().Length().Equals(5);
+
+	// Act
+	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
+
+	// Assert
+	return new EDF_TestResult(matches);
+};
+
+//------------------------------------------------------------------------------------------------
+[Test("EDF_DbFindConditionEvaluatorTests")]
 TestResultBase EDF_Test_DbFindConditionEvaluator_Any_MatchingValue_True()
 {
 	// Arrange

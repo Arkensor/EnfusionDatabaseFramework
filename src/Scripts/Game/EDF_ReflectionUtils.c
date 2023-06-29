@@ -18,7 +18,7 @@ class EDF_ReflectionUtilsT<Class T>
 		EDF_ReflectionVariableInfo info = EDF_ReflectionVariableInfo.Get(instance, variableName);
 		if (!info)
 			return false;
-		return info.m_tHolderType.GetVariableValue(instance, info.m_iVariableindex, value);
+		return info.m_tHolderType.GetVariableValue(instance, info.m_iVariableIndex, value);
 	}
 
 	//------------------------------------------------------------------------------------------------
