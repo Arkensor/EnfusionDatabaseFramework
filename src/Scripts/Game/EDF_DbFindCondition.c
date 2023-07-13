@@ -241,7 +241,7 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 
 	EDF_EDbFindOperator m_eComparisonOperator;
 	ref array<ValueType> m_aComparisonValues;
-	ref array<ref Managed> m_aComparisonValuesReferences;
+	ref array<ref ValueType> m_aComparisonValuesReferences;
 	bool m_bStringsInvariant;
 	bool m_bStringsPartialMatches;
 
@@ -463,6 +463,10 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 			}
 			saveContext.WriteValue("comparisonValues", comparisonValues);
 		}
+		else if (m_aComparisonValuesReferences) // TODO: Remove once https://feedback.bistudio.com/T173900 is fixed.
+		{
+			saveContext.WriteValue("comparisonValues", m_aComparisonValuesReferences);
+		}
 		else
 		{
 			saveContext.WriteValue("comparisonValues", m_aComparisonValues);
@@ -472,7 +476,7 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void AddReference(Managed value)
+	protected void AddReference(ValueType value)
 	{
 		m_aComparisonValuesReferences.Insert(value);
 	}
