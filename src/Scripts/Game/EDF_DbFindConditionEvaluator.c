@@ -60,7 +60,7 @@ class EDF_DbFindFieldPathSegment
 
 					case "keys":
 					{
-						if (modifiers & (EDF_DbFindFieldPathSegmentModifier.KEYS | EDF_DbFindFieldPathSegmentModifier.VALUES))
+						if (modifiers)
 							CompleteSegment(resultSegments, currentSegment, modifiers);
 
 						modifiers |= EDF_DbFindFieldPathSegmentModifier.KEYS;
@@ -69,7 +69,7 @@ class EDF_DbFindFieldPathSegment
 
 					case "values":
 					{
-						if (modifiers & (EDF_DbFindFieldPathSegmentModifier.KEYS | EDF_DbFindFieldPathSegmentModifier.VALUES))
+						if (modifiers)
 							CompleteSegment(resultSegments, currentSegment, modifiers);
 
 						modifiers |= EDF_DbFindFieldPathSegmentModifier.VALUES;

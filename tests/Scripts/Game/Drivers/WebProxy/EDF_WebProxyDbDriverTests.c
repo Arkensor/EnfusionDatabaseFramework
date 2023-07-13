@@ -430,7 +430,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_LengthOperator_OperatorBased : EDF_
 	{
 		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<string>.Create("00000000-0000-0007-0000-000000000001", "MarioE"));
 
-		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<string>.Create("00000000-0000-0007-0000-000000000001", {"Hello", "World", "!"});
+		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<string>.Create("00000000-0000-0007-0000-000000000002", {"Hello", "World", "!"});
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
 		SetResult(new EDF_TestResult(true));
@@ -445,13 +445,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_LengthOperator_OperatorBased : EDF_
 		typename type = m_pEntity.Type();
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Length().GreaterThan(3), callback: matchCallback);
 
-		// maybe for projection stage filter out all fields being accessed for length -> string property or array of strings
-			// leave condition in but on evaluate instead of the actual field name do field_lengths?
-			// https://www.thecodebuzz.com/mongodb-nested-array-string-field-value-length-query/
-			// alternative is regex
-
-		//type = String("EDF_Test_WebProxyDbDriverEntityT<string>").ToType();
-		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Length().Equals(6), callback: matchCallback);
+		type = String("EDF_Test_WebProxyDbDriverEntityT<string>").ToType();
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_Value").Length().Equals(6), callback: matchCallback);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -467,7 +462,6 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_LengthOperator_OperatorBased : EDF_
 		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
 	}
 };
-
 
 //[Test("EDF_WebProxyDbDriverTests")]
 class EDF_Test_WebProxyDbDriver_FindAllAsync_CountOperator_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
@@ -505,7 +499,6 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_CountOperator_OperatorBased : EDF_T
 		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
 	}
 };
-
 
 //[Test("EDF_WebProxyDbDriverTests")]
 class EDF_Test_WebProxyDbDriver_FindAllAsync_IntSingleOperators_OperatorBased : EDF_Test_WebProxyDbDriver_TestBase
@@ -664,13 +657,13 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntNestedArrayOperators_OperatorBas
 
 		// Should match
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(69), callback: matchCallback);
-		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf(EDF_DbValues<int>.From({42, 69})), callback: matchCallback);
-		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Equals(EDF_DbValues<int>.From({69, 96})), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf(EDF_DbValues<int>.From({42, 69})), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Equals(EDF_DbValues<int>.From({69, 96})), callback: matchCallback);
 
 		// Should not match
-		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(666), callback: noMatchCallback);
-		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf(EDF_DbValues<int>.From({41, 42, 43})), callback: noMatchCallback);
-		//m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().Equals(EDF_DbValues<int>.From({69, 96})), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(666), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf(EDF_DbValues<int>.From({41, 42, 43})), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().Equals(EDF_DbValues<int>.From({69, 96})), callback: noMatchCallback);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -852,8 +845,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedArrayOperators_Operator
 		EDF_DbFindCallbackMultipleUntyped noMatchCallback(this, "OnNoMatchResult");
 
 		// Should match
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains("HeLlO"), callback: matchCallback);
-
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Invariant().Contains("HeLlO"), callback: matchCallback);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -967,6 +959,17 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedNestedArrayOperators_Op
 
 		// Should match
 
+		EDF_DbFindCondition nestedMapCondition = EDF_DbFind
+			.Field("m_aValues")
+			.Any()
+			.Any()
+			.Values()
+			.Any()
+			.Any()
+			.All()
+			.Length()
+			.Equals(6);
+
 		EDF_DbFindCondition nestedCondition = EDF_DbFind
 			.Field("m_aNestedValues")
 			.Any()
@@ -1004,7 +1007,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedNestedArrayOperators_Op
 			EDF_DbFind.Field("m_aOtherArray").Any().Invariant().Contains("Suffering"),
 			EDF_DbFind.Field("m_aOtherArray").All().Count().Equals(3),
 			EDF_DbFind.Field("m_mNestedMap").Values().Values().Invariant().Contains("ShAdY"),
-			EDF_DbFind.Field("m_aValues").Any().Values().Any().All().Length().Equals(6),
+			nestedMapCondition,
 			nestedCondition,
 			nestedPathWrapperCondition,
 			nestedPathMultiFieldCondition
