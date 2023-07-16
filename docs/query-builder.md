@@ -14,10 +14,12 @@ Besides the `Id()` shortcut any other field can be queried using the `Field()` m
 EDF_DbFindCondition condition = EDF_DbFind.Field("m_Name").Equals("Foo");
 ```
 The field name supports "dot-notation" so you can navigate complex types as well as collections using it.  
-It is recommended to use the builder variant, instead of manually setting up the path for compatiblity reasons.
-- `EDF_DbFind.Field("fieldName.subField")` / `EDF_DbFind.Field("fieldName").Field("subField")`
-- `EDF_DbFind.Field("floatArray.0")` / `EDF_DbFind.Field("floatArray").At(0)` evaluates the first element of the array on the entity
-- `EDF_DbFind.Field("classArray.FilteredType")` / `EDF_DbFind.Field("classArray").OfType(FilteredType)` evaluate elements of a complex type array that inherit from the provided typename
+It is recommended to use the builder variant, instead of manually setting up the path to ensure future compatiblity.
+- `EDF_DbFind.Field("fieldName").Field("subField")` / `EDF_DbFind.Field("fieldName.subField")`
+- `EDF_DbFind.Field("floatArray").At(0)` / `EDF_DbFind.Field("floatArray.0")` evaluates the first element of the collection
+- `EDF_DbFind.Field("floatArray").At({0, 1})` / `EDF_DbFind.Field("floatArray.{0, 1}")` evaluates the first and second element of the collection
+- `EDF_DbFind.Field("classArray").OfType(FilteredType)` / `EDF_DbFind.Field("classArray.FilteredType")` evaluate collection collection elements of a complex type that inherit from the provided typename
+- `EDF_DbFind.Field("classArray").OfTypes({FilteredType, AnotherType})` / `EDF_DbFind.Field("classArray.{FilteredType, AnotherType}")` evaluate collection collection elements of a complex type that inherit from the provided typenames
 
 ## Field condition builder
 Summary of the available filed condition builder functions (`set<T>` counts as `array<T>`):
@@ -61,13 +63,13 @@ EDF_DbFindCondition condition = EDF_DbFind.Or({
     EDF_DbFind.Field("B").Empty(),
     EDF_DbFind.And({
         EDF_DbFind.Field("CString").Contains("SubString"),
-        EDF_DbFind.Field("DBoolArray").Equals(EDF_DbValues<bool>.From({true, false, true, true})),
+        EDF_DbFind.Field("DBoolArray").Equals({true, false, true, true}),
         EDF_DbFind.And({
             EDF_DbFind.Field("E.m_Numbers").Contains(100),
-            EDF_DbFind.Field("F.m_ComplexWrapperSet").OfType(Class).Any().Field("someNumber").Not().EqualsAnyOf(EDF_DbValues<int>.From({1, 2}))
+            EDF_DbFind.Field("F.m_ComplexWrapperSet").OfType(SomeType).Any().Field("someNumber").Not().EqualsAnyOf({1, 2})
         }),
         EDF_DbFind.Or({
-            EDF_DbFind.Field("G").EqualsAnyOf(EDF_DbValues<int>.From({12, 13}))
+            EDF_DbFind.Field("G").EqualsAnyOf({12, 13})
         })
     })
 });
@@ -90,11 +92,22 @@ EDF_DbFind.And({
 })
 ```
 
+### Polymorphism limitation
+Right now it is required to pass in the entire inheritance tree to match during an `OfType()` filtering. In later versions once https://feedback.bistudio.com/T172647 is implemented, it should be possible to just pass a base class and still match all inherited types.
+Given the classes `BaseType`, `InheritedTypeA : BaseType` and `InheritedTypeB : BaseType` a filter to match all of these needs to look like this currently:
+```cs
+EDF_DbFind.Field("someCollection").OfTypes({BaseType, InheritedTypeA, InheritedTypeB})
+```
+and later should only become
+```cs
+EDF_DbFind.Field("someCollection").OfType(BaseType)
+```
+
 ### Performance considerations 
 If possible make the condition a constant class member, that way it is created only once. For this to be possible all search values must be known constants as well.
 You can also cache more complex conditions as class members if you build them dynamically once and re-use them after.  
 ```cs
-const ref EDF_DbFindCondition s_ConstNameEqualsFoo = EDF_DbFind.Field("m_Name").Equals("Foo");
+static const ref EDF_DbFindCondition s_ConstNameEqualsFoo = EDF_DbFind.Field("m_Name").Equals("Foo");
 
 void MyFunction()
 {
@@ -102,10 +115,3 @@ void MyFunction()
 	...
 }
 ```
-### EL_DbValues wrapper
-> **Warning**
-> The following information only applies to versions used before AR patch 0.9.9.X. The value wrapper will be deprecated afterwards.
-
-In some of the examples the utility class `EDF_DbValues<T>` is used. Especially for const allocations, this ensures that the array data you pass into the builder is handled correctly.
-It is generally only needed for the static initializer syntax `{...}`. An already strong typed initialized array from previous code can be passed without the wrapper class safely.
-The compiler will complain or the built condition will have no array value if it was not used in a situation where it should have been.

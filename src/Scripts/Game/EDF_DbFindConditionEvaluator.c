@@ -6,13 +6,13 @@ enum EDF_DbFindFieldPathSegmentModifier
 	VALUES = 8,
 	COUNT = 16,
 	LENGTH = 32
-};
+}
 
 class EDF_DbFindFieldPathSegment
 {
 	string m_sFieldName;
-	int m_iCollectionIndex;
-	typename m_tCollectionTypeFilter;
+	ref set<int> m_aCollectionIndices;
+	ref set<typename> m_aCollectionTypeFilters;
 	int m_iModifiers;
 
 	//------------------------------------------------------------------------------------------------
@@ -114,29 +114,50 @@ class EDF_DbFindFieldPathSegment
 	//------------------------------------------------------------------------------------------------
 	void EDF_DbFindFieldPathSegment(string fieldName)
 	{
-		m_iCollectionIndex = -1;
 		if (!fieldName.IsEmpty())
 		{
-			int asIntValue = fieldName.ToInt();
-			if (asIntValue != 0 || fieldName == "0")
+			if (fieldName.StartsWith("{"))
 			{
-				m_iCollectionIndex = asIntValue;
+				array<string> arraySplits();
+				fieldName.Substring(1, fieldName.Length() - 2).Split(",", arraySplits, true);
+				bool typenameMode, intMode;
+				foreach (string arraySplit : arraySplits)
+				{
+					arraySplit.Trim();
+
+					if (!typenameMode && !intMode)
+					{
+						if (arraySplit.ToType())
+						{
+							typenameMode = true;
+							m_aCollectionTypeFilters = new set<typename>();
+							m_aCollectionTypeFilters.Reserve(arraySplits.Count());
+						}
+						else
+						{
+							intMode = true;
+							m_aCollectionIndices = new set<int>();
+							m_aCollectionIndices.Reserve(arraySplits.Count());
+						}
+					}
+
+					if (typenameMode)
+					{
+						m_aCollectionTypeFilters.Insert(arraySplit.ToType());
+					}
+					else
+					{
+						m_aCollectionIndices.Insert(arraySplit.ToInt());
+					}
+				}
 			}
 			else
 			{
-				typename type = fieldName.ToType();
-				if (type)
-				{
-					m_tCollectionTypeFilter = type;
-				}
-				else
-				{
-					m_sFieldName = fieldName;
-				}
+				m_sFieldName = fieldName;
 			}
 		}
 	}
-};
+}
 
 class EDF_DbFindConditionEvaluator
 {
@@ -239,8 +260,7 @@ class EDF_DbFindConditionEvaluator
 					EDF_DbFindFieldPathSegment nextSegment = pathSegments.Get(nextSegmentIndex);
 
 					// Handle collection<Class>.typename access operator
-					typename filterType = nextSegment.m_tCollectionTypeFilter;
-					if (filterType)
+					if (nextSegment.m_aCollectionTypeFilters)
 					{
 						nextSegmentIndex++; //Skip source.filterType. to condition after the filter
 						currentSegment = nextSegment; // move current segment because :any/:all modifier is on the typename segement
@@ -251,22 +271,34 @@ class EDF_DbFindConditionEvaluator
 
 					// Handle collection<...>.N access operator
 					int collectionStartIndex = 0;
-					bool indexAccessorMode = false;
-					if (nextSegment.m_iCollectionIndex != -1)
+					if (nextSegment.m_aCollectionIndices)
 					{
-						collectionStartIndex = nextSegment.m_iCollectionIndex;
-						if (collectionStartIndex >= collectionCount)
+						int min = int.MAX, max = int.MIN;
+						foreach (int index : nextSegment.m_aCollectionIndices)
 						{
-							Debug.Error(string.Format("Tried to access ilegal collection index '%1' of type '%2' on '%3'. Collection only contained '%4' items.", collectionStartIndex, variableInfo.m_tVaribleType, instance, collectionCount));
+							if (index < min)
+								min = index;
+
+							if (index > max)
+								max = index;
+						}
+
+						if (min >= collectionCount || max >= collectionCount)
+						{
+							Debug.Error(string.Format("Tried to access ilegal collection index range <%1..%2> of type '%3' on '%4'. Collection only contained '%5' items.", min, max, variableInfo.m_tVaribleType, instance, collectionCount));
 							return false;
 						}
 
-						indexAccessorMode = true;
+						collectionStartIndex = min;
 						nextSegmentIndex++; // Continue on the segment after the index information
 					}
 
 					for (int nValue = collectionStartIndex; nValue < collectionCount; nValue++)
 					{
+						// Index filtering
+						if (nextSegment.m_aCollectionIndices && !nextSegment.m_aCollectionIndices.Contains(nValue))
+							continue;
+
 						Class collectionValueItem;
 
 						string getFnc = "Get";
@@ -293,14 +325,23 @@ class EDF_DbFindConditionEvaluator
 							return false;
 						}
 
-						if (filterType && !collectionValueItem.IsInherited(filterType))
-							continue;
+						// Typename filtering
+						if (nextSegment.m_aCollectionTypeFilters)
+						{
+							bool found;
+							foreach (typename filterType : nextSegment.m_aCollectionTypeFilters)
+							{
+								if (collectionValueItem.IsInherited(filterType))
+								{
+									found = true;
+									break;
+								}
+							}
+							if (!found)
+								continue;
+						}
 
 						bool evaluationResult = EvaluateField(collectionValueItem, fieldCondition, pathSegments, nextSegmentIndex);
-
-						// A specific index of the collection was checked, just directly return that result what ever it is.
-						if (indexAccessorMode)
-							return evaluationResult;
 
 						if (currentSegment.m_iModifiers & EDF_DbFindFieldPathSegmentModifier.ALL)
 						{
@@ -615,7 +656,7 @@ class EDF_DbFindConditionEvaluator
 		// TODO: Can be optimized to check if id field is part of AND, and there are no other toplevel ORs, so we can know that only specific ids need to be loaded and then filters applied.
 		return false;
 	}
-};
+}
 
 class EDF_DbFindFieldFieldNullOrDefaultChecker<Class TValueType>
 {
@@ -681,7 +722,7 @@ class EDF_DbFindFieldFieldNullOrDefaultChecker<Class TValueType>
 
 		return false;
 	}
-};
+}
 
 class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 {
@@ -717,8 +758,8 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 		if (fieldInfo.m_eCollectionType != EDF_ReflectionVariableCollectionType.NONE)
 		{
 			/*
-			if (fieldInfo.m_tCollectionValueType.IsInherited(Class) && 
-				(TValueType != typename) && 
+			if (fieldInfo.m_tCollectionValueType.IsInherited(Class) &&
+				(TValueType != typename) &&
 				!(currentSegment.m_iModifiers & (EDF_DbFindFieldPathSegmentModifier.KEYS | EDF_DbFindFieldPathSegmentModifier.LENGTH | EDF_DbFindFieldPathSegmentModifier.COUNT)))
 			{
 				Debug.Error(string.Format(
@@ -1340,4 +1381,4 @@ class EDF_DbFindFieldValueTypedEvaluator<Class TValueType>
 
 		return false;
 	}
-};
+}

@@ -4,7 +4,7 @@ class EDF_WebProxyConnectionInfoBase : EDF_DbConnectionInfoBase
 	[Attribute(defvalue: "localhost", desc: "Web proxy hostname.")]
 	string m_sProxyHost;
 
-	[Attribute(defvalue: "8001", desc: "Web proxy port.")]
+	[Attribute(defvalue: "8008", desc: "Web proxy port.")]
 	int m_iProxyPort;
 
 	[Attribute(desc: "Use TLS/SSL to connect to the web proxy.")]
@@ -71,7 +71,7 @@ class EDF_WebProxyConnectionInfoBase : EDF_DbConnectionInfoBase
 			}
 		}
 	}
-};
+}
 
 sealed class EDF_CustomDefaultTitle : BaseContainerCustomTitleField
 {
@@ -93,7 +93,7 @@ sealed class EDF_CustomDefaultTitle : BaseContainerCustomTitleField
 		m_PropertyName = propertyName;
 		m_sDefaultTitle = defaultTitle;
 	}
-};
+}
 
 [EDF_CustomDefaultTitle("m_sKey", "MyNewUrlParameter"), BaseContainerProps()]
 sealed class EDF_WebProxyParameter
@@ -110,7 +110,7 @@ sealed class EDF_WebProxyParameter
 		m_sKey = key;
 		m_sValue = value;
 	}
-};
+}
 
 sealed class EDF_WebProxyDbDriverCallback : RestCallback
 {
@@ -235,7 +235,7 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 		m_tResultType = resultType;
 		s_aSelfReferences.Insert(this);
 	};
-};
+}
 
 sealed class EDF_WebProxyDbDriverFindRequest
 {
@@ -270,7 +270,7 @@ sealed class EDF_WebProxyDbDriverFindRequest
 		m_iLimit = limit;
 		m_iOffset = offset;
 	}
-};
+}
 
 class EDF_WebProxyDbDriver : EDF_DbDriver
 {
@@ -411,9 +411,10 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 
 	//------------------------------------------------------------------------------------------------
 	//! TODO: Rely on https://feedback.bistudio.com/T173074 instead once added
-	static string MoveTypeDiscriminatorIn(string data)
+	static string MoveTypeDiscriminatorIn(string data, string discriminator = "_type")
 	{
-		int typeDiscriminatorIdx = data.IndexOf("\"$type\"");
+		string quoutedDiscriminator = string.Format("\"%1\"", discriminator);
+		int typeDiscriminatorIdx = data.IndexOf(quoutedDiscriminator);
 		if (typeDiscriminatorIdx == -1)
 			return data;
 
@@ -439,7 +440,7 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 			processedString += typeDiscrimiantor;
 
 			dataPosition = injectionIndex;
-			typeDiscriminatorIdx = data.IndexOfFrom(skipOver, "\"$type\"");
+			typeDiscriminatorIdx = data.IndexOfFrom(skipOver, quoutedDiscriminator);
 			if (typeDiscriminatorIdx == -1)
 			{
 				processedString += data.Substring(dataPosition, dataLength - dataPosition);
@@ -451,9 +452,10 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string MoveTypeDiscriminatorOut(string data)
+	static string MoveTypeDiscriminatorOut(string data, string discriminator = "_type")
 	{
-		int typeDiscriminatorIdx = data.IndexOf("\"$type\"");
+		string quoutedDiscriminator = string.Format("\"%1\"", discriminator);
+		int typeDiscriminatorIdx = data.IndexOf(quoutedDiscriminator);
 		if (typeDiscriminatorIdx == -1)
 			return data;
 
@@ -490,7 +492,7 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 			// Continue behind original position
 			dataPosition = typeDiscriminatorIdx + discriminatorLength;
 
-			typeDiscriminatorIdx = data.IndexOfFrom(dataPosition, "\"$type\"");
+			typeDiscriminatorIdx = data.IndexOfFrom(dataPosition, quoutedDiscriminator);
 			if (typeDiscriminatorIdx == -1)
 			{
 				processedString += data.Substring(dataPosition, dataLength - dataPosition);
@@ -510,4 +512,4 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 		m_pContext.reset();
 		m_pContext = null;
 	}
-};
+}
