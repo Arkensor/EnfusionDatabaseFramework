@@ -20,7 +20,8 @@ class EDF_AutoTestEntity : GenericEntity
 	{
 		// Run tests and wait until finished
 		TestHarness.Begin();
-		while (!TestHarness.Run())
+		int start = System.GetTickCount();
+		while (!TestHarness.Run() && (System.GetTickCount() - start) < 10000)
 		{
 		}
 		TestHarness.End();
@@ -54,4 +55,4 @@ class EDF_AutoTestEntity : GenericEntity
 		handle.Write(testResults);
 		handle.Close();
 	}
-};
+}
