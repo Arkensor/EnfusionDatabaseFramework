@@ -11,7 +11,7 @@ class EDF_DbFindConditionBuilderTests : TestSuite
 	void TearDown()
 	{
 	}
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -22,7 +22,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_And_EmptyArgs_EmptyCondition()
 
 	// Assert
 	return new EDF_TestResult(condition.m_aConditions.Count() == 0);
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -33,7 +33,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_And_MultipleConditions_MultipleWr
 
 	// Assert
 	return new EDF_TestResult(condition.m_aConditions.Count() == 2);
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -44,7 +44,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Or_EmptyArgs_EmptyCondition()
 
 	// Assert
 	return new EDF_TestResult(condition.m_aConditions.Count() == 0);
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -55,7 +55,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Or_MultipleConditions_MultipleWra
 
 	// Assert
 	return new EDF_TestResult(condition.m_aConditions.Count() == 2);
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -66,7 +66,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_SingleField_ValidBuilder()
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath == "fieldName" && builder.m_bInverted == false);
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -77,7 +77,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_SingleFieldMultiValueInvert
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath == "fieldName.subField" && builder.m_bInverted == true);
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -88,7 +88,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_MultiField_FieldsChained()
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath == "fieldName.subField");
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -99,7 +99,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_Length_ModifierPresent()
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath.EndsWith("stringField" + EDF_DbFindFieldAnnotations.LENGTH));
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -110,7 +110,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_Count_ModifierPresent()
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath.EndsWith("collectionName:count"));
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -121,7 +121,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_Any_ModifierPresent()
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath.EndsWith(":any"));
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -132,7 +132,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_All_ModifierPresent()
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath.EndsWith(":all"));
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -143,7 +143,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_Keys_ModifierPresent()
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath.EndsWith(":keys"));
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -154,7 +154,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_Values_ModifierPresent()
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath.EndsWith(":values"));
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -165,7 +165,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_ValuesAny_ModifiersPresent(
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath.EndsWith(":values:any"));
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -176,7 +176,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_At_IndexFieldSet()
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath == "collectionName.{3}");
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -187,7 +187,7 @@ TestResultBase EDF_Test_DbFindConditionBuilder_Field_OfType_ModiferAndTypefilter
 
 	// Assert
 	return new EDF_TestResult(builder.m_sFieldPath == "collectionName.{EDF_DbFind}");
-};
+}
 
 //------------------------------------------------------------------------------------------------
 [Test("EDF_DbFindConditionBuilderTests")]
@@ -202,13 +202,13 @@ class EDF_Test_DbFindConditionBuilder_Field_ComplexBuild_DebugStringEqual : Test
 			EDF_DbFind.Field("B").NullOrDefault(),
 			EDF_DbFind.And({
 				EDF_DbFind.Field("CString").Contains("SubString"),
-				EDF_DbFind.Field("DBoolArray").Equals(EDF_DbValues<bool>.From({true, false, true, true})),
+				EDF_DbFind.Field("DBoolArray").Equals({true, false, true, true}),
 				EDF_DbFind.And({
 					EDF_DbFind.Field("E.m_Numbers").Contains(100),
-					EDF_DbFind.Field("F.m_ComplexWrapperSet").OfType(EDF_DbFind).Any().Field("someNumber").Not().EqualsAnyOf(EDF_DbValues<int>.From({1, 2}))
+					EDF_DbFind.Field("F.m_ComplexWrapperSet").OfType(EDF_DbFind).Any().Field("someNumber").Not().EqualsAnyOf({1, 2})
 				}),
 				EDF_DbFind.Or({
-					EDF_DbFind.Field("G").EqualsAnyOf(EDF_DbValues<int>.From({12, 13}))
+					EDF_DbFind.Field("G").EqualsAnyOf({12, 13})
 				})
 			})
 		});
@@ -221,17 +221,17 @@ class EDF_Test_DbFindConditionBuilder_Field_ComplexBuild_DebugStringEqual : Test
 
 		// Assert
 		string compareString = "Or(\
-			CheckNullOrDefault(fieldPath:'A', shouldBeNullOrDefault:false),\
-			CheckNullOrDefault(fieldPath:'B', shouldBeNullOrDefault:true),\
+			CheckNullOrDefault(fieldPath:'A', shouldBeNullOrDefault:false), \
+			CheckNullOrDefault(fieldPath:'B', shouldBeNullOrDefault:true), \
 			And(\
-				Compare(fieldPath:'CString', operator:CONTAINS, values:{'SubString'}),\
-				Compare(fieldPath:'DBoolArray', operator:EQUAL, values:{{true,false,true,true}}),\
+				Compare(fieldPath:'CString', operator:CONTAINS, values:{'SubString'}), \
+				Compare(fieldPath:'DBoolArray', operator:EQUAL, values:{{true, false, true, true}}), \
 				And(\
-					Compare(fieldPath:'E.m_Numbers', operator:CONTAINS, values:{100}),\
-					Compare(fieldPath:'F.m_ComplexWrapperSet.{EDF_DbFind}:any.someNumber', operator:NOT_EQUAL, values:{1,2})\
-				),\
+					Compare(fieldPath:'E.m_Numbers', operator:CONTAINS, values:{100}), \
+					Compare(fieldPath:'F.m_ComplexWrapperSet.{EDF_DbFind}:any.someNumber', operator:NOT_EQUAL, values:{1, 2})\
+				), \
 				Or(\
-					Compare(fieldPath:'G', operator:EQUAL, values:{12,13})\
+					Compare(fieldPath:'G', operator:EQUAL, values:{12, 13})\
 				)\
 			)\
 		)";
@@ -242,4 +242,4 @@ class EDF_Test_DbFindConditionBuilder_Field_ComplexBuild_DebugStringEqual : Test
 
 		SetResult(new EDF_TestResult(debugString == compareString));
 	}
-};
+}

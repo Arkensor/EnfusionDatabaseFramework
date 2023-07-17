@@ -401,7 +401,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_EqualsAnyOf_OneTrue_True()
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_Float").EqualsAnyOf(EDF_DbValues<float>.From({3.14, 2.22, 42.42}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_Float").EqualsAnyOf({3.14, 2.22, 42.42});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -417,7 +417,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_EqualsAnyOf_NoneTrue_False()
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_Float").EqualsAnyOf(EDF_DbValues<float>.From({3.14, 2.22, 3.33}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_Float").EqualsAnyOf({3.14, 2.22, 3.33});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -545,7 +545,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Count_AnyOfIncludingTwo_True()
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_IntArray").Count().EqualsAnyOf(EDF_DbValues<int>.From({1, 2, 3}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_IntArray").Count().EqualsAnyOf({1, 2, 3});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -689,7 +689,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Values_OneMatching_True()
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainer entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_IntMap").Values().Any().EqualsAnyOf(EDF_DbValues<int>.From({10, 1300, 42}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_IntMap").Values().Any().EqualsAnyOf({10, 1300, 42});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -785,7 +785,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_Equals_ArrayMatches_True()
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatArray").Equals(EDF_DbValues<float>.From({42.42, 1337.1337}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatArray").Equals({42.42, 1337.1337});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -801,7 +801,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAnyOf_PartialIntersect_
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatSet").ContainsAnyOf(EDF_DbValues<float>.From({666.666, 1337.1337}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatSet").ContainsAnyOf({666.666, 1337.1337});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -817,7 +817,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAnyOf_NoIntersect_False
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatSet").ContainsAnyOf(EDF_DbValues<float>.From({69.696969}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatSet").ContainsAnyOf({69.696969});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -833,7 +833,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAllOf_PartialIntersect_
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatSet").ContainsAllOf(EDF_DbValues<float>.From({666.666, 1337.1337}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_FloatSet").ContainsAllOf({666.666, 1337.1337});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -849,7 +849,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAllOf_FullIntersect_Tru
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_IntArray").ContainsAllOf(EDF_DbValues<int>.From({1337, 42}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_IntArray").ContainsAllOf({1337, 42});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -865,7 +865,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAllOf_FullIntersectSing
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_VectorArray").ContainsAllOf(EDF_DbValues<vector>.From({"1 0 1"}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_VectorArray").ContainsAllOf({Vector(1, 0, 1)});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
@@ -881,7 +881,7 @@ TestResultBase EDF_Test_DbFindConditionEvaluator_ContainsAllOf_PartialMoreValues
 	// Arrange
 	EDF_Test_FindConditionEvaluatorContainerItem entity();
 
-	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_VectorArray").ContainsAllOf(EDF_DbValues<vector>.From({"1 0 1", "6 6 6"}));
+	EDF_DbFindCondition conditon = EDF_DbFind.Field("m_VectorArray").ContainsAllOf({"1 0 1", "6 6 6"});
 
 	// Act
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);

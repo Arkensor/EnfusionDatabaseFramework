@@ -562,27 +562,6 @@ typedef EDF_DbFindCompareFieldValues<array<string>> EDF_DbFindFieldStringArray;
 typedef EDF_DbFindCompareFieldValues<array<vector>> EDF_DbFindFieldVectorArray;
 typedef EDF_DbFindCompareFieldValues<array<typename>> EDF_DbFindFieldTypenameArray;
 
-class EDF_DbValues<Class T>
-{
-	protected static ref array<ref array<T>> ALLOC_BUFFER;
-
-	//------------------------------------------------------------------------------------------------
-	static array<T> From(notnull array<T> values)
-	{
-		auto data = new array<T>();
-		data.Reserve(values.Count());
-
-		foreach (T value : values)
-		{
-			data.Insert(value);
-		}
-
-		if (!ALLOC_BUFFER) ALLOC_BUFFER = {null};
-		ALLOC_BUFFER.Set(0, data);
-		return data;
-	}
-}
-
 class EDF_DbFindFieldAnnotations
 {
 	const string SEPERATOR = ".";

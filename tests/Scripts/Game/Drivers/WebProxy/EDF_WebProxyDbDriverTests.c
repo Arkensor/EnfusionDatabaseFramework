@@ -609,18 +609,18 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntArrayOperators_OperatorBased : E
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Not().NullOrDefault(), callback: matchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Contains(1337), callback: matchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Contains(42), callback: matchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAnyOf(EDF_DbValues<int>.From({41, 42, 43})), callback: matchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAllOf(EDF_DbValues<int>.From({42, 1337})), callback: matchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Equals(EDF_DbValues<int>.From({1337, 42})), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAnyOf({41, 42, 43}), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAllOf({42, 1337}), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Equals({1337, 42}), callback: matchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().GreaterThan(69), callback: matchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().LessThan(2000), callback: matchCallback);
 
 		// Should not match
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").NullOrDefault(), callback: noMatchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Contains(69), callback: noMatchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAnyOf(EDF_DbValues<int>.From({69, 96})), callback: noMatchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAllOf(EDF_DbValues<int>.From({42, 69})), callback: noMatchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Equals(EDF_DbValues<int>.From({42, 1337})), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAnyOf({69, 96}), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").ContainsAllOf({42, 69}), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Equals({42, 1337}), callback: noMatchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().GreaterThanOrEquals(1338), callback: noMatchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().LessThanOrEquals(40), callback: noMatchCallback);
 	}
@@ -678,13 +678,13 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntNestedArrayOperators_OperatorBas
 
 		// Should match
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(69), callback: matchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf(EDF_DbValues<int>.From({42, 69})), callback: matchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Equals(EDF_DbValues<int>.From({69, 96})), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf({42, 69}), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Equals({69, 96}), callback: matchCallback);
 
 		// Should not match
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(666), callback: noMatchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf(EDF_DbValues<int>.From({41, 42, 43})), callback: noMatchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().Equals(EDF_DbValues<int>.From({69, 96})), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().ContainsAnyOf({41, 42, 43}), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().Equals({69, 96}), callback: noMatchCallback);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -805,12 +805,12 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_BoolNestedArrayOperators_OperatorBa
 
 		// Should match
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Contains(true), callback: matchCallback);
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Equals(EDF_DbValues<bool>.From({true, false})), callback: matchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Equals({true, false}), callback: matchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().Any().Equals(false), callback: matchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").Any().All().NullOrDefault(), callback: matchCallback);
 
 		// Should not match
-		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().Equals(EDF_DbValues<bool>.From({true, true})), callback: noMatchCallback);
+		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().Equals({true, true}), callback: noMatchCallback);
 		m_pDriver.FindAllAsync(type, EDF_DbFind.Field("m_aValues").All().All().NullOrDefault(), callback: noMatchCallback);
 	}
 
@@ -998,7 +998,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedNestedArrayOperators_Op
 			.Field("m_aValues")
 			.Any()
 			.Invariant()
-			.ContainsAllOf(EDF_DbValues<string>.From({"arma", "reforger"}));
+			.ContainsAllOf({"arma", "reforger"});
 
 		EDF_DbFindCondition nestedPathWrapperCondition = EDF_DbFind
 			.Field("m_pOuterWrapper")

@@ -186,7 +186,7 @@ class EDF_Test_JsonFileDbDriver_FindAll_IdOnly_ExactLoadAndCache : EDF_Test_Json
 	[Step(EStage.Main)]
 	void ActAndAsset()
 	{
-		EDF_DbFindCondition condition = EDF_DbFind.Id().EqualsAnyOf(EDF_DbValues<string>.From({"TEST0000-0000-0001-0000-000000001001", "TEST0000-0000-0001-0000-000000001005"}));
+		EDF_DbFindCondition condition = EDF_DbFind.Id().EqualsAnyOf({"TEST0000-0000-0001-0000-000000001001", "TEST0000-0000-0001-0000-000000001005"});
 
 		// Act
 		array<ref EDF_DbEntity> results = driver.FindAll(EDF_Test_JsonFileDbDriverEntity, condition).GetEntities();
