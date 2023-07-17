@@ -152,7 +152,7 @@ class EDF_Test_JsonFileDbDriver_Remove_ExistingEntity_FileDeleted : EDF_Test_Jso
 		}
 
 		string file = string.Format("%1/%2.json", driver._GetTypeDirectory(EDF_Test_JsonFileDbDriverEntity), entity.GetId());
-		SetResult(new EDF_TestResult(!FileIO.FileExist(file)));
+		SetResult(new EDF_TestResult(!FileIO.FileExists(file)));
 	}
 
 	//------------------------------------------------------------------------------------------------

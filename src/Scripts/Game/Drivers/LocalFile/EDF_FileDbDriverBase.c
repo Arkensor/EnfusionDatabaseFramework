@@ -42,7 +42,7 @@ class EDF_FileDbDriverBase : EDF_DbDriver
 		FileIO.MakeDirectory(DB_BASE_DIR);
 		FileIO.MakeDirectory(m_sDbDir);
 
-		return FileIO.FileExist(m_sDbDir);
+		return FileIO.FileExists(m_sDbDir);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ class EDF_FileDbDriverBase : EDF_DbDriver
 	{
 		string file = string.Format("%1/%2%3", _GetTypeDirectory(entityType), entityId, GetFileExtension());
 
-		if (!FileIO.FileExist(file))
+		if (!FileIO.FileExists(file))
 			return EDF_EDbOperationStatusCode.FAILURE_ID_NOT_FOUND;
 
 		if (!FileIO.DeleteFile(file))

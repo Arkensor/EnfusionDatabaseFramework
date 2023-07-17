@@ -64,7 +64,7 @@ class EDF_JsonFileDbDriver : EDF_FileDbDriverBase
 	override protected EDF_EDbOperationStatusCode ReadFromDisk(typename entityType, string entityId, out EDF_DbEntity entity)
 	{
 		string file = string.Format("%1/%2.json", _GetTypeDirectory(entityType), entityId);
-		if (FileIO.FileExist(file))
+		if (FileIO.FileExists(file))
 		{
 			SCR_JsonLoadContext reader();
 			if (!reader.LoadFromFile(file))
