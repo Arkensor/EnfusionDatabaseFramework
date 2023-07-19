@@ -35,7 +35,7 @@
 - 🚧 `BIBackend` local/cloud synced `.bin` files stored in the Bohemia Interactive session backend.
 - 🚧 `Http` a web API powered bridge to other external storage services such as SQL and document databases.
     - 🚧 SQL Databases `SQLite`, `MySQL`, `PostgreSQL`
-    - 🚧 Document Databases `MongoDB`
+    - ✅ Document Databases [`MongoDB`](https://github.com/Arkensor/EnfusionDatabaseFramework.Drivers.WebProxy.MongoDB)
 
 ## 📖 Documentation
 Detailed information on the individual classes and best practices can be found [here](docs/index.md).
