@@ -9,246 +9,323 @@ class EDF_DbEntitySorter
 	//------------------------------------------------------------------------------------------------
 	static array<ref EDF_DbEntity> GetSorted(notnull array<ref EDF_DbEntity> entities, notnull array<ref TStringArray> orderBy, int orderByIndex = 0)
 	{
-		if (entities.Count() < 2 || orderByIndex >= orderBy.Count()) return entities;
+		if (entities.Count() < 2 || orderByIndex >= orderBy.Count())
+			return entities;
 
 		string fieldName = orderBy.Get(orderByIndex).Get(0);
 		array<string> fieldSplits();
 		fieldName.Split(".", fieldSplits, true);
 
 		// Empty sort condition, nothing to do
-		if (fieldSplits.IsEmpty()) return entities;
+		if (fieldSplits.IsEmpty())
+			return entities;
 
 		string sortDirection = orderBy.Get(orderByIndex).Get(1);
 		sortDirection.ToLower();
 		bool descending = sortDirection == "desc";
 
-		//Collect all values for the field being sorted
-		map<string, ref array<ref EDF_DbEntity>> distinctValues();
+		ScriptModule scriptModule = GetGame().GetScriptModule();
+		Managed sortWrappers = GetSortedWrappers(entities, fieldSplits, descending, scriptModule);
 
-		//Get type from first instance, they should all be the same
-		typename fieldType;
+		int sortWrappersCount;
+		scriptModule.Call(sortWrappers, "Count", false, sortWrappersCount);
 
-		//Add each entity to distinct map of field values
-		foreach (EDF_DbEntity entity : entities)
+		array<ref EDF_DbEntity> sameEntities();
+		bool checkSameEntities = (orderByIndex + 1) < orderBy.Count();
+
+		array<ref EDF_DbEntity> sortedEntities();
+		sortedEntities.Reserve(sortWrappersCount);
+		for (int nWrapper = 0; nWrapper < sortWrappersCount; nWrapper++)
 		{
-			string valueKey;
-			GetSortValue(entity, fieldSplits, 0, valueKey, fieldType);
+			EDF_DbEntitySortWrapper sortWrapper;
+			scriptModule.Call(sortWrappers, "Get", false, sortWrapper, nWrapper);
 
-			array<ref EDF_DbEntity> entityArray = distinctValues.Get(valueKey);
-			if (!entityArray)
+			if (checkSameEntities)
 			{
-				entityArray = new array<ref EDF_DbEntity>();
-				distinctValues.Set(valueKey, entityArray);
+				// Collect same order value entities to run sub ordering on them
+				sameEntities.Clear();
+				int checkNext = nWrapper + 1;
+				while (checkNext < sortWrappersCount)
+				{
+					EDF_DbEntitySortWrapper next;
+					scriptModule.Call(sortWrappers, "Get", false, next, checkNext);
+
+					if (sortWrapper.Equals(next))
+					{
+						sameEntities.Insert(next.m_pEntity);
+						checkNext++;
+						continue;
+					}
+
+					break;
+				}
+
+				if (!sameEntities.IsEmpty())
+				{
+					sameEntities.Insert(sortWrapper.m_pEntity);
+					foreach (EDF_DbEntity subSortedEntity : GetSorted(sameEntities, orderBy, orderByIndex + 1))
+					{
+						sortedEntities.Insert(subSortedEntity);
+					}
+					nWrapper = checkNext - 1;
+					continue;
+				}
 			}
 
-			entityArray.Insert(entity);
+			sortedEntities.Insert(sortWrapper.m_pEntity);
 		}
 
-		//Sort all field values according to input
-		array<string> valueKeysSorted();
-		valueKeysSorted.Reserve(distinctValues.Count());
-
-		// TODO: Use fixed lengh padded numbers to rely only on string sort without conversion
-		switch(fieldType)
-		{
-			case int:
-			{
-				array<int> valueKeysSortedTyped();
-				valueKeysSortedTyped.Reserve(distinctValues.Count());
-
-				//Parse strings back into sortable integers
-				for (int nKey = 0, keys = distinctValues.Count(); nKey < keys; nKey++)
-				{
-					valueKeysSortedTyped.Insert(distinctValues.GetKey(nKey).ToInt());
-				}
-
-				//Sort integers
-				valueKeysSortedTyped.Sort(descending);
-
-				//Turn back into strings to get objects from map
-				foreach (int sortedKey : valueKeysSortedTyped)
-				{
-					valueKeysSorted.Insert(sortedKey.ToString());
-				}
-
-				break;
-			}
-
-			case float:
-			{
-				array<float> valueKeysSortedTyped();
-				valueKeysSortedTyped.Reserve(distinctValues.Count());
-
-				//Parse strings back into sortable floats
-				for (int nKey = 0, keys = distinctValues.Count(); nKey < keys; nKey++)
-				{
-					valueKeysSortedTyped.Insert(distinctValues.GetKey(nKey).ToFloat());
-				}
-
-				//Sort floats
-				valueKeysSortedTyped.Sort(descending);
-
-				//Turn back into strings to get objects from map
-				foreach (int index, float sortedKey : valueKeysSortedTyped)
-				{
-					valueKeysSorted.Insert(sortedKey.ToString());
-				}
-
-				break;
-			}
-
-			case bool:
-			{
-				array<bool> valueKeysSortedTyped();
-				valueKeysSortedTyped.Reserve(distinctValues.Count());
-
-				//Parse strings back into sortable booleans
-				for (int nKey = 0, keys = distinctValues.Count(); nKey < keys; nKey++)
-				{
-					valueKeysSortedTyped.Insert(distinctValues.GetKey(nKey) == "true");
-				}
-
-				//Sort booleans
-				valueKeysSortedTyped.Sort(descending);
-
-				//Turn back into strings to get objects from map
-				foreach (int index, bool sortedKey : valueKeysSortedTyped)
-				{
-					valueKeysSorted.Insert(sortedKey.ToString());
-				}
-
-				break;
-			}
-
-			case string:
-			{
-				for (int nKey = 0, keys = distinctValues.Count(); nKey < keys; nKey++)
-				{
-					valueKeysSorted.Insert(distinctValues.GetKey(nKey));
-				}
-
-				valueKeysSorted.Sort(descending);
-
-				break;
-			}
-
-			case vector:
-			{
-				array<vector> valueKeysSortedTyped();
-				valueKeysSortedTyped.Reserve(distinctValues.Count());
-
-				//Parse strings back into sortable booleans
-				for (int nKey = 0, keys = distinctValues.Count(); nKey < keys; nKey++)
-				{
-					valueKeysSortedTyped.Insert(distinctValues.GetKey(nKey).ToVector());
-				}
-
-				//Sort booleans
-				valueKeysSortedTyped.Sort(descending);
-
-				//Turn back into strings to get objects from map
-				foreach (int index, vector sortedKey : valueKeysSortedTyped)
-				{
-					valueKeysSorted.Insert(sortedKey.ToString(false));
-				}
-
-				break;
-			}
-		}
-
-		array<ref EDF_DbEntity> sortedEnties();
-		sortedEnties.Reserve(entities.Count());
-
-		foreach (string sortedValueKey : valueKeysSorted)
-		{
-			array<ref EDF_DbEntity> sameKeyEntities = distinctValues.Get(sortedValueKey);
-
-			if (sameKeyEntities.Count() == 1)
-			{
-				sortedEnties.Insert(sameKeyEntities.Get(0));
-			}
-			else
-			{
-				array<ref EDF_DbEntity> subSortedEnities = GetSorted(sameKeyEntities, orderBy, orderByIndex + 1);
-
-				foreach (EDF_DbEntity subSortedEntity : subSortedEnities)
-				{
-					sortedEnties.Insert(subSortedEntity);
-				}
-			}
-		}
-
-		return sortedEnties;
+		return sortedEntities;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void GetSortValue(Class instance, array<string> fieldSplits, int currentIndex, out string sortValue, out typename valueType)
+	protected static EDF_DbEntitySortWrapper GetSortWrapper(EDF_DbEntity entity, array<string> fieldSplits)
+	{
+		EDF_DbEntitySortWrapper wrapper = BuildSortWrapper(entity, fieldSplits, 0);
+		wrapper.m_pEntity = entity;
+		return wrapper;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static EDF_DbEntitySortWrapper BuildSortWrapper(Class instance, array<string> fieldSplits, int currentIndex)
 	{
 		string currentFieldName = fieldSplits.Get(currentIndex);
 		EDF_ReflectionVariableInfo variableinfo = EDF_ReflectionVariableInfo.Get(instance, currentFieldName);
-		valueType = variableinfo.m_tVaribleType;
 
 		// Expand nested object
 		if (currentIndex < fieldSplits.Count() - 1)
 		{
-			if (valueType.IsInherited(array) || valueType.IsInherited(set) || valueType.IsInherited(map))
+			if (variableinfo.m_tVaribleType.IsInherited(array) || variableinfo.m_tVaribleType.IsInherited(set) || variableinfo.m_tVaribleType.IsInherited(map))
 			{
-				Debug.Error(string.Format("Can not get sort value from collection type '%1' on '%2.%3'", valueType, variableinfo.m_tHolderType, currentFieldName));
-				return;
+				Debug.Error(string.Format("Can not get sort value from collection type '%1' on '%2.%3'", variableinfo.m_tVaribleType, variableinfo.m_tHolderType, currentFieldName));
+				return null;
 			}
-			else if (!valueType.IsInherited(Class))
+			else if (!variableinfo.m_tVaribleType.IsInherited(Class))
 			{
-				Debug.Error(string.Format("Can not expand primitive type '%1' on '%2.%3' to read field '%4'", valueType, variableinfo.m_tHolderType, currentFieldName, fieldSplits.Get(currentIndex + 1)));
-				return;
+				Debug.Error(string.Format("Can not expand primitive type '%1' on '%2.%3' to read field '%4'", variableinfo.m_tVaribleType, variableinfo.m_tHolderType, currentFieldName, fieldSplits.Get(currentIndex + 1)));
+				return null;
 			}
 
 			Class complexHolder;
-			if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, complexHolder)) return;
-			GetSortValue(complexHolder, fieldSplits, currentIndex + 1, sortValue, valueType);
+			if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, complexHolder))
+				return null;
+
+			return BuildSortWrapper(complexHolder, fieldSplits, currentIndex + 1);
 		}
 
 		// Read primitive field value and convert to compareable
-		switch(valueType)
+		switch (variableinfo.m_tVaribleType)
 		{
 			case int:
 			{
 				int outVal;
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal)) return;
-				sortValue = outVal.ToString();
-				return;
+				if (variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal))
+					return new EDF_DbEntitySortWrapperT<int>(outVal);
+
+				break;
 			}
 
 			case float:
 			{
 				float outVal;
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal)) return;
-				sortValue = outVal.ToString();
-				return;
+				if (variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal))
+					return new EDF_DbEntitySortWrapperT<float>(outVal);
+
+				break;
 			}
 
 			case bool:
 			{
 				bool outVal;
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal)) return;
-				sortValue = outVal.ToString();
-				return;
+				if (variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal))
+					return new EDF_DbEntitySortWrapperT<bool>(outVal);
+
+				break;
 			}
 
 			case string:
 			{
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, sortValue)) return;
-				return;
+				string outVal;
+				if (variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal))
+					return new EDF_DbEntitySortWrapperT<string>(outVal);
+
+				break;
 			}
 
 			case vector:
 			{
 				vector outVal;
-				if (!variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal)) return;
-				sortValue = outVal.ToString(false);
-				return;
+				if (variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal))
+					return new EDF_DbEntitySortWrapperT<vector>(outVal);
+
+				break;
+			}
+
+			case typename:
+			{
+				typename outVal;
+				if (variableinfo.m_tHolderType.GetVariableValue(instance, variableinfo.m_iVariableIndex, outVal))
+					return new EDF_DbEntitySortWrapperT<typename>(outVal);
+
+				break;
 			}
 		}
 
-		Debug.Error(string.Format("Can not sort entity collection by field '%1' with non sortable type '%2'.", currentFieldName, valueType));
+		Debug.Error(string.Format("Can not sort entity collection by field '%1' with non sortable type '%2'.", currentFieldName, variableinfo.m_tVaribleType.ToString()));
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static Managed GetSortedWrappers(array<ref EDF_DbEntity> entities, array<string> fieldSplits, bool descending, ScriptModule scriptModule)
+	{
+		Managed sortWrappers;
+		typename valueType;
+
+		foreach (EDF_DbEntity entity : entities)
+		{
+			EDF_DbEntitySortWrapper wrapper = GetSortWrapper(entity, fieldSplits);
+
+			if (!sortWrappers)
+			{
+				valueType = wrapper.GetType();
+				switch (valueType)
+				{
+					case int:
+					{
+						sortWrappers = new array<ref EDF_DbEntitySortWrapperT<int>>();
+						break;
+					}
+
+					case float:
+					{
+						sortWrappers = new array<ref EDF_DbEntitySortWrapperT<float>>();
+						break;
+					}
+
+					case bool:
+					{
+						sortWrappers = new array<ref EDF_DbEntitySortWrapperT<bool>>();
+						break;
+					}
+
+					case string:
+					{
+						sortWrappers = new array<ref EDF_DbEntitySortWrapperT<string>>();
+						break;
+					}
+
+					case vector:
+					{
+						sortWrappers = new array<ref EDF_DbEntitySortWrapperT<vector>>();
+						break;
+					}
+
+					case typename:
+					{
+						sortWrappers = new array<ref EDF_DbEntitySortWrapperT<typename>>();
+						break;
+					}
+				}
+
+				scriptModule.Call(sortWrappers, "Reserve", false, null, entities.Count());
+			}
+
+			switch (valueType)
+			{
+				case int:
+				{
+					array<ref EDF_DbEntitySortWrapperT<int>>.Cast(sortWrappers).Insert(EDF_DbEntitySortWrapperT<int>.Cast(wrapper));
+					break;
+				}
+
+				case float:
+				{
+					array<ref EDF_DbEntitySortWrapperT<float>>.Cast(sortWrappers).Insert(EDF_DbEntitySortWrapperT<float>.Cast(wrapper));
+					break;
+				}
+
+				case bool:
+				{
+					array<ref EDF_DbEntitySortWrapperT<bool>>.Cast(sortWrappers).Insert(EDF_DbEntitySortWrapperT<bool>.Cast(wrapper));
+					break;
+				}
+
+				case string:
+				{
+					array<ref EDF_DbEntitySortWrapperT<string>>.Cast(sortWrappers).Insert(EDF_DbEntitySortWrapperT<string>.Cast(wrapper));
+					break;
+				}
+
+				case vector:
+				{
+					array<ref EDF_DbEntitySortWrapperT<vector>>.Cast(sortWrappers).Insert(EDF_DbEntitySortWrapperT<vector>.Cast(wrapper));
+					break;
+				}
+
+				case typename:
+				{
+					array<ref EDF_DbEntitySortWrapperT<typename>>.Cast(sortWrappers).Insert(EDF_DbEntitySortWrapperT<typename>.Cast(wrapper));
+					break;
+				}
+			}
+		}
+
+		auto dbgbefore = array<ref EDF_DbEntitySortWrapperT<vector>>.Cast(sortWrappers);
+		if (dbgbefore)
+		{
+			foreach (auto wrapperbefore : dbgbefore)
+			{
+				Print(wrapperbefore.m_SortValue);
+			}
+		}
+
+		scriptModule.Call(sortWrappers, "Sort", false, null, descending);
+
+		auto dbgafter = array<ref EDF_DbEntitySortWrapperT<vector>>.Cast(sortWrappers);
+		if (dbgafter)
+		{
+			foreach (auto wrapperafter : dbgafter)
+			{
+				Print(wrapperafter.m_SortValue);
+			}
+		}
+
+		return sortWrappers;
+	}
+
+}
+
+class EDF_DbEntitySortWrapper
+{
+	ref EDF_DbEntity m_pEntity;
+
+	//------------------------------------------------------------------------------------------------
+	bool Equals(EDF_DbEntitySortWrapper other);
+
+	//------------------------------------------------------------------------------------------------
+	typename GetType();
+}
+
+class EDF_DbEntitySortWrapperT<Class T> : EDF_DbEntitySortWrapper
+{
+	[SortAttribute()]
+	T m_SortValue;
+
+	//------------------------------------------------------------------------------------------------
+	override bool Equals(EDF_DbEntitySortWrapper other)
+	{
+		return m_SortValue == EDF_DbEntitySortWrapperT<T>.Cast(other).m_SortValue;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override typename GetType()
+	{
+		return T;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void EDF_DbEntitySortWrapperT(T sortValue)
+	{
+		m_SortValue = sortValue;
 	}
 }
