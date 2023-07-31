@@ -119,11 +119,14 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 	protected ref EDF_DbOperationCallback m_pCallback;
 	protected typename m_tResultType;
 
+	protected string m_sVerb;
+	protected string m_sUrl;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(string data, int dataSize)
 	{
 		#ifdef PERSISTENCE_DEBUG
-		Print(string.Format("%1::OnSuccess(%2, %3)", this, dataSize, data), LogLevel.VERBOSE);
+		Print(string.Format("%1::OnSuccess(%2, %3) from %4:%5", this, dataSize, data, m_sVerb, m_sUrl), LogLevel.VERBOSE);
 		#endif
 
 		s_aSelfReferences.RemoveItem(this);
@@ -173,7 +176,7 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 		s_aSelfReferences.RemoveItem(this);
 
 		#ifdef PERSISTENCE_DEBUG
-		Print(string.Format("%1::OnError(%2(%3))", this, errorCode, typename.EnumToString(ERestResult, errorCode)), LogLevel.VERBOSE);
+		Print(string.Format("%1::OnError(%2) from %3:%4", this, typename.EnumToString(ERestResult, errorCode), m_sVerb, m_sUrl), LogLevel.ERROR);
 		#endif
 
 		EDF_EDbOperationStatusCode statusCode;
@@ -201,7 +204,7 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 		s_aSelfReferences.RemoveItem(this);
 
 		#ifdef PERSISTENCE_DEBUG
-		Print(string.Format("%1::OnTimeout()", this), LogLevel.VERBOSE);
+		Print(string.Format("%1::OnTimeout() from %2:%3", this, m_sVerb, m_sUrl), LogLevel.VERBOSE);
 		#endif
 
 		OnFailure(EDF_EDbOperationStatusCode.FAILURE_DB_UNAVAILABLE);
@@ -229,10 +232,12 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void EDF_WebProxyDbDriverCallback(EDF_DbOperationCallback callback, typename resultType = typename.Empty)
+	void EDF_WebProxyDbDriverCallback(EDF_DbOperationCallback callback, typename resultType = typename.Empty, string verb = string.Empty, string url = string.Empty)
 	{
 		m_pCallback = callback;
 		m_tResultType = resultType;
+		m_sVerb = verb;
+		m_sUrl = url;
 		s_aSelfReferences.Insert(this);
 	};
 }
@@ -349,7 +354,7 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 		typename entityType = entity.Type();
 		string request = string.Format("%1/%2%3", EDF_DbName.Get(entityType), entity.GetId(), m_sAddtionalParams);
 		string data = Serialize(entity);
-		m_pContext.PUT(new EDF_WebProxyDbDriverCallback(callback), request, data);
+		m_pContext.PUT(new EDF_WebProxyDbDriverCallback(callback, verb: "PUT", url: request), request, data);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -365,7 +370,7 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 		}
 
 		string request = string.Format("%1/%2%3", EDF_DbName.Get(entityType), entityId, m_sAddtionalParams);
-		m_pContext.DELETE(new EDF_WebProxyDbDriverCallback(callback), request, string.Empty);
+		m_pContext.DELETE(new EDF_WebProxyDbDriverCallback(callback, verb: "DELETE", url: request), request, string.Empty);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -394,8 +399,8 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 		string data = Serialize(new EDF_WebProxyDbDriverFindRequest(condition, orderBy, limit, offset));
 		//Print(request);
 		//Print(data);
-		System.ExportToClipboard(data);
-		m_pContext.POST(new EDF_WebProxyDbDriverCallback(callback, entityType), request, data);
+		//System.ExportToClipboard(data);
+		m_pContext.POST(new EDF_WebProxyDbDriverCallback(callback, entityType, verb: "POST", url: request), request, data);
 	}
 
 	//------------------------------------------------------------------------------------------------
