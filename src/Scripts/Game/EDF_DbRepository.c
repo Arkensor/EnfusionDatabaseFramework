@@ -172,7 +172,7 @@ class EDF_DbRepositoryRegistration
 
 		foreach (typename repositoryType : s_aRegistrationQueue)
 		{
-			Class reflectionInst = repositoryType.Spawn();
+			auto reflectionInst = repositoryType.Spawn();
 			if (!reflectionInst)
 				continue;
 
