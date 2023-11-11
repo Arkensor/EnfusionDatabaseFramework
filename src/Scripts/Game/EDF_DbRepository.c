@@ -17,7 +17,7 @@ class EDF_DbRepositoryBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Creation only through EDF_DbRepositoryFactory::GetRepository
-	protected void EDF_DbRepositoryBase();
+	/*protected void EDF_DbRepositoryBase(); --Hotfix for 1.0*/
 };
 
 class EDF_DbRepository<Class TEntityType> : EDF_DbRepositoryBase
