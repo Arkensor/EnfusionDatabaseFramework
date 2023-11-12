@@ -41,7 +41,7 @@ TestResultBase EDF_Test_DbEntityUtils_StructAutoCopy_ValidInput_MatchingOutput()
 	EDF_Test_DbEntityUtilsOtherClassType otherClass = EDF_Test_DbEntityUtilsOtherClassType.Cast(String("EDF_Test_DbEntityUtilsOtherClassType").ToType().Spawn());
 
 	// Act
-	EDF_DbEntityUtils.StructAutoCopy(saveStruct, otherClass);
+	EDF_DbEntityUtils<EDF_Test_DbEntityUtilsOtherClassType>.StructAutoCopy(saveStruct, otherClass);
 
 	// Assert
 	return new EDF_TestResult(otherClass && (otherClass.m_fFloatValue == saveStruct.m_fFloatValue) && (otherClass.m_sStringValue == saveStruct.m_sStringValue));
