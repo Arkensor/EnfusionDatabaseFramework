@@ -481,7 +481,8 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void SerializeTypenameArray(Managed values, out array<ref array<string>> comparisonValues)
+	/*protected --Hotfix for 1.0, do not call directly please.*/
+	void SerializeTypenameArray(Managed values, out array<ref array<string>> comparisonValues)
 	{
 		array<array<typename>> typedArray = array<array<typename>>.Cast(values);
 		comparisonValues.Reserve(typedArray.Count());
@@ -498,7 +499,8 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void AddReference(ValueType value)
+	/*protected --Hotfix for 1.0, do not call directly please.*/
+	void AddReference(ValueType value)
 	{
 		m_aComparisonValuesReferences.Insert(value);
 	}

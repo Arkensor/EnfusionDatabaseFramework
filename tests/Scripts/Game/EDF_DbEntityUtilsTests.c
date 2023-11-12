@@ -25,7 +25,8 @@ class EDF_Test_DbEntityUtilsOtherClassType
 	string m_sStringValue;
 
 	//------------------------------------------------------------------------------------------------
-	private void EDF_Test_DbEntityUtilsOtherClassType(float floatValue, string stringValue);
+	/* private -- Hotfix for 1.0, do not ctor directly */
+	void EDF_Test_DbEntityUtilsOtherClassType(float floatValue, string stringValue);
 }
 
 //------------------------------------------------------------------------------------------------
