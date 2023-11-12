@@ -182,12 +182,6 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 		EDF_EDbOperationStatusCode statusCode;
 		switch (errorCode)
 		{
-			case 14:
-			{
-				statusCode = EDF_EDbOperationStatusCode.FAILURE_ID_NOT_FOUND;
-				break;
-			}
-
 			default:
 			{
 				statusCode = EDF_EDbOperationStatusCode.FAILURE_UNKNOWN;

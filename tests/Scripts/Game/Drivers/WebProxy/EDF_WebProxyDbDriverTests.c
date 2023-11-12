@@ -284,7 +284,7 @@ class EDF_Test_WebProxyDbDriver_RemoveAsync_UnknownEntity_NotFound : EDF_Test_We
 	//------------------------------------------------------------------------------------------------
 	void OnResult(EDF_EDbOperationStatusCode statusCode)
 	{
-		PrintFormat("%1 OnResult: %2", ClassName(), statusCode == EDF_EDbOperationStatusCode.FAILURE_ID_NOT_FOUND);
+		PrintFormat("%1 OnResult: %2", ClassName(), statusCode == EDF_EDbOperationStatusCode.FAILURE_UNKNOWN);
 	}
 }
 
