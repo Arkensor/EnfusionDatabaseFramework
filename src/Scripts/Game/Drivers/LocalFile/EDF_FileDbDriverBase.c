@@ -192,7 +192,7 @@ class EDF_FileDbDriverBase : EDF_DbDriver
 	protected set<string> GetIdsOnDisk(typename entityType, set<string> skipIds = null)
 	{
 		EDF_FileDbDriverFindIdsCallback callback();
-		System.FindFiles(callback.AddFile, _GetTypeDirectory(entityType), GetFileExtension());
+		FileIO.FindFiles(callback.AddFile, _GetTypeDirectory(entityType), GetFileExtension());
 
 		set<string> ids();
 		foreach (string id : callback.m_Ids)

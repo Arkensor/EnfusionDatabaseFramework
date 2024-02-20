@@ -15,7 +15,7 @@ class EDF_BinaryFileDbDriverTests : TestSuite
 		string dir = string.Format("%1/%2", EDF_FileDbDriverBase.DB_BASE_DIR, DB_NAME);
 
 		array<string> paths = {};
-		System.FindFiles(paths.Insert, dir, "");
+		FileIO.FindFiles(paths.Insert, dir, "");
 
 		foreach (string path : paths)
 		{

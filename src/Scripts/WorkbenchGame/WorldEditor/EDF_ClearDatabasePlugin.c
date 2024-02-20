@@ -6,9 +6,9 @@ class EDF_ClearDatabasePlugin: WorkbenchPlugin
 	//------------------------------------------------------------------------------------------------
 	override void Run()
 	{
-		System.FindFiles(DeleteFileCallback, DB_BASE_DIR, ".json");
-		System.FindFiles(DeleteFileCallback, DB_BASE_DIR, ".bin");
-		System.FindFiles(DeleteFileCallback, DB_BASE_DIR, string.Empty);
+		FileIO.FindFiles(DeleteFileCallback, DB_BASE_DIR, ".json");
+		FileIO.FindFiles(DeleteFileCallback, DB_BASE_DIR, ".bin");
+		FileIO.FindFiles(DeleteFileCallback, DB_BASE_DIR, string.Empty);
 		FileIO.DeleteFile(DB_BASE_DIR);
 		Print("-- DATABASE CLEARED --", LogLevel.WARNING);
 	}
