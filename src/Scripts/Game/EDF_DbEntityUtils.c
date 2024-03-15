@@ -1,13 +1,11 @@
-class EDF_DbEntityUtils<Class TDesition>
+class EDF_DbEntityUtils
 {
 	//------------------------------------------------------------------------------------------------
-	static bool StructAutoCopy(notnull Managed from, notnull TDesition to)
+	//! Memeber-wise deep copy of data from source to matching named instance variables on the destination
+	static bool StructAutoCopy(notnull Managed source, notnull Managed destination)
 	{
-		// TODO: Remove template hack after C++ side bug is fixed.
-		// TODO: Use binary serailizer for speeeeed booooost as soon as we can read back from it in memory without file io
-		
 		SCR_JsonSaveContext writer();
-		if (!writer.WriteValue("", from))
+		if (!writer.WriteValue("", source))
 			return false;
 
 		string data = writer.ExportToString();
@@ -16,6 +14,24 @@ class EDF_DbEntityUtils<Class TDesition>
 		if (!reader.ImportFromString(data))
 			return false;
 
-		return reader.ReadValue("", to);
+		return reader.ReadValue("", destination);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static Managed DeepCopy(notnull Managed instance)
+	{
+		SCR_BinSaveContext writer();
+		if (!writer.WriteValue("", instance))
+			return null;
+
+		SCR_BinLoadContext reader();
+		if (!reader.LoadFromContainer(writer.SaveToContainer()))
+			return null;
+
+		auto deepCopy = instance.Type().Spawn();
+		if (!reader.ReadValue("", deepCopy))
+			return null;
+
+		return deepCopy;
 	}
 }

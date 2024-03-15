@@ -36,8 +36,7 @@ class EDF_InMemoryDbDriver : EDF_DbDriver
 			return EDF_EDbOperationStatusCode.FAILURE_ID_NOT_SET;
 
 		// Make a copy so after insert you can not accidently change anything on the instance passed into the driver later.
-		EDF_DbEntity deepCopy = EDF_DbEntity.Cast(entity.Type().Spawn());
-		EDF_DbEntityUtils<EDF_DbEntity>.StructAutoCopy(entity, deepCopy);
+		EDF_DbEntity deepCopy = EDF_DbEntity.Cast(EDF_DbEntityUtils.DeepCopy(entity));
 
 		m_pDb.AddOrUpdate(deepCopy);
 		return EDF_EDbOperationStatusCode.SUCCESS;
@@ -101,9 +100,7 @@ class EDF_InMemoryDbDriver : EDF_DbDriver
 				continue;
 
 			// Return a deep copy so you can not accidentially change the db reference instance in the result handling code
-			EDF_DbEntity deepCopy = EDF_DbEntity.Cast(entityType.Spawn());
-			EDF_DbEntityUtils<EDF_DbEntity>.StructAutoCopy(entity, deepCopy);
-
+			EDF_DbEntity deepCopy = EDF_DbEntity.Cast(EDF_DbEntityUtils.DeepCopy(entity));
 			resultEntites.Insert(deepCopy);
 		}
 
