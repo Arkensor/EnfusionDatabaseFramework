@@ -34,8 +34,6 @@ class EDF_AutoTestEntity : GenericEntity
 		System.GetHourMinuteSecondUTC(hour, minute, second);
 		string resultFile = string.Format("TestResults/Run %1-%2-%3 %4_%5_%6.xml", year, month, day, hour, minute, second);
 
-		string hintText;
-
 		if (!testResults.Contains("<failure ") && !testResults.Contains("<error "))
 		{
 			Print("All test run successfully!");

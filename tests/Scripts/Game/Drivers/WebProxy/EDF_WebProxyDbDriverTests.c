@@ -346,8 +346,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_OrderedLimitedOffset_CorrectResults
 	{
 		EDF_DbFindCondition condition = EDF_DbFind.Id().Contains("00000000-0000-0005-0000");
 		array<ref TStringArray> orderBy = {{"m_fFloatValue", EDF_EDbEntitySortDirection.DESCENDING}, {"m_sStringValue", "asc"}};
-		int limit = 4;
-		int offset = 1;
+		const int limit = 4;
+		const int offset = 1;
 
 		/*
 			5 -> exclude through offset
