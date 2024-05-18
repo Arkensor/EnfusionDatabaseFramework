@@ -9,9 +9,12 @@ A [http api proxy](https://github.com/Arkensor/EnfusionDatabaseFramework.Drivers
 ### Aliases: `MongoDb`, `Mongo`
 
 ### ConnectionInfo: [`EDF_MongoDbConnectionInfo`](https://enfusionengine.com/api/redirect?to=enfusion://ScriptEditor/Scripts/Game/Drivers/WebProxy/EDF_MongoDbDriver.c;2)
-| Option           | Values      | Description                                                              |
-|------------------|-------------|--------------------------------------------------------------------------|
-| ProxyHost        | Hostname/IP | Web proxy hostname.                                                      |
-| ProxyPort        | Portnumber  | Web proxy port.                                                          |
-| SecureConnection | True/False  | Use TLS/SSL to connect to the web proxy.                                 |
-| Parameters       | key=value   | Additional parameters added to the url with ...&key=value e.g. api keys. |
+Example: `MongoDb://MyDatabase?host=1.2.3.4&headers=user-agent,application/json,api-key,123456789&parameters=key,value,key2,value2`
+
+| Option           | Values      | Description                                               |
+|------------------|-------------|-----------------------------------------------------------|
+| ProxyHost        | Hostname/IP | Web proxy hostname.                                       |
+| ProxyPort        | Portnumber  | Web proxy port.                                           |
+| SecureConnection | True/False  | Use TLS/SSL to connect to the web proxy.                  |
+| Headers          | key,value   | Headers used for the request                              |
+| Parameters       | key,value   | Additional parameters added to the url with ...&key=value |

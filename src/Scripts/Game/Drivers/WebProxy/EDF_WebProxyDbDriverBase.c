@@ -10,7 +10,10 @@ class EDF_WebProxyConnectionInfoBase : EDF_DbConnectionInfoBase
 	[Attribute(desc: "Use TLS/SSL to connect to the web proxy.")]
 	bool m_bSecureConnection;
 
-	[Attribute(desc: "Additional parameters added to the url with ...&key=value e.g. api keys.")]
+	[Attribute(desc: "Custom headers for all requests e.g. api keys.")]
+	ref array<ref EDF_WebProxyParameter> m_aHeaders;
+
+	[Attribute(desc: "Additional parameters added to the url with ...&key=value")]
 	ref array<ref EDF_WebProxyParameter> m_aParameters;
 
 	//------------------------------------------------------------------------------------------------
@@ -20,6 +23,12 @@ class EDF_WebProxyConnectionInfoBase : EDF_DbConnectionInfoBase
 
 		if (m_sDatabaseName.Length() == connectionString.Length())
 			return; // No other params
+
+		if (!m_aHeaders)
+			m_aHeaders = {};
+
+		if (!m_aParameters)
+			m_aParameters = {};
 
 		array<string> keyValuePairs();
 		int paramsStart = m_sDatabaseName.Length() + 1;
@@ -63,10 +72,41 @@ class EDF_WebProxyConnectionInfoBase : EDF_DbConnectionInfoBase
 					m_bSecureConnection = valueLower == "1" || valueLower == "true" || valueLower == "yes";
 					break;
 				}
-
-				default:
+				
+				case "headers":
+				case "parameters":
 				{
+					array<string> kvs();
+					value.Split(",", kvs, true);
+					if ((kvs.Count() % 2) != 0)
+					{
+						Debug.Error(string.Format("Invalid '%1' connection info parameter. Not all keys have a value!", key));
+						break;
+					}
+					
+					bool isHeaders = keyLower == "headers";
+					
+					for (int nKey = 0, count = kvs.Count() - 1; nKey < count; nKey+=2)
+					{
+						auto param = new EDF_WebProxyParameter(kvs.Get(nKey), kvs.Get(nKey + 1));
+
+						if (isHeaders)
+						{
+							m_aHeaders.Insert(param);
+							continue;
+						}
+						
+						m_aParameters.Insert(param);
+					}
+					break;
+				}
+				
+				default: 
+				{
+					// Backwards compatiblity, will remove it at some point
 					m_aParameters.Insert(new EDF_WebProxyParameter(key, value));
+
+					//Debug.Error(string.Format("Unknown parameter '%1'='%2' in connection info.", key, value));
 				}
 			}
 		}
@@ -95,7 +135,7 @@ sealed class EDF_CustomDefaultTitle : BaseContainerCustomTitleField
 	}
 }
 
-[EDF_CustomDefaultTitle("m_sKey", "MyNewUrlParameter"), BaseContainerProps()]
+[EDF_CustomDefaultTitle("m_sKey", "UNCONFIGURED"), BaseContainerProps()]
 sealed class EDF_WebProxyParameter
 {
 	[Attribute()]
@@ -107,8 +147,12 @@ sealed class EDF_WebProxyParameter
 	//------------------------------------------------------------------------------------------------
 	void EDF_WebProxyParameter(string key, string value)
 	{
-		m_sKey = key;
-		m_sValue = value;
+		// Only use ctor params if they provide something. Otherwise it was set via attribute already.
+		if (key)
+			m_sKey = key;
+		
+		if (value)
+			m_sValue = value;
 	}
 }
 
@@ -289,6 +333,38 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 		url += string.Format("://%1:%2/%3/", webConnectInfo.m_sProxyHost, webConnectInfo.m_iProxyPort, webConnectInfo.m_sDatabaseName);
 		m_pContext = GetGame().GetRestApi().GetContext(url);
 
+		string headers;
+		bool hasContentType, hasUserAgent;
+		if (webConnectInfo.m_aHeaders)
+		{
+			foreach (EDF_WebProxyParameter header : webConnectInfo.m_aHeaders)
+			{
+				if (!hasContentType && (header.m_sKey.Compare("Content-Type", false) == 0))
+					hasContentType = true;
+				
+				if (!hasUserAgent && (header.m_sKey.Compare("User-Agent", false) == 0))
+					hasUserAgent = true;
+				
+				if (!headers.IsEmpty())
+					headers += ",";
+				
+				headers += string.Format("%1,%2", header.m_sKey, header.m_sValue);
+			}
+		}
+		
+		if (!hasContentType)
+		{
+			if (!headers.IsEmpty())
+				headers += ",";
+
+			headers += "Content-Type,application/json";
+		}
+
+		if (!hasUserAgent)
+			headers += ",User-Agent,AR-EDF";
+
+		m_pContext.SetHeaders(headers);
+		
 		if (webConnectInfo.m_aParameters)
 		{
 			int paramCount = webConnectInfo.m_aParameters.Count();
