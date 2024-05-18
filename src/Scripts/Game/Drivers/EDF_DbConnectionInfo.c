@@ -39,7 +39,7 @@ class EDF_DbConnectionInfoBase
 		if (!connectionInfo)
 			return null;
 
-		connectionInfo.Parse(connectionInfoString);
+		connectionInfo.ReadOptions(connectionInfoString);
 
 		return connectionInfo;
 	}
