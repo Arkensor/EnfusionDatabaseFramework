@@ -46,14 +46,14 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateFindById_NotFlushed_Ret
 
 	// Assert
 	if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
-		return new EDF_TestResult(false);
+		SetResult(new SCR_AutotestResult(false);
 
 	array<ref EDF_DbEntity> results = bufferedDriver.FindAll(EDF_Test_DbDriverBufferWrapperEntity, EDF_DbFind.Id().Equals(entity.GetId())).GetEntities();
 	if (results.Count() != 1)
-		return new EDF_TestResult(false);
+		return new SCR_AutotestResult(false);
 
 	EDF_Test_DbDriverBufferWrapperEntity resultEntity = EDF_Test_DbDriverBufferWrapperEntity.Cast(results.Get(0));
-	return new EDF_TestResult(
+	SetResult(new SCR_AutotestResult(
 		resultEntity.GetId() == entity.GetId() &&
 		resultEntity.m_iValue == entity.m_iValue);
 };
@@ -81,12 +81,12 @@ TestResultBase EDF_Test_DbDriverBufferWrapper_AddOrUpdateInPlaceTwice_Flushed_Re
 	if (statusCode1 != EDF_EDbOperationStatusCode.SUCCESS||
 		statusCode2 != EDF_EDbOperationStatusCode.SUCCESS)
 	{
-		return new EDF_TestResult(false);
+		return new SCR_AutotestResult(false);
 	}
 
 	array<ref EDF_DbEntity> results = bufferedDriver.FindAll(EDF_Test_DbDriverBufferWrapperEntity, EDF_DbFind.Id().Equals(updatedEntity.GetId())).GetEntities();
 	if (results.Count() != 1)
-		return new EDF_TestResult(false);
+		return new SCR_AutotestResult(false);
 
 	EDF_Test_DbDriverBufferWrapperEntity resultEntity = EDF_Test_DbDriverBufferWrapperEntity.Cast(results.Get(0));
 	return new EDF_TestResult(

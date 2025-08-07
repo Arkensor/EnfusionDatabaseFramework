@@ -1,12 +1,7 @@
-class EDF_BinaryFileDbDriverTests : TestSuite
+[BaseContainerProps(category: "Autotest")]
+class EDF_BinaryFileDbDriverTests : SCR_AutotestSuiteBase
 {
 	static const string DB_NAME = "BinaryFileDbDriverTests";
-
-	//------------------------------------------------------------------------------------------------
-	[Step(EStage.Setup)]
-	void Setup()
-	{
-	}
 
 	//------------------------------------------------------------------------------------------------
 	[Step(EStage.TearDown)]
@@ -39,7 +34,7 @@ class EDF_BinaryFileDbDriverTests : TestSuite
 	{
 		FileIO.DeleteFile(string.Format("%1/%2.bin", dbDir, entityId));
 	}
-};
+}
 
 class EDF_Test_BinFileDbDriverEntity : EDF_DbEntity
 {
@@ -55,9 +50,9 @@ class EDF_Test_BinFileDbDriverEntity : EDF_DbEntity
 		entity.m_sStringValue = stringValue;
 		return entity;
 	}
-};
+}
 
-class EDF_Test_BinFileDbDriverEntity_TestBase : TestBase
+class EDF_Test_BinFileDbDriverEntity_TestBase : SCR_AutotestCaseBase
 {
 	ref EDF_BinaryFileDbDriver driver;
 
@@ -67,7 +62,7 @@ class EDF_Test_BinFileDbDriverEntity_TestBase : TestBase
 	{
 		driver = new EDF_BinaryFileDbDriver();
 	}
-};
+}
 
 [Test("EDF_BinaryFileDbDriverTests")]
 class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully : EDF_Test_BinFileDbDriverEntity_TestBase
@@ -91,7 +86,7 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 		// Assert
 		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
 		{
-			SetResult(new EDF_TestResult(false));
+			SetResult(new SCR_AutotestResult(false));
 			return;
 		}
 
@@ -99,7 +94,7 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 
 		if (results.Count() != 1)
 		{
-			SetResult(new EDF_TestResult(false));
+			SetResult(new SCR_AutotestResult(false));
 			return;
 		}
 
@@ -107,11 +102,11 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 
 		if (!resultEntity)
 		{
-			SetResult(new EDF_TestResult(false));
+			SetResult(new SCR_AutotestResult(false));
 			return;
 		}
 
-		SetResult(new EDF_TestResult(
+		SetResult(new SCR_AutotestResult(
 			resultEntity.GetId() == entity.GetId() &&
 			resultEntity.m_fFloatValue == entity.m_fFloatValue &&
 			resultEntity.m_sStringValue == entity.m_sStringValue));
@@ -123,4 +118,4 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 	{
 		EDF_BinaryFileDbDriverTests.DeleteEntity(driver._GetTypeDirectory(EDF_Test_BinFileDbDriverEntity), "TEST0000-0000-0001-0000-000000000001");
 	}
-};
+}

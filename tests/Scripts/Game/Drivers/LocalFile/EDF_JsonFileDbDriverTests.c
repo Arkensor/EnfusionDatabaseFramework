@@ -1,17 +1,12 @@
-class EDF_JsonFileDbDriverTests : TestSuite
+[BaseContainerProps(category: "Autotest")]
+class EDF_JsonFileDbDriverTests : SCR_AutotestSuiteBase
 {
 	static const string DB_NAME = "JsonFileDbDriverTests";
 
 	//------------------------------------------------------------------------------------------------
-	[Step(EStage.Setup)]
-    void Setup()
-    {
-    }
-
-	//------------------------------------------------------------------------------------------------
-    [Step(EStage.TearDown)]
-    void TearDown()
-    {
+	[Step(EStage.TearDown)]
+	void TearDown()
+	{
 		string dir = string.Format("%1/%2", EDF_FileDbDriverBase.DB_BASE_DIR, DB_NAME);
 
 		array<string> paths = {};
@@ -23,7 +18,7 @@ class EDF_JsonFileDbDriverTests : TestSuite
 		}
 
 		FileIO.DeleteFile(dir);
-    }
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void WriteEntity(string dbDir, EDF_Test_JsonFileDbDriverEntity entity)
@@ -55,7 +50,7 @@ class EDF_Test_JsonFileDbDriverEntity : EDF_DbEntity
 	}
 }
 
-class EDF_Test_JsonFileDbDriver_TestBase : TestBase
+class EDF_Test_JsonFileDbDriver_TestBase : SCR_AutotestCaseBase
 {
 	ref EDF_JsonFileDbDriver driver;
 
@@ -89,7 +84,7 @@ class EDF_Test_JsonFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully :
 		// Assert
 		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
 		{
-			SetResult(new EDF_TestResult(false));
+			SetResult(new SCR_AutotestResult(false));
 			return;
 		}
 
@@ -97,7 +92,7 @@ class EDF_Test_JsonFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully :
 
 		if (results.Count() != 1)
 		{
-			SetResult(new EDF_TestResult(false));
+			SetResult(new SCR_AutotestResult(false));
 			return;
 		}
 
@@ -105,11 +100,11 @@ class EDF_Test_JsonFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully :
 
 		if (!resultEntity)
 		{
-			SetResult(new EDF_TestResult(false));
+			SetResult(new SCR_AutotestResult(false));
 			return;
 		}
 
-		SetResult(new EDF_TestResult(
+		SetResult(new SCR_AutotestResult(
 			resultEntity.GetId() == entity.GetId() &&
 			float.AlmostEqual(resultEntity.m_fFloatValue, entity.m_fFloatValue) &&
 			resultEntity.m_sStringValue == entity.m_sStringValue));
@@ -147,12 +142,12 @@ class EDF_Test_JsonFileDbDriver_Remove_ExistingEntity_FileDeleted : EDF_Test_Jso
 		// Assert
 		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
 		{
-			SetResult(new EDF_TestResult(false));
+			SetResult(new SCR_AutotestResult(false));
 			return;
 		}
 
 		string file = string.Format("%1/%2.json", driver._GetTypeDirectory(EDF_Test_JsonFileDbDriverEntity), entity.GetId());
-		SetResult(new EDF_TestResult(!FileIO.FileExists(file)));
+		SetResult(new SCR_AutotestResult(!FileIO.FileExists(file)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -192,7 +187,7 @@ class EDF_Test_JsonFileDbDriver_FindAll_IdOnly_ExactLoadAndCache : EDF_Test_Json
 		array<ref EDF_DbEntity> results = driver.FindAll(EDF_Test_JsonFileDbDriverEntity, condition).GetEntities();
 
 		// Assert
-		SetResult(new EDF_TestResult((results.Count() == 2) && (driver._GetEntityCache().m_EntityInstances.Count() == 2)));
+		SetResult(new SCR_AutotestResult((results.Count() == 2) && (driver._GetEntityCache().m_EntityInstances.Count() == 2)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -238,7 +233,7 @@ class EDF_Test_JsonFileDbDriver_FindAll_ContentField_AllLoadedAndCached : EDF_Te
 		array<ref EDF_DbEntity> results = driver.FindAll(EDF_Test_JsonFileDbDriverEntity, condition).GetEntities();
 
 		// Assert
-		SetResult(new EDF_TestResult((results.Count() == 2) && (driver._GetEntityCache().m_EntityInstances.Count() == 5)));
+		SetResult(new SCR_AutotestResult((results.Count() == 2) && (driver._GetEntityCache().m_EntityInstances.Count() == 5)));
 	}
 
 	//------------------------------------------------------------------------------------------------

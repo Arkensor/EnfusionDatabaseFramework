@@ -1,19 +1,9 @@
-class EDF_WebProxyDbDriverTests : TestSuite
+[BaseContainerProps(category: "Autotest")]
+class EDF_WebProxyDbDriverTests : SCR_AutotestSuiteBase
 {
-	//------------------------------------------------------------------------------------------------
-	[Step(EStage.Setup)]
-	void Setup()
-	{
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[Step(EStage.TearDown)]
-	void TearDown()
-	{
-	}
 }
 
-class EDF_Test_WebProxyDbDriver_TestBase : TestBase
+class EDF_Test_WebProxyDbDriver_TestBase : SCR_AutotestCaseBase
 {
 	bool m_bReady;
 	bool m_bCleaned;
@@ -209,14 +199,14 @@ class EDF_Test_WebProxyDbDriver_AddOrUpdateAsync_NewEntity_Added : EDF_Test_WebP
 		EDF_DbOperationStatusOnlyCallback callback(this, "OnResult");
 		m_pDriver.AddOrUpdateAsync(entity, callback);
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void OnResult(EDF_EDbOperationStatusCode statusCode)
 	{
-		PrintFormat("%1 OnResult: %2", ClassName(), statusCode == EDF_EDbOperationStatusCode.SUCCESS);
-		//SetResult(new EDF_TestResult(statusCode == EDF_EDbOperationStatusCode.SUCCESS));
+		PrintFormat("%1 OnResult: %2", ClassName(), typename.EnumToString(EDF_EDbOperationStatusCode, statusCode));
+		//SetResult(new SCR_AutotestResult(statusCode == EDF_EDbOperationStatusCode.SUCCESS));
 	}
 
 	/*
@@ -249,7 +239,7 @@ class EDF_Test_WebProxyDbDriver_RemoveAsync_ExitingEntity_Removed : EDF_Test_Web
 		EDF_DbOperationStatusOnlyCallback callback(this, "Act");
 		m_pDriver.AddOrUpdateAsync(entity, callback);
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -263,7 +253,7 @@ class EDF_Test_WebProxyDbDriver_RemoveAsync_ExitingEntity_Removed : EDF_Test_Web
 	//------------------------------------------------------------------------------------------------
 	void OnResult(EDF_EDbOperationStatusCode statusCode)
 	{
-		PrintFormat("%1 OnResult: %2", ClassName(), statusCode == EDF_EDbOperationStatusCode.SUCCESS);
+		PrintFormat("%1 OnResult: %2", ClassName(), typename.EnumToString(EDF_EDbOperationStatusCode, statusCode));
 	}
 }
 
@@ -277,14 +267,14 @@ class EDF_Test_WebProxyDbDriver_RemoveAsync_UnknownEntity_NotFound : EDF_Test_We
 		EDF_DbOperationStatusOnlyCallback callback(this, "OnResult");
 		m_pDriver.RemoveAsync(EDF_Test_WebProxyDbDriverEntityA, "00000000-0000-0003-0000-000000000001", callback);
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void OnResult(EDF_EDbOperationStatusCode statusCode)
 	{
-		PrintFormat("%1 OnResult: %2", ClassName(), statusCode == EDF_EDbOperationStatusCode.FAILURE_UNKNOWN);
+		PrintFormat("%1 OnResult: %2", ClassName(), typename.EnumToString(EDF_EDbOperationStatusCode, statusCode));
 	}
 }
 
@@ -299,7 +289,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_ExitingId_Returned : EDF_Test_WebPr
 		EDF_DbOperationStatusOnlyCallback callback(this, "Act");
 		m_pDriver.AddOrUpdateAsync(entity, callback);
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -318,7 +308,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_ExitingId_Returned : EDF_Test_WebPr
 			results.Count() == 1 &&
 			results.Get(0).GetId() == "00000000-0000-0004-0000-000000000001";
 
-		PrintFormat("%1 OnResult: %2", ClassName(), SUCCESS);
+		PrintFormat("%1 OnResult: %2", ClassName(), SUCCESS.ToString());
 	}
 }
 
@@ -338,7 +328,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_OrderedLimitedOffset_CorrectResults
 		EDF_DbOperationStatusOnlyCallback callback(this, "Act");
 		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityA.Create("00000000-0000-0005-0000-000000000006", 4), callback);
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -371,7 +361,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_OrderedLimitedOffset_CorrectResults
 			results.Get(2).GetId() == "00000000-0000-0005-0000-000000000005" &&
 			results.Get(3).GetId() == "00000000-0000-0005-0000-000000000002";
 
-		PrintFormat("%1 OnResult: %2", ClassName(), SUCCESS);
+		PrintFormat("%1 OnResult: %2", ClassName(), SUCCESS.ToString());
 	}
 }
 
@@ -398,7 +388,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_NullOrDefault_OperatorBased : EDF_T
 		m_pDriver.AddOrUpdateAsync(EDF_Test_WebProxyDbDriverEntityT<vector>.Create("00000000-0000-0006-0000-000000000010", "1 2 3"),
 			new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -438,7 +428,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_NullOrDefault_OperatorBased : EDF_T
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -454,7 +445,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_LengthOperator_OperatorBased : EDF_
 		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<string>.Create("00000000-0000-0007-0000-000000000002", {"Hello", "World", "!"});
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -480,7 +471,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_LengthOperator_OperatorBased : EDF_
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -494,7 +486,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_CountOperator_OperatorBased : EDF_T
 		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<int>.Create("00000000-0000-0008-0000-000000000001", {1, 2, 3});
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -517,7 +509,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_CountOperator_OperatorBased : EDF_T
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -531,7 +524,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntSingleOperators_OperatorBased : 
 		m_pEntity = EDF_Test_WebProxyDbDriverEntityT<int>.Create("00000000-0000-0009-0000-000000000001", 1337);
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -568,7 +561,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntSingleOperators_OperatorBased : 
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -581,7 +575,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntSingleOperators_OperatorBased : 
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+		const bool success = matches == 0;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -595,7 +590,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntArrayOperators_OperatorBased : E
 		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<int>.Create("00000000-0000-0010-0000-000000000001", {1337, 42});
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -635,7 +630,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntArrayOperators_OperatorBased : E
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -648,7 +644,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntArrayOperators_OperatorBased : E
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+		const bool success = matches == 0;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -666,7 +663,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntNestedArrayOperators_OperatorBas
 		m_pEntity = EDF_Test_WebProxyDbDriverEntityTNestedArray<int>.Create("00000000-0000-0011-0000-000000000001", values);
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -697,7 +694,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntNestedArrayOperators_OperatorBas
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -710,7 +708,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_IntNestedArrayOperators_OperatorBas
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+		const bool success = matches == 0;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -728,7 +727,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_FloatNestedArrayOperators_OperatorB
 		m_pEntity = EDF_Test_WebProxyDbDriverEntityTNestedArray<float>.Create("00000000-0000-0012-0000-000000000001", values);
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -761,7 +760,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_FloatNestedArrayOperators_OperatorB
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -774,7 +774,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_FloatNestedArrayOperators_OperatorB
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+		const bool success = matches == 0;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -793,7 +794,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_BoolNestedArrayOperators_OperatorBa
 		m_pEntity = EDF_Test_WebProxyDbDriverEntityTNestedArray<bool>.Create("00000000-0000-0013-0000-000000000001", values);
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -824,7 +825,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_BoolNestedArrayOperators_OperatorBa
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -837,7 +839,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_BoolNestedArrayOperators_OperatorBa
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+		const bool success = matches == 0;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -855,7 +858,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedArrayOperators_Operator
 		m_pEntity = EDF_Test_WebProxyDbDriverEntityTNestedArray<string>.Create("00000000-0000-0014-0000-000000000001", values);
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -879,7 +882,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedArrayOperators_Operator
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -892,7 +896,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedArrayOperators_Operator
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+		const bool success = matches == 0;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -968,7 +973,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedNestedArrayOperators_Op
 		m_pEntity = EDF_Test_WebProxyDbDriverComplexUnwrapEntity.Create("00000000-0000-0015-0000-000000000001", strings, secondArrayArray, nestedMap, mapHolders, nestedArray, outerWrapper);
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1047,7 +1052,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedNestedArrayOperators_Op
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1060,7 +1066,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_StringNestedNestedArrayOperators_Op
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 0);
+		const bool success = matches == 0;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -1077,7 +1084,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_TypenameOfTypeAny_Matches : EDF_Tes
 		});
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1100,7 +1107,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_TypenameOfTypeAny_Matches : EDF_Tes
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -1115,7 +1123,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_TypenameArrayEquals_Matches : EDF_T
 		m_pEntity = EDF_Test_WebProxyDbDriverEntityTArray<string>.Create("00000000-0000-0017-0000-000000000001", {"EDF_Test_WebProxyDbDriverEntityA", "EDF_Test_WebProxyDbDriverEntityB"});
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1139,7 +1147,8 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_TypenameArrayEquals_Matches : EDF_T
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
 
@@ -1156,7 +1165,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_ObjectArrayTypenameCheck_Matches : 
 		});
 		m_pDriver.AddOrUpdateAsync(m_pEntity, new EDF_DbOperationStatusOnlyCallback(this, "Act"));
 
-		SetResult(new EDF_TestResult(true));
+		SetResult(new SCR_AutotestResult(true));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1180,6 +1189,7 @@ class EDF_Test_WebProxyDbDriver_FindAllAsync_ObjectArrayTypenameCheck_Matches : 
 				matches++;
 		}
 
-		PrintFormat("%1 OnResult: %2", ClassName(), matches == 1);
+		const bool success = matches == 1;
+		PrintFormat("%1 OnResult: %2", ClassName(), success.ToString());
 	}
 }
