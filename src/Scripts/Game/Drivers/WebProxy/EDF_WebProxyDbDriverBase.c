@@ -165,13 +165,33 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 
 	protected string m_sVerb;
 	protected string m_sUrl;
-
+		
 	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(string data, int dataSize)
+	protected void HandleResult(RestCallback cb)
 	{
-		#ifdef PERSISTENCE_DEBUG
-		Print(string.Format("%1::OnSuccess(%2, %3) from %4:%5", this, dataSize, data, m_sVerb, m_sUrl), LogLevel.VERBOSE);
-		#endif
+		const ERestResult result = cb.GetRestResult();
+		switch (result)
+		{
+			case ERestResult.EREST_SUCCESS:
+			{
+				HandleSuccess(cb.GetData());
+				return;
+			}
+			
+			case ERestResult.EREST_ERROR_TIMEOUT:
+			{
+				HandleTimeout();
+				return;
+			}
+		}
+
+		HandleError(result);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	protected void HandleSuccess(string data)
+	{
+		Print(string.Format("%1::OnSuccess() from %2:%3", this, m_sVerb, m_sUrl), LogLevel.VERBOSE);
 
 		s_aSelfReferences.RemoveItem(this);
 
@@ -186,7 +206,7 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 		if (!findCallback)
 			return; // Could have been a status only operation but no callback was set
 
-		if (dataSize == 0)
+		if (data.IsEmpty())
 		{
 			OnFailure(EDF_EDbOperationStatusCode.FAILURE_RESPONSE_MALFORMED);
 			return;
@@ -212,16 +232,14 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 		}
 
 		findCallback.Invoke(EDF_EDbOperationStatusCode.SUCCESS, resultEntities);
-	};
+	}
 
 	//------------------------------------------------------------------------------------------------
-	override void OnError(int errorCode)
+	protected void HandleError(int errorCode)
 	{
 		s_aSelfReferences.RemoveItem(this);
 
-		#ifdef PERSISTENCE_DEBUG
-		Print(string.Format("%1::OnError(%2) from %3:%4", this, typename.EnumToString(ERestResult, errorCode), m_sVerb, m_sUrl), LogLevel.ERROR);
-		#endif
+		Print(string.Format("%1::HandleError(%2) from %3:%4", this, typename.EnumToString(ERestResult, errorCode), m_sVerb, m_sUrl), LogLevel.ERROR);
 
 		EDF_EDbOperationStatusCode statusCode;
 		switch (errorCode)
@@ -237,13 +255,11 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override void OnTimeout()
+	protected void HandleTimeout()
 	{
 		s_aSelfReferences.RemoveItem(this);
 
-		#ifdef PERSISTENCE_DEBUG
-		Print(string.Format("%1::OnTimeout() from %2:%3", this, m_sVerb, m_sUrl), LogLevel.VERBOSE);
-		#endif
+		Print(string.Format("%1::HandleTimeout() from %2:%3", this, m_sVerb, m_sUrl), LogLevel.VERBOSE);
 
 		OnFailure(EDF_EDbOperationStatusCode.FAILURE_DB_UNAVAILABLE);
 	}
@@ -277,7 +293,10 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 		m_sVerb = verb;
 		m_sUrl = url;
 		s_aSelfReferences.Insert(this);
-	};
+		
+		SetOnSuccess(HandleResult);
+		SetOnError(HandleResult);
+	}
 }
 
 sealed class EDF_WebProxyDbDriverFindRequest
