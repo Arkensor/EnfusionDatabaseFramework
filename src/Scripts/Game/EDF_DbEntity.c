@@ -38,7 +38,7 @@ class EDF_DbEntity
 	{
 		loadContext.ReadValue(FIELD_ID, m_sId);
 	}
-};
+}
 
 class EDF_DbName
 {
@@ -68,12 +68,14 @@ class EDF_DbName
 	}
 
 	//------------------------------------------------------------------------------------------------
+	[Obsolete("Use EDF_DbName() without any arguments instead! Support stops with AR 1.7.")]
 	static EDF_DbName Automatic()
 	{
 		return new EDF_DbName(AUTO_GENERATE);
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Set the "pretty" name used for database tables etc, if left empty it is automatically generated.
 	void EDF_DbName(string name = AUTO_GENERATE)
 	{
 		typename entityType = EDF_ReflectionUtils.GetAttributeParent();
@@ -105,4 +107,4 @@ class EDF_DbName
 		s_mMapping.Set(entityType, name);
 		s_mReverseMapping.Set(name, entityType);
 	}
-};
+}
