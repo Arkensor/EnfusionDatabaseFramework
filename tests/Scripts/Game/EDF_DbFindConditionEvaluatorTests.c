@@ -84,7 +84,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_CorrectInt_True : SCR_AutotestCas
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -104,7 +104,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_IncorrectInt_False : SCR_Autotest
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -124,7 +124,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_CorrectFloat_True : SCR_AutotestC
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -144,7 +144,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_IncorrectFloat_False : SCR_Autote
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -164,7 +164,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_CorrectBool_True : SCR_AutotestCa
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -184,7 +184,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_IncorrectBool_False : SCR_Autotes
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -204,7 +204,7 @@ class EDF_Test_DbFindConditionEvaluator_EqualsCaseSenstive_CorrectString_True : 
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -224,7 +224,7 @@ class EDF_Test_DbFindConditionEvaluator_EqualsCaseSensitve_DifferentCase_False :
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -244,7 +244,7 @@ class EDF_Test_DbFindConditionEvaluator_InvariantEquals_DifferentCase_True : SCR
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -264,7 +264,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_IncorrectString_False : SCR_Autot
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -284,7 +284,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_CorrectVector_True : SCR_Autotest
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -304,7 +304,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_IncorrectVector_False : SCR_Autot
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -324,7 +324,7 @@ class EDF_Test_DbFindConditionEvaluator_InvariantContains_StringField_True : SCR
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -344,7 +344,7 @@ class EDF_Test_DbFindConditionEvaluator_InvariantEquals_PartialMatch_False : SCR
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -364,7 +364,7 @@ class EDF_Test_DbFindConditionEvaluator_InvariantPartialEquals_PartialMatch_True
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -387,7 +387,7 @@ class EDF_Test_DbFindConditionEvaluator_And_OneTrue_False : SCR_AutotestCaseBase
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -410,7 +410,7 @@ class EDF_Test_DbFindConditionEvaluator_And_BothTrue_True : SCR_AutotestCaseBase
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -433,7 +433,7 @@ class EDF_Test_DbFindConditionEvaluator_Or_NoneTrue_False : SCR_AutotestCaseBase
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -456,7 +456,7 @@ class EDF_Test_DbFindConditionEvaluator_Or_OneTrue_True : SCR_AutotestCaseBase
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -476,7 +476,7 @@ class EDF_Test_DbFindConditionEvaluator_EqualsAnyOf_OneTrue_True : SCR_AutotestC
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -496,7 +496,7 @@ class EDF_Test_DbFindConditionEvaluator_EqualsAnyOf_NoneTrue_False : SCR_Autotes
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -516,7 +516,7 @@ class EDF_Test_DbFindConditionEvaluator_LessThan_FloatLess_True : SCR_AutotestCa
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -536,7 +536,7 @@ class EDF_Test_DbFindConditionEvaluator_LessThanOrEqual_IntGreater_False : SCR_A
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -556,7 +556,7 @@ class EDF_Test_DbFindConditionEvaluator_GreaterThanOrEqual_VectorLess_True : SCR
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -576,7 +576,7 @@ class EDF_Test_DbFindConditionEvaluator_Between_InRange_True : SCR_AutotestCaseB
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -596,7 +596,7 @@ class EDF_Test_DbFindConditionEvaluator_Not_Matching_False : SCR_AutotestCaseBas
 	bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 
 	// Assert
-	SetResult(new SCR_AutotestResult(!matches));
+	SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -616,7 +616,7 @@ class EDF_Test_DbFindConditionEvaluator_NullOrDefault_NullField_True : SCR_Autot
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -636,7 +636,7 @@ class EDF_Test_DbFindConditionEvaluator_NullOrDefault_FilledCollection_False : S
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -656,7 +656,7 @@ class EDF_Test_DbFindConditionEvaluator_Count_AnyOfIncludingTwo_True : SCR_Autot
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -676,7 +676,7 @@ class EDF_Test_DbFindConditionEvaluator_Length_Equals_True : SCR_AutotestCaseBas
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -696,7 +696,7 @@ class EDF_Test_DbFindConditionEvaluator_Length_MatchingUtf8String_True : SCR_Aut
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -716,7 +716,7 @@ class EDF_Test_DbFindConditionEvaluator_AnyLength_Matching_True : SCR_AutotestCa
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -736,7 +736,7 @@ class EDF_Test_DbFindConditionEvaluator_Any_MatchingValue_True : SCR_AutotestCas
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -756,7 +756,7 @@ class EDF_Test_DbFindConditionEvaluator_All_OneNotMatching_False : SCR_AutotestC
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -776,7 +776,7 @@ class EDF_Test_DbFindConditionEvaluator_AnyAllGreaterThanOrEquals_Matching_True 
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -796,7 +796,7 @@ class EDF_Test_DbFindConditionEvaluator_KeysAnyEquals_OneMatching_True : SCR_Aut
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -816,7 +816,7 @@ class EDF_Test_DbFindConditionEvaluator_KeysAnyLengthGreaterThan_MultipleMatchin
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -836,7 +836,7 @@ class EDF_Test_DbFindConditionEvaluator_Values_OneMatching_True : SCR_AutotestCa
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -856,7 +856,7 @@ class EDF_Test_DbFindConditionEvaluator_ValuesAllCountEquals_Matching_True : SCR
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -876,7 +876,7 @@ class EDF_Test_DbFindConditionEvaluator_ValuesAllNotContains_AllMatch_True : SCR
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -896,7 +896,7 @@ class EDF_Test_DbFindConditionEvaluator_ValuesAllContains_NotAllMatch_False : SC
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -916,7 +916,7 @@ class EDF_Test_DbFindConditionEvaluator_ValuesAllAllGreaterThanOrEquals_AllMatch
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -936,7 +936,7 @@ class EDF_Test_DbFindConditionEvaluator_At_IdxZeroNestedVectorContained_True : S
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -956,7 +956,7 @@ class EDF_Test_DbFindConditionEvaluator_Equals_ArrayMatches_True : SCR_AutotestC
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -976,7 +976,7 @@ class EDF_Test_DbFindConditionEvaluator_ContainsAnyOf_PartialIntersect_True : SC
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -996,7 +996,7 @@ class EDF_Test_DbFindConditionEvaluator_ContainsAnyOf_NoIntersect_False : SCR_Au
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -1016,7 +1016,7 @@ class EDF_Test_DbFindConditionEvaluator_ContainsAllOf_PartialIntersect_False : S
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -1036,7 +1036,7 @@ class EDF_Test_DbFindConditionEvaluator_ContainsAllOf_FullIntersect_True : SCR_A
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -1056,7 +1056,7 @@ class EDF_Test_DbFindConditionEvaluator_ContainsAllOf_FullIntersectSingleValue_T
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -1076,7 +1076,7 @@ class EDF_Test_DbFindConditionEvaluator_ContainsAllOf_PartialMoreValues_False : 
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -1096,7 +1096,7 @@ class EDF_Test_DbFindConditionEvaluator_InvariantContains_StringArrayItemMatches
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -1116,7 +1116,7 @@ class EDF_Test_DbFindConditionEvaluator_InvariantPartialContains_ArrayPartialMat
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -1136,7 +1136,7 @@ class EDF_Test_DbFindConditionEvaluator_InvariantContains_ArrayPartialMatch_Fals
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -1156,7 +1156,7 @@ class EDF_Test_DbFindConditionEvaluator_InvariantContains_StringArrayNoMatches_F
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(entity, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -1214,7 +1214,7 @@ class EDF_Test_DbFindConditionEvaluator_FirstOf_Matches_True : SCR_AutotestCaseB
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, conditon);
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -1245,7 +1245,7 @@ class EDF_Test_DbFindConditionEvaluator_AllOf_ConstMatches_True : SCR_AutotestCa
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, s_Condition);
 
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -1269,7 +1269,7 @@ class EDF_Test_DbFindConditionEvaluator_AnyEqualsTypename_Match_True : SCR_Autot
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
 
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -1293,7 +1293,7 @@ class EDF_Test_DbFindConditionEvaluator_AllEqualsTypename_MixedTypes_False : SCR
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
 
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }
 
@@ -1316,7 +1316,7 @@ class EDF_Test_DbFindConditionEvaluator_ContainsTypename_Match_True : SCR_Autote
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
 
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -1340,7 +1340,7 @@ class EDF_Test_DbFindConditionEvaluator_NotContainsTypename_SingleType_True : SC
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
 
 		// Assert
-		SetResult(new SCR_AutotestResult(matches));
+		SetResult(EDF_AutotestResult.FromResult(matches));
 	}
 }
 
@@ -1361,6 +1361,6 @@ class EDF_Test_DbFindConditionEvaluator_ContainsTypename_Empty_False : SCR_Autot
 		bool matches = EDF_DbFindConditionEvaluator.Evaluate(container, condition);
 
 		// Assert
-		SetResult(new SCR_AutotestResult(!matches));
+		SetResult(EDF_AutotestResult.FromResult(!matches));
 	}
 }

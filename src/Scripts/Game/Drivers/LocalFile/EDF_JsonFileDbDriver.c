@@ -37,8 +37,8 @@ class EDF_JsonFileDbDriver : EDF_FileDbDriverBase
 	//------------------------------------------------------------------------------------------------
 	override protected EDF_EDbOperationStatusCode WriteToDisk(EDF_DbEntity entity)
 	{
-		ContainerSerializationSaveContext writer();
-		BaseJsonSerializationSaveContainer jsonContainer;
+		SaveContainerContext writer();
+		BaseJsonSaveContainer jsonContainer;
 		if (m_bPrettify)
 		{
 			jsonContainer = new PrettyJsonSaveContainer();
@@ -66,7 +66,7 @@ class EDF_JsonFileDbDriver : EDF_FileDbDriverBase
 		string file = string.Format("%1/%2.json", _GetTypeDirectory(entityType), entityId);
 		if (FileIO.FileExists(file))
 		{
-			SCR_JsonLoadContext reader();
+			JsonLoadContext reader();
 			if (!reader.LoadFromFile(file))
 				return EDF_EDbOperationStatusCode.FAILURE_DB_UNAVAILABLE;
 

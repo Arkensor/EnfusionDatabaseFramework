@@ -14,7 +14,7 @@ class EDF_Test_DbFindConditionBuilder_And_EmptyArgs_EmptyCondition : SCR_Autotes
 		EDF_DbFindAnd condition = EDF_DbFind.And({});
 
 		// Assert
-		SetResult(new SCR_AutotestResult(condition.m_aConditions.Count() == 0));
+		SetResult(EDF_AutotestResult.FromResult(condition.m_aConditions.Count() == 0));
 	}
 }
 
@@ -29,7 +29,7 @@ class EDF_Test_DbFindConditionBuilder_And_MultipleConditions_MultipleWrapped : S
 		EDF_DbFindAnd condition = EDF_DbFind.And({new EDF_DbFindCondition(), new EDF_DbFindCondition()});
 
 		// Assert
-		SetResult(new SCR_AutotestResult(condition.m_aConditions.Count() == 2));
+		SetResult(EDF_AutotestResult.FromResult(condition.m_aConditions.Count() == 2));
 	}
 }
 
@@ -44,7 +44,7 @@ class EDF_Test_DbFindConditionBuilder_Or_EmptyArgs_EmptyCondition : SCR_Autotest
 		EDF_DbFindOr condition = EDF_DbFind.Or({});
 
 		// Assert
-		SetResult(new SCR_AutotestResult(condition.m_aConditions.Count() == 0));
+		SetResult(EDF_AutotestResult.FromResult(condition.m_aConditions.Count() == 0));
 	}
 }
 
@@ -59,7 +59,7 @@ class EDF_Test_DbFindConditionBuilder_Or_MultipleConditions_MultipleWrapped : SC
 		EDF_DbFindOr condition = EDF_DbFind.Or({new EDF_DbFindCondition(), new EDF_DbFindCondition()});
 
 		// Assert
-		SetResult(new SCR_AutotestResult(condition.m_aConditions.Count() == 2));
+		SetResult(EDF_AutotestResult.FromResult(condition.m_aConditions.Count() == 2));
 	}
 }
 
@@ -75,7 +75,7 @@ class EDF_Test_DbFindConditionBuilder_Field_SingleField_ValidBuilder : SCR_Autot
 		EDF_DbFindFieldCollectionHandlingBuilder builder = EDF_DbFind.Field("fieldName");
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath == "fieldName" && builder.m_bInverted == false));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath == "fieldName" && builder.m_bInverted == false));
 	}
 }
 
@@ -90,7 +90,7 @@ class EDF_Test_DbFindConditionBuilder_Field_SingleFieldMultiValueInverted_ValidB
 		EDF_DbFindFieldAllValueConditonBuilder builder = EDF_DbFind.Field("fieldName.subField").Not();
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath == "fieldName.subField" && builder.m_bInverted == true));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath == "fieldName.subField" && builder.m_bInverted == true));
 	}
 }
 
@@ -105,7 +105,7 @@ class EDF_Test_DbFindConditionBuilder_Field_MultiField_FieldsChained : SCR_Autot
 		EDF_DbFindFieldCollectionHandlingBuilder builder = EDF_DbFind.Field("fieldName").Field("subField");
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath == "fieldName.subField"));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath == "fieldName.subField"));
 	}
 }
 
@@ -120,7 +120,7 @@ class EDF_Test_DbFindConditionBuilder_Field_Length_ModifierPresent : SCR_Autotes
 		EDF_DbFindFieldNumericValueConditonBuilder builder = EDF_DbFind.Field("stringField").Length();
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath.EndsWith("stringField" + EDF_DbFindFieldAnnotations.LENGTH)));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath.EndsWith("stringField" + EDF_DbFindFieldAnnotations.LENGTH)));
 	}
 }
 
@@ -135,7 +135,7 @@ class EDF_Test_DbFindConditionBuilder_Field_Count_ModifierPresent : SCR_Autotest
 		EDF_DbFindFieldNumericValueConditonBuilder builder = EDF_DbFind.Field("collectionName").Count();
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath.EndsWith("collectionName:count")));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath.EndsWith("collectionName:count")));
 	}
 }
 
@@ -150,7 +150,7 @@ class EDF_Test_DbFindConditionBuilder_Field_Any_ModifierPresent : SCR_AutotestCa
 		EDF_DbFindFieldMainConditionBuilder builder = EDF_DbFind.Field("collectionName").Any();
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath.EndsWith(":any")));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath.EndsWith(":any")));
 	}
 }
 
@@ -165,7 +165,7 @@ class EDF_Test_DbFindConditionBuilder_Field_All_ModifierPresent : SCR_AutotestCa
 		EDF_DbFindFieldMainConditionBuilder builder = EDF_DbFind.Field("collectionName").All();
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath.EndsWith(":all")));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath.EndsWith(":all")));
 	}
 }
 
@@ -180,7 +180,7 @@ class EDF_Test_DbFindConditionBuilder_Field_Keys_ModifierPresent : SCR_AutotestC
 		EDF_DbFindFieldBasicCollectionHandlingBuilder builder = EDF_DbFind.Field("collectionName").Keys();
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath.EndsWith(":keys")));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath.EndsWith(":keys")));
 	}
 }
 
@@ -195,7 +195,7 @@ class EDF_Test_DbFindConditionBuilder_Field_Values_ModifierPresent : SCR_Autotes
 		EDF_DbFindFieldBasicCollectionHandlingBuilder builder = EDF_DbFind.Field("collectionName").Values();
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath.EndsWith(":values")));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath.EndsWith(":values")));
 	}
 }
 
@@ -210,7 +210,7 @@ class EDF_Test_DbFindConditionBuilder_Field_ValuesAny_ModifiersPresent : SCR_Aut
 		EDF_DbFindFieldMainConditionBuilder builder = EDF_DbFind.Field("collectionName").Values().Any();
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath.EndsWith(":values:any")));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath.EndsWith(":values:any")));
 	}
 }
 
@@ -225,7 +225,7 @@ class EDF_Test_DbFindConditionBuilder_Field_At_IndexFieldSet : SCR_AutotestCaseB
 		EDF_DbFindFieldMainConditionBuilder builder = EDF_DbFind.Field("collectionName").At(3);
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath == "collectionName.{3}"));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath == "collectionName.{3}"));
 	}
 }
 
@@ -240,7 +240,7 @@ class EDF_Test_DbFindConditionBuilder_Field_OfType_ModiferAndTypefilterPresent :
 		EDF_DbFindFieldMainConditionBuilder builder = EDF_DbFind.Field("collectionName").OfType(EDF_DbFind);
 
 		// Assert
-		SetResult(new SCR_AutotestResult(builder.m_sFieldPath == "collectionName.{EDF_DbFind}"));
+		SetResult(EDF_AutotestResult.FromResult(builder.m_sFieldPath == "collectionName.{EDF_DbFind}"));
 	}
 }
 
@@ -295,6 +295,6 @@ class EDF_Test_DbFindConditionBuilder_Field_ComplexBuild_DebugStringEqual : SCR_
 		compareString.Replace("\t", "");
 		compareString.Replace(" ", "");
 
-		SetResult(new SCR_AutotestResult(debugString == compareString));
+		SetResult(EDF_AutotestResult.FromResult(debugString == compareString));
 	}
 }

@@ -27,14 +27,14 @@ class EDF_DbEntity
 
 	//------------------------------------------------------------------------------------------------
 	//! Utility function to write id to serializer
-	void WriteId(notnull BaseSerializationSaveContext saveContext)
+	void WriteId(notnull SaveContext saveContext)
 	{
 		saveContext.WriteValue(FIELD_ID, m_sId);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Utility function to read id from serializer
-	void ReadId(notnull BaseSerializationLoadContext loadContext)
+	void ReadId(notnull LoadContext loadContext)
 	{
 		loadContext.ReadValue(FIELD_ID, m_sId);
 	}

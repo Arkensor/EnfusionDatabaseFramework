@@ -4,14 +4,14 @@ class EDF_DbEntityUtils
 	//! Memeber-wise deep copy of data from source to matching named instance variables on the destination
 	static bool StructAutoCopy(notnull Managed source, notnull Managed destination)
 	{
-		SCR_JsonSaveContext writer();
+		JsonSaveContext writer();
 		if (!writer.WriteValue("", source))
 			return false;
 
-		string data = writer.ExportToString();
+		const string data = writer.SaveToString();
 
-		SCR_JsonLoadContext reader();
-		if (!reader.ImportFromString(data))
+		JsonLoadContext reader();
+		if (!reader.LoadFromString(data))
 			return false;
 
 		return reader.ReadValue("", destination);
@@ -20,11 +20,11 @@ class EDF_DbEntityUtils
 	//------------------------------------------------------------------------------------------------
 	static Managed DeepCopy(notnull Managed instance)
 	{
-		SCR_BinSaveContext writer();
+		BinarySaveContext writer();
 		if (!writer.WriteValue("", instance))
 			return null;
 
-		SCR_BinLoadContext reader();
+		BinaryLoadContext reader();
 		if (!reader.LoadFromContainer(writer.SaveToContainer()))
 			return null;
 

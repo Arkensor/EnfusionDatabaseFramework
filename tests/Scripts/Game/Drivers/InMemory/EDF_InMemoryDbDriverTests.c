@@ -44,7 +44,7 @@ class EDF_Test_InMemoryDbDriver_AddOrUpdate_NewEntity_Inserted : SCR_AutotestCas
 				EDF_Test_InMemoryDbDriverEntity resultEntity = EDF_Test_InMemoryDbDriverEntity.Cast(results.Get(0));
 				if (resultEntity)
 				{
-					SetResult(new SCR_AutotestResult(
+					SetResult(EDF_AutotestResult.FromResult(
 						resultEntity.GetId() == entity.GetId() &&
 						resultEntity.m_fFloatValue == entity.m_fFloatValue &&
 						resultEntity.m_sStringValue == entity.m_sStringValue));
@@ -54,7 +54,7 @@ class EDF_Test_InMemoryDbDriver_AddOrUpdate_NewEntity_Inserted : SCR_AutotestCas
 			}
 		}
 
-		SetResult(new SCR_AutotestResult(false));
+		SetResult(EDF_AutotestResult.FromResult(false));
 	}
 }
 
@@ -86,6 +86,6 @@ class EDF_Test_InMemoryDbDriver_Remove_ExistingId_Removed : SCR_AutotestCaseBase
 			success = results.Count() == 0;
 		}
 
-		SetResult(new SCR_AutotestResult(success));
+		SetResult(EDF_AutotestResult.FromResult(success));
 	}
 }

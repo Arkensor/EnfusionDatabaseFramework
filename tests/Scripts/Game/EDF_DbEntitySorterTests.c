@@ -53,7 +53,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayInt_AscSorted : SCR_AutotestCaseBas
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_iIntValue", EDF_EDbEntitySortDirection.ASCENDING}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_iIntValue == 1 &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_iIntValue == 5 &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_iIntValue == 50));
@@ -78,7 +78,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayInt_DescSorted : SCR_AutotestCaseBa
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_iIntValue", EDF_EDbEntitySortDirection.DESCENDING}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_iIntValue == 50 &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_iIntValue == 5 &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_iIntValue == 1));
@@ -103,7 +103,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayFloat_AscSorted : SCR_AutotestCaseB
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_fFloatValue", EDF_EDbEntitySortDirection.ASCENDING}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_fFloatValue == 1.1 &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_fFloatValue == 5.2 &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_fFloatValue == 50.3));
@@ -128,7 +128,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayFloat_DescSorted : SCR_AutotestCase
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_fFloatValue", EDF_EDbEntitySortDirection.DESCENDING}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_fFloatValue == 50.3 &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_fFloatValue == 5.2 &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_fFloatValue == 1.1));
@@ -153,7 +153,7 @@ class EDF_Test_DbEntitySorter_GetSorted_WrappedIntFloatDirectionInvariant_DescSo
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_iSameIntValue", "Asc"}, {"m_pEntity.m_fFloatValue", "deSC"}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntitySingleWrapper.Cast(sorted.Get(0)).m_pEntity.m_fFloatValue == 50.3 &&
 			EDF_Test_DbEntitySortableEntitySingleWrapper.Cast(sorted.Get(1)).m_pEntity.m_fFloatValue == 5.2 &&
 			EDF_Test_DbEntitySortableEntitySingleWrapper.Cast(sorted.Get(2)).m_pEntity.m_fFloatValue == 1.1));
@@ -178,7 +178,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayBool_AscSorted : SCR_AutotestCaseBa
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_bBoolValue", EDF_EDbEntitySortDirection.ASCENDING}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_bBoolValue == false &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_bBoolValue == false &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_bBoolValue == true));
@@ -203,7 +203,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayBool_DescSorted : SCR_AutotestCaseB
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_bBoolValue", EDF_EDbEntitySortDirection.DESCENDING}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_bBoolValue == true &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_bBoolValue == false &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_bBoolValue == false));
@@ -229,7 +229,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayString_AscSorted : SCR_AutotestCase
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_sStringValue", EDF_EDbEntitySortDirection.ASCENDING}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_sStringValue == "876 AmrA" &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_sStringValue == "987 ZyaD" &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_sStringValue == "Hello Arma" &&
@@ -256,7 +256,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayString_DescSorted : SCR_AutotestCas
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_sStringValue", EDF_EDbEntitySortDirection.DESCENDING}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_sStringValue == "Hello World" &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_sStringValue == "Hello Arma" &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_sStringValue == "987 ZyaD" &&
@@ -283,7 +283,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayVector_AscSorted : SCR_AutotestCase
 		array<ref EDF_DbEntity> sorted = EDF_DbEntitySorter.GetSorted(entities, {{"m_vVectorValue", EDF_EDbEntitySortDirection.ASCENDING}});
 	
 		// Assert
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_vVectorValue == Vector(0, 9, 9) &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_vVectorValue == Vector(1, 2, 1) &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_vVectorValue == Vector(1, 9, 1) &&
@@ -311,7 +311,7 @@ class EDF_Test_DbEntitySorter_GetSorted_ArrayVector_DescSorted : SCR_AutotestCas
 	
 		// Assert
 		
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(0)).m_vVectorValue == Vector(3, 0, 0) &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(1)).m_vVectorValue == Vector(1, 9, 1) &&
 			EDF_Test_DbEntitySortableEntity.Cast(sorted.Get(2)).m_vVectorValue == Vector(1, 2, 1) &&

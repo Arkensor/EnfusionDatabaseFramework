@@ -15,7 +15,7 @@ class EDF_BinaryFileDbDriver : EDF_FileDbDriverBase
 	//------------------------------------------------------------------------------------------------
 	override protected EDF_EDbOperationStatusCode WriteToDisk(EDF_DbEntity entity)
 	{
-		SCR_BinSaveContext writer();
+		BinarySaveContext writer();
 		if (!writer.WriteValue("", entity))
 			return EDF_EDbOperationStatusCode.FAILURE_DATA_MALFORMED;
 
@@ -31,7 +31,7 @@ class EDF_BinaryFileDbDriver : EDF_FileDbDriverBase
 		string file = string.Format("%1/%2.bin", _GetTypeDirectory(entityType), entityId);
 		if (FileIO.FileExists(file))
 		{
-			SCR_BinLoadContext reader();
+			BinaryLoadContext reader();
 			if (!reader.LoadFromFile(file))
 				return EDF_EDbOperationStatusCode.FAILURE_DB_UNAVAILABLE;
 			

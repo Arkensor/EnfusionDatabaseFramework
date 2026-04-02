@@ -23,7 +23,7 @@ class EDF_BinaryFileDbDriverTests : SCR_AutotestSuiteBase
 	//------------------------------------------------------------------------------------------------
 	static void WriteEntity(string dbDir, EDF_Test_BinFileDbDriverEntity entity)
 	{
-		SCR_BinSaveContext writer();
+		BinarySaveContext writer();
 		writer.WriteValue("data", entity);
 		FileIO.MakeDirectory(dbDir);
 		writer.SaveToFile(string.Format("%1/%2.bin", dbDir, entity.GetId()));
@@ -86,7 +86,7 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 		// Assert
 		if (statusCode != EDF_EDbOperationStatusCode.SUCCESS)
 		{
-			SetResult(new SCR_AutotestResult(false));
+			SetResult(EDF_AutotestResult.FromResult(false));
 			return;
 		}
 
@@ -94,7 +94,7 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 
 		if (results.Count() != 1)
 		{
-			SetResult(new SCR_AutotestResult(false));
+			SetResult(EDF_AutotestResult.FromResult(false));
 			return;
 		}
 
@@ -102,11 +102,11 @@ class EDF_Test_BinaryFileDbDriver_AddOrUpdate_NewEntity_ReadFromFileSuccessfully
 
 		if (!resultEntity)
 		{
-			SetResult(new SCR_AutotestResult(false));
+			SetResult(EDF_AutotestResult.FromResult(false));
 			return;
 		}
 
-		SetResult(new SCR_AutotestResult(
+		SetResult(EDF_AutotestResult.FromResult(
 			resultEntity.GetId() == entity.GetId() &&
 			resultEntity.m_fFloatValue == entity.m_fFloatValue &&
 			resultEntity.m_sStringValue == entity.m_sStringValue));

@@ -212,7 +212,7 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 			return;
 		}
 
-		SCR_JsonLoadContext reader();
+		JsonLoadContext reader();
 		array<ref EDF_DbEntity> resultEntities();
 
 		// Read per line individually until json load context has polymorph support: https://feedback.bistudio.com/T173074
@@ -222,7 +222,7 @@ sealed class EDF_WebProxyDbDriverCallback : RestCallback
 		{
 			EDF_DbEntity entity = EDF_DbEntity.Cast(m_tResultType.Spawn());
 
-			if (!reader.ImportFromString(lines[nLine]) || !reader.ReadValue("", entity))
+			if (!reader.LoadFromString(lines[nLine]) || !reader.ReadValue("", entity))
 			{
 				OnFailure(EDF_EDbOperationStatusCode.FAILURE_RESPONSE_MALFORMED);
 				return;
@@ -307,7 +307,7 @@ sealed class EDF_WebProxyDbDriverFindRequest
 	int m_iOffset;
 
 	//------------------------------------------------------------------------------------------------
-	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	protected bool SerializationSave(SaveContext saveContext)
 	{
 		if (m_pCondition)
 			saveContext.WriteValue("condition", m_pCondition);
@@ -495,12 +495,10 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 	//------------------------------------------------------------------------------------------------
 	static string Serialize(Managed data)
 	{
-		ContainerSerializationSaveContext writer();
-		JsonSaveContainer jsonContainer = new JsonSaveContainer();
-		jsonContainer.SetMaxDecimalPlaces(5);
-		writer.SetContainer(jsonContainer);
+		JsonSaveContext writer();
+		writer.SetMaxDecimalPlaces(5);
 		writer.WriteValue("", data);
-		return jsonContainer.ExportToString();
+		return writer.SaveToString();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -600,10 +598,6 @@ class EDF_WebProxyDbDriver : EDF_DbDriver
 	//------------------------------------------------------------------------------------------------
 	void ~EDF_WebProxyDbDriver()
 	{
-		if (!m_pContext)
-			return;
-
-		m_pContext.reset();
 		m_pContext = null;
 	}
 }

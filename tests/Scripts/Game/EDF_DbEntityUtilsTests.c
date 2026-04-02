@@ -37,7 +37,7 @@ class EDF_Test_DbEntityUtils_StructAutoCopy_ValidInput_MatchingOutput : SCR_Auto
 		EDF_DbEntityUtils.StructAutoCopy(saveStruct, otherClass);
 
 		// Assert
-		SetResult(new SCR_AutotestResult(otherClass && (otherClass.m_fFloatValue == saveStruct.m_fFloatValue) && (otherClass.m_sStringValue == saveStruct.m_sStringValue)));
+		SetResult(EDF_AutotestResult.FromResult(otherClass && (otherClass.m_fFloatValue == saveStruct.m_fFloatValue) && (otherClass.m_sStringValue == saveStruct.m_sStringValue)));
 	}
 }
 
@@ -57,6 +57,6 @@ class EDF_Test_DbEntityUtils_DeepCopy_ValidInput_MatchingOutput : SCR_AutotestCa
 		auto deepCopy = EDF_Test_DbEntityUtilsSaveStruct.Cast(EDF_DbEntityUtils.DeepCopy(saveStruct));
 
 		// Assert
-		SetResult(new SCR_AutotestResult(deepCopy && (deepCopy.m_fFloatValue == saveStruct.m_fFloatValue) && (deepCopy.m_sStringValue == saveStruct.m_sStringValue)));
+		SetResult(EDF_AutotestResult.FromResult(deepCopy && (deepCopy.m_fFloatValue == saveStruct.m_fFloatValue) && (deepCopy.m_sStringValue == saveStruct.m_sStringValue)));
 	}
 }

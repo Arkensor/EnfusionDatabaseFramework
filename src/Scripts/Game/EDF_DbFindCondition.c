@@ -90,7 +90,7 @@ class EDF_DbFindAnd : EDF_DbFindConditionWithChildren
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	protected bool SerializationSave(SaveContext saveContext)
 	{
 		saveContext.WriteValue("_type", "DbFindAnd");
 		saveContext.WriteValue("conditions", m_aConditions);

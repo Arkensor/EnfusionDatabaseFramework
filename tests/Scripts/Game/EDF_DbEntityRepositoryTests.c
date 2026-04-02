@@ -57,8 +57,8 @@ class EDF_Test_DbEntityRepository_AddOrUpdate_NewEntityFindByIntValue_Found : SC
 		repository.AddOrUpdate(entity);
 	
 		// Assert
-		SCR_AutotestResult result(repository.FindByIntValue(1001).GetEntity().GetId() == "TEST0000-0000-0001-0000-000000000001");
-	
+		auto result = EDF_AutotestResult.FromResult(repository.FindByIntValue(1001).GetEntity().GetId() == "TEST0000-0000-0001-0000-000000000001");
+
 		// Cleanup
 		repository.Remove(entity);
 	
@@ -83,10 +83,10 @@ class EDF_Test_DbEntityRepository_Remove_ByInstance_Removed : SCR_AutotestCaseBa
 		EDF_EDbOperationStatusCode statusCode = repository.Remove(entity);
 	
 		// Assert
-		SCR_AutotestResult result(
+		auto result = EDF_AutotestResult.FromResult(
 			statusCode == EDF_EDbOperationStatusCode.SUCCESS &&
 			!repository.Find("TEST0000-0000-0001-0000-000000000002").GetEntity());
-	
+
 		// Cleanup
 		repository.Remove(entity);
 	
