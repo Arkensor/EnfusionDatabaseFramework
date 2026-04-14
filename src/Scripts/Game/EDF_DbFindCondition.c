@@ -118,7 +118,7 @@ class EDF_DbFindOr : EDF_DbFindConditionWithChildren
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	protected bool SerializationSave(SaveContext saveContext)
 	{
 		saveContext.WriteValue("_type", "DbFindOr");
 		saveContext.WriteValue("conditions", m_aConditions);
@@ -143,7 +143,7 @@ class EDF_DbFindFieldCondition : EDF_DbFindCondition
 	bool m_bUsesTypename;
 
 	//------------------------------------------------------------------------------------------------
-	protected void SerializationWritePath(BaseSerializationSaveContext saveContext)
+	protected void SerializationWritePath(SaveContext saveContext)
 	{
 		// Replace any typenames in path with their db name aliases
 		string fieldPath = m_sFieldPath;
@@ -199,7 +199,7 @@ class EDF_DbFindCheckFieldNullOrDefault : EDF_DbFindFieldCondition
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	protected bool SerializationSave(SaveContext saveContext)
 	{
 		saveContext.WriteValue("_type", "DbFindCheckFieldNullOrDefault");
 		SerializationWritePath(saveContext);
@@ -437,7 +437,7 @@ class EDF_DbFindCompareFieldValues<Class ValueType> : EDF_DbFindFieldCondition
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	protected bool SerializationSave(SaveContext saveContext)
 	{
 		typename valueType = ValueType;
 		saveContext.WriteValue("_type", "DbFindCompareFieldValues<" + valueType + ">");

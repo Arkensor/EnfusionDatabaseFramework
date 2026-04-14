@@ -57,7 +57,7 @@ class EDF_Test_WebProxyDbDriverEntityB : EDF_DbEntity
 	vector m_vVector;
 
 	//------------------------------------------------------------------------------------------------
-	protected bool SerializationSave(BaseSerializationSaveContext saveContext)
+	protected bool SerializationSave(SaveContext saveContext)
 	{
 		saveContext.WriteValue("_type", Type().ToString());
 		WriteId(saveContext);
