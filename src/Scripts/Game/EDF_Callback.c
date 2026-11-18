@@ -2,7 +2,7 @@
 class EDF_Callback
 {
 	ref Managed m_pContext;
-	Class m_pInvokeInstance;
+	ref Managed m_pInvokeInstance;
 	string m_sInvokeMethod;
 
 	//------------------------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ class EDF_Callback
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void EDF_Callback(Class invokeInstance = null, string invokeMethod = string.Empty, Managed context = null)
+	void EDF_Callback(Managed invokeInstance = null, string invokeMethod = string.Empty, Managed context = null)
 	{
 		m_pInvokeInstance = invokeInstance;
 		m_sInvokeMethod = invokeMethod;
@@ -20,7 +20,7 @@ class EDF_Callback
 	}
 };
 
-class EDF_DataCallbackSingle<Class T> : EDF_Callback
+class EDF_DataCallbackSingle<Managed T> : EDF_Callback
 {
 	//------------------------------------------------------------------------------------------------
 	void OnComplete(T data, Managed context);
@@ -37,7 +37,7 @@ class EDF_DataCallbackSingle<Class T> : EDF_Callback
 	}
 };
 
-class EDF_DataCallbackMultiple<Class T> : EDF_Callback
+class EDF_DataCallbackMultiple<Managed T> : EDF_Callback
 {
 	//------------------------------------------------------------------------------------------------
 	void OnComplete(array<T> data, Managed context);
